@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Scheduler</string>
+    <string-array name="navigation_menu">
+        <item>My schedulers</item>
+        <item>Cloud of schedulers</item>
+    </string-array>
+</resources>

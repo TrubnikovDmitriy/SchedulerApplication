@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Расписание</string>
+    <string-array name="navigation_menu">
+        <item>Мои расписания</item>
+        <item>Облако расписаний</item>
+    </string-array>
+</resources>
