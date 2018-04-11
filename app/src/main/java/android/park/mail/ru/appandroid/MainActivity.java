@@ -10,7 +10,6 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -18,6 +17,8 @@ import android.widget.ListView;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -27,7 +28,6 @@ public class MainActivity extends AppCompatActivity {
 
 	public static final int LOCAL = 0;
 	public static final int SERVER = 1;
-
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -45,11 +45,12 @@ public class MainActivity extends AppCompatActivity {
 
 
 	private class NavigationMenuListener implements AdapterView.OnItemClickListener  {
+
 		@Override
 		public void onItemClick(AdapterView<?> adapterView,
 		                        View view, int position, long id) {
 
-			selectItem(position);
+			selectMenuItem(position);
 			setActionBarTitle(position);
 
 			if (drawerLayout == null) {
@@ -58,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
 			drawerLayout.closeDrawer(navigationMenuList);
 		}
 
-		private void selectItem(int position) {
+		private void selectMenuItem(int position) {
 			final Fragment fragment;
 			switch (position) {
 				case LOCAL:
