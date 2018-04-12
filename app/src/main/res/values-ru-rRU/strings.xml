@@ -4,6 +4,7 @@
     <string name="parse_err">Не могу прочесть данные сервера</string>
     <string name="empty_dataset">Нет данных</string>
     <string name="success_load_dataset">Расписания успешно загружены</string>
+    <string name="not_success_response">Некорректный ответ сервера</string>
     <string-array name="navigation_menu">
         <item>Мои расписания</item>
         <item>Облако расписаний</item>

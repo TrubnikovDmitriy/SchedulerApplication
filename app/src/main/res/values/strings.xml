@@ -4,6 +4,7 @@
     <string name="parse_err">Can\'t read data from server</string>
     <string name="empty_dataset">No dataset</string>
     <string name="success_load_dataset">Dashboards successfully download</string>
+    <string name="not_success_response">Invalid server response</string>
     <string-array name="navigation_menu">
         <item>My schedulers</item>
         <item>Cloud of schedulers</item>

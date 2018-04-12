@@ -1,8 +1,9 @@
 package android.park.mail.ru.appandroid.fragments;
 
 import android.os.Bundle;
-import android.park.mail.ru.appandroid.network.HttpClient;
-import android.park.mail.ru.appandroid.network.NetworkManager;
+import android.os.Handler;
+import android.os.Looper;
+import android.park.mail.ru.appandroid.network.ServerAPI;
 import android.park.mail.ru.appandroid.pojo.ShortDashboard;
 import android.park.mail.ru.appandroid.recycler.DashboardAdapter;
 import android.support.annotation.Nullable;
@@ -18,16 +19,12 @@ import android.park.mail.ru.appandroid.R;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
-import okhttp3.Response;
-import okhttp3.ResponseBody;
+import retrofit2.Response;
 
 
 public class ServerDashboardsFragment extends Fragment {
@@ -40,11 +37,6 @@ public class ServerDashboardsFragment extends Fragment {
 	private ArrayList<ShortDashboard> dataset;
 
 	public ServerDashboardsFragment() { }
-
-	@Override
-	public void onCreate(@Nullable Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -60,10 +52,11 @@ public class ServerDashboardsFragment extends Fragment {
 
 		if (savedInstanceState == null) {
 			// Receiving data from server
-			NetworkManager.getSchedulers(new LoadTitlesListener());
+			ServerAPI.getInstance().getDashboards(new LoadDashboardsListener());
 
 		} else {
 			Object[] objects = (Object[]) savedInstanceState.getSerializable(DATASET);
+
 			if (objects != null) {
 				// Try to cast Object[] to ShortDashboard[]
 				ShortDashboard[] dashes = Arrays.copyOf(
@@ -93,69 +86,65 @@ public class ServerDashboardsFragment extends Fragment {
 		adapter.notifyDataSetChanged();
 	}
 
-	class LoadTitlesListener implements HttpClient.OnRequestCompleteListener {
+	class LoadDashboardsListener implements ServerAPI.OnRequestCompleteListener<List<ShortDashboard>> {
 
-		private ArrayList<ShortDashboard> dashes = new ArrayList<>();
+		private ArrayList<ShortDashboard> dashboards;
+		private final Handler handler = new Handler(Looper.getMainLooper());
 
 		@Override
-		public void onSuccess(Response response) {
-
-			try(ResponseBody body = response.body()) {
-
-				// Parse HTTP response
-				if (body != null && response.code() == 200) {
-					JSONObject bodyJSON = new JSONObject(body.string());
-					JSONArray dashboards = bodyJSON.getJSONArray("dashboards");
-
-					for (int i = 0; i < dashboards.length(); ++i) {
-						dashes.add(new ShortDashboard(
-								dashboards.getJSONObject(i).getString("title"),
-								dashboards.getJSONObject(i).getInt("dashID")
-						));
-					}
-				}
-
-			} catch (IOException | JSONException e) {
-
-				Log.e("Parse", "Exception while parsing", e);
-				getActivity().runOnUiThread(new Runnable() {
+		public void onSuccess(Response<List<ShortDashboard>> response, List<ShortDashboard> list) {
+			if (response.code() == 200) {
+				dashboards = new ArrayList<>(list);
+				handler.post(new Runnable() {
 					@Override
 					public void run() {
-						Toast.makeText(getContext(), R.string.parse_err,
+						Toast.makeText(
+								getContext(),
+								dashboards.isEmpty() ?
+										R.string.empty_dataset : R.string.success_load_dataset,
+								Toast.LENGTH_SHORT
+						).show();
+						progressBar.setVisibility(ProgressBar.INVISIBLE);
+						updateDataset(dashboards);
+					}
+				});
+			} else {
+				handler.post(new Runnable() {
+					@Override
+					public void run() {
+						Toast.makeText(getContext(), R.string.not_success_response,
 								Toast.LENGTH_LONG).show();
 						progressBar.setVisibility(ProgressBar.INVISIBLE);
-						updateDataset(dashes);
+						updateDataset(null);
+					}
+				});
+			}
+		}
+
+		@Override
+		public void onFailure(Exception exception) {
+			Log.e("Network", "Parse or network", exception);
+
+			// IOException - network problem
+			if (exception instanceof IOException) {
+				handler.post(new Runnable() {
+					@Override
+					public void run() {
+						Toast.makeText(getContext(), R.string.network_err, Toast.LENGTH_LONG).show();
+						progressBar.setVisibility(ProgressBar.INVISIBLE);
+						updateDataset(null);
 					}
 				});
 				return;
 			}
 
-			// Update data set in adapter
-			getActivity().runOnUiThread(new Runnable() {
+			// RuntimeException - parse problem
+			handler.post(new Runnable() {
 				@Override
 				public void run() {
-					Toast.makeText(
-							getContext(),
-							dashes.isEmpty() ?
-									R.string.empty_dataset : R.string.success_load_dataset,
-							Toast.LENGTH_LONG
-					).show();
+					Toast.makeText(getContext(), R.string.parse_err, Toast.LENGTH_LONG).show();
 					progressBar.setVisibility(ProgressBar.INVISIBLE);
-					updateDataset(dashes);
-				}
-			});
-		}
-
-		@Override
-		public void onFailure() {
-			Log.e("Network", "Error connection");
-			getActivity().runOnUiThread(new Runnable() {
-				@Override
-				public void run() {
-					Toast.makeText(getContext(), R.string.network_err,
-							Toast.LENGTH_LONG).show();
-					progressBar.setVisibility(ProgressBar.INVISIBLE);
-					updateDataset(dashes);
+					updateDataset(null);
 				}
 			});
 		}

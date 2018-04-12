@@ -43,7 +43,6 @@ public class MainActivity extends AppCompatActivity {
 		navigationMenuList.setOnItemClickListener(new NavigationMenuListener());
 	}
 
-
 	private class NavigationMenuListener implements AdapterView.OnItemClickListener  {
 
 		@Override
