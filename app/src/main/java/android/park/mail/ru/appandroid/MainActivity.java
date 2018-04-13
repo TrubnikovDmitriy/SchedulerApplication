@@ -1,6 +1,6 @@
 package android.park.mail.ru.appandroid;
 
-import android.park.mail.ru.appandroid.fragments.LocalDashboardsFragment;
+import android.park.mail.ru.appandroid.fragments.ServerEventsFragment;
 import android.park.mail.ru.appandroid.fragments.ServerDashboardsFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -17,8 +17,7 @@ import android.widget.ListView;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+
 
 public class MainActivity extends AppCompatActivity {
 
@@ -62,13 +61,11 @@ public class MainActivity extends AppCompatActivity {
 			final Fragment fragment;
 			switch (position) {
 				case LOCAL:
-					fragment = new LocalDashboardsFragment();
-					Log.i(this.getClass().getSimpleName(), LocalDashboardsFragment.class.getSimpleName());
+					fragment = new ServerEventsFragment();
 					break;
 
 				case SERVER:
 					fragment = new ServerDashboardsFragment();
-					Log.i(this.getClass().getSimpleName(), ServerDashboardsFragment.class.getSimpleName());
 					break;
 
 				default:

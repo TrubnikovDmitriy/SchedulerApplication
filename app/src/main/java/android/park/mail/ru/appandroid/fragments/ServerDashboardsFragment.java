@@ -4,11 +4,11 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.park.mail.ru.appandroid.network.ServerAPI;
-import android.park.mail.ru.appandroid.pojo.ShortDashboard;
+import android.park.mail.ru.appandroid.models.ShortDashboard;
 import android.park.mail.ru.appandroid.recycler.DashboardAdapter;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -29,7 +29,7 @@ import retrofit2.Response;
 
 public class ServerDashboardsFragment extends Fragment {
 
-	public static final String DATASET = "dataset";
+	public static final String DATASET = "dataset_bundle";
 
 
 	private DashboardAdapter adapter;
@@ -43,7 +43,7 @@ public class ServerDashboardsFragment extends Fragment {
 	                         Bundle savedInstanceState) {
 
 		// Inflate the layout for this fragment
-		final View view = inflater.inflate(R.layout.fragment_server_dashboards,
+		final View view = inflater.inflate(R.layout.fragment_dashboards,
 				container, false);
 		RecyclerView recyclerView = view.findViewById(R.id.recycle_dash);
 		progressBar = view.findViewById(R.id.progressbar_dash_load);
@@ -66,17 +66,16 @@ public class ServerDashboardsFragment extends Fragment {
 			progressBar.setVisibility(ProgressBar.INVISIBLE);
 		}
 
-
-		adapter = new DashboardAdapter(dataset);
+		adapter = new DashboardAdapter(dataset, new OnDashboardClickListener());
 		recyclerView.setAdapter(adapter);
-		recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
+		recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
 		return view;
 	}
 
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
-		outState.putSerializable(DATASET, dataset.toArray());
+		outState.putSerializable(DATASET, dataset == null ? null : dataset.toArray());
 		super.onSaveInstanceState(outState);
 	}
 
@@ -84,6 +83,26 @@ public class ServerDashboardsFragment extends Fragment {
 		dataset = newDataset;
 		adapter.setNewDataset(dataset);
 		adapter.notifyDataSetChanged();
+	}
+
+	class OnDashboardClickListener extends DashboardAdapter.OnDashboardClickListener {
+
+		@Override
+		public void onClick(View view) {
+
+			// Create fragment and set arguments
+			final Fragment fragment = new ServerEventsFragment();
+			final Bundle bundle = new Bundle();
+			bundle.putLong(ServerEventsFragment.DASHBOARD_ID, getDashboard().getDashID());
+			fragment.setArguments(bundle);
+
+			// Replace content in FrameLayout-container
+			getFragmentManager()
+					.beginTransaction()
+					.replace(R.id.container, fragment)
+					.addToBackStack(null)
+					.commit();
+		}
 	}
 
 	class LoadDashboardsListener implements ServerAPI.OnRequestCompleteListener<List<ShortDashboard>> {
@@ -101,7 +120,7 @@ public class ServerDashboardsFragment extends Fragment {
 						Toast.makeText(
 								getContext(),
 								dashboards.isEmpty() ?
-										R.string.empty_dataset : R.string.success_load_dataset,
+										R.string.empty_dataset : R.string.success_load_dashboards,
 								Toast.LENGTH_SHORT
 						).show();
 						progressBar.setVisibility(ProgressBar.INVISIBLE);

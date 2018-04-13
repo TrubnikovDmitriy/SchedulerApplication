@@ -1,10 +1,8 @@
 package android.park.mail.ru.appandroid.network;
 
 
-import android.park.mail.ru.appandroid.pojo.ShortDashboard;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import android.park.mail.ru.appandroid.models.Dashboard;
+import android.park.mail.ru.appandroid.models.ShortDashboard;
 
 import java.io.IOException;
 import java.util.List;
@@ -35,6 +33,7 @@ public class ServerAPI {
 		return instance;
 	}
 
+
 	public void getDashboards(final OnRequestCompleteListener<List<ShortDashboard>> listener) {
 
 		executor.execute(new Runnable() {
@@ -51,6 +50,24 @@ public class ServerAPI {
 			}
 		});
 	}
+
+	public void getEvents(final Long ID, final OnRequestCompleteListener<Dashboard> listener) {
+
+		executor.execute(new Runnable() {
+			@Override
+			public void run() {
+				Call<Dashboard> call = service.getEvents(ID);
+				try {
+					Response<Dashboard> response = call.execute();
+					listener.onSuccess(response, response.body());
+
+				} catch (IOException | RuntimeException e) {
+					listener.onFailure(e);
+				}
+			}
+		});
+	}
+
 
 	public interface OnRequestCompleteListener<T> {
 

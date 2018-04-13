@@ -1,12 +1,13 @@
 package android.park.mail.ru.appandroid.recycler;
 
 import android.park.mail.ru.appandroid.R;
-import android.park.mail.ru.appandroid.pojo.ShortDashboard;
+import android.park.mail.ru.appandroid.models.ShortDashboard;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
@@ -17,21 +18,24 @@ public class DashboardAdapter extends RecyclerView.Adapter<DashboardAdapter.Dash
 	static class DashboardHolder extends RecyclerView.ViewHolder {
 
 		private CardView cardItemView;
-		private TextView textView;
+		private TextView textButton;
 
 		DashboardHolder(CardView cardItemView) {
 			super(cardItemView);
 			this.cardItemView = cardItemView;
-			this.textView = cardItemView.findViewById(R.id.dash_title);
+			this.textButton = cardItemView.findViewById(R.id.dash_title);
 		}
 	}
+
+	private OnDashboardClickListener onItemClickListener;
 
 	@NonNull
 	private ArrayList<ShortDashboard> dashSet;
 
-	public DashboardAdapter(@Nullable ArrayList<ShortDashboard> dataset) {
-		this.dashSet = (dataset != null) ?
-				dataset : new ArrayList<ShortDashboard>();
+	public DashboardAdapter(@Nullable final ArrayList<ShortDashboard> dataset,
+	                        @Nullable final OnDashboardClickListener listener) {
+		this.onItemClickListener = listener;
+		this.dashSet = (dataset != null) ? dataset : new ArrayList<ShortDashboard>();
 	}
 
 	@Override
@@ -42,8 +46,10 @@ public class DashboardAdapter extends RecyclerView.Adapter<DashboardAdapter.Dash
 	}
 
 	@Override
-	public void onBindViewHolder(DashboardHolder holder, int position) {
-		holder.textView.setText(dashSet.get(position).getTitle());
+	public void onBindViewHolder(final DashboardHolder holder, final int position) {
+		holder.textButton.setText(dashSet.get(position).getTitle());
+		onItemClickListener.setDashboard(dashSet.get(holder.getAdapterPosition()));
+		holder.cardItemView.setOnClickListener(onItemClickListener);
 	}
 
 	@Override
@@ -54,5 +60,18 @@ public class DashboardAdapter extends RecyclerView.Adapter<DashboardAdapter.Dash
 	public void setNewDataset(@Nullable ArrayList<ShortDashboard> newDataset) {
 		this.dashSet = (newDataset != null) ?
 				newDataset : new ArrayList<ShortDashboard>();
+	}
+
+	public static abstract class OnDashboardClickListener implements View.OnClickListener {
+
+		private ShortDashboard dashboard;
+
+		private void setDashboard(ShortDashboard dashboard) {
+			this.dashboard = dashboard;
+		}
+
+		protected ShortDashboard getDashboard() {
+			return dashboard;
+		}
 	}
 }

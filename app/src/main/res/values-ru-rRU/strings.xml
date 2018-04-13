@@ -3,7 +3,8 @@
     <string name="network_err">Ошибка соединения с сервером. Проверьте интеренет соединение</string>
     <string name="parse_err">Не могу прочесть данные сервера</string>
     <string name="empty_dataset">Нет данных</string>
-    <string name="success_load_dataset">Расписания успешно загружены</string>
+    <string name="success_load_dashboards">Расписания успешно загружены</string>
+    <string name="success_load_events">Расписание успешно загружено</string>
     <string name="not_success_response">Некорректный ответ сервера</string>
     <string-array name="navigation_menu">
         <item>Мои расписания</item>

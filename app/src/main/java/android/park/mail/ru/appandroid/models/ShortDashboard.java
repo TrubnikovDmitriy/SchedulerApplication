@@ -1,4 +1,4 @@
-package android.park.mail.ru.appandroid.pojo;
+package android.park.mail.ru.appandroid.models;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -10,9 +10,9 @@ public class ShortDashboard implements Serializable {
 	@SerializedName("title")
 	private final String title;
 	@SerializedName("dashID")
-	private final Integer dashID;
+	private final Long dashID;
 
-	public ShortDashboard(String title, Integer dashID) {
+	public ShortDashboard(String title, Long dashID) {
 		this.title = title;
 		this.dashID = dashID;
 	}
@@ -21,7 +21,7 @@ public class ShortDashboard implements Serializable {
 		return title;
 	}
 
-	public Integer getDashID() {
+	public Long getDashID() {
 		return dashID;
 	}
 }
