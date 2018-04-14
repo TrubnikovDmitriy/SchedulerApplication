@@ -48,8 +48,10 @@ public class DashboardAdapter extends RecyclerView.Adapter<DashboardAdapter.Dash
 	@Override
 	public void onBindViewHolder(final DashboardHolder holder, final int position) {
 		holder.textButton.setText(dashSet.get(position).getTitle());
-		onItemClickListener.setDashboard(dashSet.get(holder.getAdapterPosition()));
-		holder.cardItemView.setOnClickListener(onItemClickListener);
+		if (onItemClickListener != null) {
+			onItemClickListener.setDashboard(dashSet.get(position));
+			holder.cardItemView.setOnClickListener(onItemClickListener);
+		}
 	}
 
 	@Override

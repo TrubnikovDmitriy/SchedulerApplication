@@ -1,8 +1,9 @@
-package android.park.mail.ru.appandroid.fragments;
+package android.park.mail.ru.appandroid.fragments.dashboards;
 
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.park.mail.ru.appandroid.fragments.events.ServerEventsFragment;
 import android.park.mail.ru.appandroid.network.ServerAPI;
 import android.park.mail.ru.appandroid.models.ShortDashboard;
 import android.park.mail.ru.appandroid.recycler.DashboardAdapter;
@@ -10,7 +11,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -52,7 +52,7 @@ public class ServerDashboardsFragment extends Fragment {
 
 		if (savedInstanceState == null) {
 			// Receiving data from server
-			ServerAPI.getInstance().getDashboards(new LoadDashboardsListener());
+			ServerAPI.getInstance().getDashboards(new NetworkLoadDashboardsListener());
 
 		} else {
 			Object[] objects = (Object[]) savedInstanceState.getSerializable(DATASET);
@@ -105,7 +105,7 @@ public class ServerDashboardsFragment extends Fragment {
 		}
 	}
 
-	class LoadDashboardsListener implements ServerAPI.OnRequestCompleteListener<List<ShortDashboard>> {
+	class NetworkLoadDashboardsListener implements ServerAPI.OnRequestCompleteListener<List<ShortDashboard>> {
 
 		private ArrayList<ShortDashboard> dashboards;
 		private final Handler handler = new Handler(Looper.getMainLooper());
@@ -119,8 +119,7 @@ public class ServerDashboardsFragment extends Fragment {
 					public void run() {
 						Toast.makeText(
 								getContext(),
-								dashboards.isEmpty() ?
-										R.string.empty_dataset : R.string.success_load_dashboards,
+								dashboards.isEmpty() ? R.string.empty_dataset : R.string.success_load_dashboards,
 								Toast.LENGTH_SHORT
 						).show();
 						progressBar.setVisibility(ProgressBar.INVISIBLE);
@@ -131,7 +130,7 @@ public class ServerDashboardsFragment extends Fragment {
 				handler.post(new Runnable() {
 					@Override
 					public void run() {
-						Toast.makeText(getContext(), R.string.not_success_response,
+						Toast.makeText(getContext(), R.string.network_failure,
 								Toast.LENGTH_LONG).show();
 						progressBar.setVisibility(ProgressBar.INVISIBLE);
 						updateDataset(null);
@@ -142,7 +141,6 @@ public class ServerDashboardsFragment extends Fragment {
 
 		@Override
 		public void onFailure(Exception exception) {
-			Log.e("Network", "Parse or network", exception);
 
 			// IOException - network problem
 			if (exception instanceof IOException) {

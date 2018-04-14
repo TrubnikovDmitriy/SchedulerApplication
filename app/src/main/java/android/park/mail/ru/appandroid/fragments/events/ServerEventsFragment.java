@@ -1,4 +1,4 @@
-package android.park.mail.ru.appandroid.fragments;
+package android.park.mail.ru.appandroid.fragments.events;
 
 import android.os.Bundle;
 import android.os.Handler;
@@ -7,6 +7,8 @@ import android.park.mail.ru.appandroid.R;
 import android.park.mail.ru.appandroid.calendar.SchedulerCaldroidFragment;
 import android.park.mail.ru.appandroid.network.ServerAPI;
 import android.park.mail.ru.appandroid.models.Dashboard;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -33,8 +35,9 @@ public class ServerEventsFragment extends Fragment {
 
 
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-	                         Bundle savedInstanceState) {
+	public View onCreateView(LayoutInflater inflater,
+	                         @Nullable ViewGroup container,
+	                         @Nullable Bundle savedInstanceState) {
 
 		final View view = inflater.inflate(R.layout.fragment_events, container, false);
 		progressBar = view.findViewById(R.id.progressbar_event_load);
@@ -46,7 +49,9 @@ public class ServerEventsFragment extends Fragment {
 
 		} else {
 			dashboard = (Dashboard) savedInstanceState.getSerializable(DASHBOARD);
-			setCalendar(dashboard);
+			if (dashboard != null) {
+				setCalendar(dashboard);
+			}
 		}
 
 		return view;
@@ -59,7 +64,7 @@ public class ServerEventsFragment extends Fragment {
 	}
 
 
-	private void setCalendar(final Dashboard dashboard) {
+	private void setCalendar(@NonNull final Dashboard dashboard) {
 
 		final SchedulerCaldroidFragment caldroid = new SchedulerCaldroidFragment();
 		caldroid.setEvents(dashboard.getEvents());
@@ -95,7 +100,7 @@ public class ServerEventsFragment extends Fragment {
 				handler.post(new Runnable() {
 					@Override
 					public void run() {
-						Toast.makeText(getContext(), R.string.not_success_response,
+						Toast.makeText(getContext(), R.string.network_failure,
 								Toast.LENGTH_LONG).show();
 						progressBar.setVisibility(ProgressBar.INVISIBLE);
 					}

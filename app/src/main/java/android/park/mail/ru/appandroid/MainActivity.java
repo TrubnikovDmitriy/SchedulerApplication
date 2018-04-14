@@ -1,7 +1,7 @@
 package android.park.mail.ru.appandroid;
 
-import android.park.mail.ru.appandroid.fragments.ServerEventsFragment;
-import android.park.mail.ru.appandroid.fragments.ServerDashboardsFragment;
+import android.park.mail.ru.appandroid.fragments.dashboards.LocalDashboardsFragment;
+import android.park.mail.ru.appandroid.fragments.dashboards.ServerDashboardsFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
 			final Fragment fragment;
 			switch (position) {
 				case LOCAL:
-					fragment = new ServerEventsFragment();
+					fragment = new LocalDashboardsFragment();
 					break;
 
 				case SERVER:
