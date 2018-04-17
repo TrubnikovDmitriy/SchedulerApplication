@@ -2,6 +2,7 @@ package android.park.mail.ru.appandroid;
 
 import android.park.mail.ru.appandroid.fragments.dashboards.LocalDashboardsFragment;
 import android.park.mail.ru.appandroid.fragments.dashboards.ServerDashboardsFragment;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -10,6 +11,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -24,9 +26,13 @@ public class MainActivity extends AppCompatActivity {
 	private DrawerLayout drawerLayout;
 	private ListView navigationMenuList;
 	private ArrayList<String> navigationMenu;
+	private ActionBar bar;
 
 	public static final int LOCAL = 0;
 	public static final int SERVER = 1;
+	public static final String TITLE = "bundle_title";
+
+
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +46,27 @@ public class MainActivity extends AppCompatActivity {
 		navigationMenuList.setAdapter(new ArrayAdapter<>(
 				this, android.R.layout.simple_list_item_1, navigationMenu));
 		navigationMenuList.setOnItemClickListener(new NavigationMenuListener());
+
+
+		if (savedInstanceState != null) {
+			final ActionBar bar = getSupportActionBar();
+			if (bar != null) {
+				final String title = savedInstanceState.getString(TITLE);
+				if (title != null) {
+					bar.setTitle(title);
+				} else {
+					bar.setTitle(R.string.app_name);
+				}
+			}
+		}
+	}
+
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		if (getSupportActionBar() != null && getSupportActionBar().getTitle() != null) {
+			outState.putString(TITLE, getSupportActionBar().getTitle().toString());
+		}
+		super.onSaveInstanceState(outState);
 	}
 
 	private class NavigationMenuListener implements AdapterView.OnItemClickListener  {
@@ -73,11 +100,11 @@ public class MainActivity extends AppCompatActivity {
 					return;
 			}
 
-			final FragmentManager manager = getSupportFragmentManager();
-			FragmentTransaction transaction = manager.beginTransaction();
-			transaction.replace(R.id.container, fragment);
-			transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-			transaction.commit();
+			getSupportFragmentManager()
+					.beginTransaction()
+					.replace(R.id.container, fragment)
+					.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+					.commit();
 		}
 
 		private void setActionBarTitle(int position) {

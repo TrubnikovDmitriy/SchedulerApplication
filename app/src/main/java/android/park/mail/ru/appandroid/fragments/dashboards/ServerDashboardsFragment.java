@@ -12,6 +12,8 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -27,14 +29,7 @@ import java.util.List;
 import retrofit2.Response;
 
 
-public class ServerDashboardsFragment extends Fragment {
-
-	public static final String DATASET = "dataset_bundle";
-
-
-	private DashboardAdapter adapter;
-	private ProgressBar progressBar;
-	private ArrayList<ShortDashboard> dataset;
+public class ServerDashboardsFragment extends DashboardsFragment {
 
 	public ServerDashboardsFragment() { }
 
@@ -74,15 +69,9 @@ public class ServerDashboardsFragment extends Fragment {
 	}
 
 	@Override
-	public void onSaveInstanceState(Bundle outState) {
-		outState.putSerializable(DATASET, dataset == null ? null : dataset.toArray());
-		super.onSaveInstanceState(outState);
-	}
-
-	private void updateDataset(@Nullable ArrayList<ShortDashboard> newDataset) {
-		dataset = newDataset;
-		adapter.setNewDataset(dataset);
-		adapter.notifyDataSetChanged();
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+		inflater.inflate(R.menu.server_dashboards, menu);
+		super.onCreateOptionsMenu(menu, inflater);
 	}
 
 	class OnDashboardClickListener extends DashboardAdapter.OnDashboardClickListener {

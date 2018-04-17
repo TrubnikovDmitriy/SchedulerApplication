@@ -5,6 +5,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.park.mail.ru.appandroid.R;
 import android.park.mail.ru.appandroid.calendar.SchedulerCaldroidFragment;
+import android.park.mail.ru.appandroid.database.SchedulerDBHelper;
 import android.park.mail.ru.appandroid.network.ServerAPI;
 import android.park.mail.ru.appandroid.models.Dashboard;
 import android.support.annotation.NonNull;
@@ -24,28 +25,22 @@ import java.io.IOException;
 import retrofit2.Response;
 
 
-public class ServerEventsFragment extends Fragment {
-
-	public static final String DASHBOARD_ID = "dash_id";
-	private static final String DASHBOARD = "dashboard_bundle";
-	private Dashboard dashboard;
-	private ProgressBar progressBar;
+public class ServerEventsFragment extends EventsFragment {
 
 	public ServerEventsFragment() { }
-
 
 	@Override
 	public View onCreateView(LayoutInflater inflater,
 	                         @Nullable ViewGroup container,
 	                         @Nullable Bundle savedInstanceState) {
 
-		final View view = inflater.inflate(R.layout.fragment_events, container, false);
-		progressBar = view.findViewById(R.id.progressbar_event_load);
+		final View view = super.onCreateView(inflater, container, savedInstanceState);
 
 		if (savedInstanceState == null) {
 			progressBar.setVisibility(ProgressBar.VISIBLE);
 			final Long dashID = getArguments().getLong(DASHBOARD_ID);
 			ServerAPI.getInstance().getEvents(dashID, new LoadEventsListener());
+			// TODO Singleton
 
 		} else {
 			dashboard = (Dashboard) savedInstanceState.getSerializable(DASHBOARD);
@@ -55,28 +50,6 @@ public class ServerEventsFragment extends Fragment {
 		}
 
 		return view;
-	}
-
-	@Override
-	public void onSaveInstanceState(Bundle outState) {
-		outState.putSerializable(DASHBOARD, dashboard);
-		super.onSaveInstanceState(outState);
-	}
-
-
-	private void setCalendar(@NonNull final Dashboard dashboard) {
-
-		final SchedulerCaldroidFragment caldroid = new SchedulerCaldroidFragment();
-		caldroid.setEvents(dashboard.getEvents());
-
-		Bundle args = new Bundle();
-		args.putBoolean(CaldroidFragment.SHOW_NAVIGATION_ARROWS, false);
-		caldroid.setArguments(args);
-
-		getFragmentManager()
-				.beginTransaction()
-				.replace(R.id.caldroid_container, caldroid)
-				.commit();
 	}
 
 	class LoadEventsListener implements ServerAPI.OnRequestCompleteListener<Dashboard> {
@@ -134,5 +107,4 @@ public class ServerEventsFragment extends Fragment {
 			});
 		}
 	}
-
 }

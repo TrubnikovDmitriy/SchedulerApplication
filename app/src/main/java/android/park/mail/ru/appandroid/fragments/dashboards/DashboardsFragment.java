@@ -1,10 +1,13 @@
 package android.park.mail.ru.appandroid.fragments.dashboards;
 
 import android.os.Bundle;
+import android.park.mail.ru.appandroid.R;
 import android.park.mail.ru.appandroid.models.ShortDashboard;
 import android.park.mail.ru.appandroid.recycler.DashboardAdapter;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.widget.ProgressBar;
 
 import java.util.ArrayList;
@@ -23,7 +26,14 @@ public abstract class DashboardsFragment extends Fragment {
 	public DashboardsFragment() { }
 
 	@Override
+	public void onCreate(@Nullable Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setHasOptionsMenu(true);
+	}
+
+	@Override
 	public void onSaveInstanceState(Bundle outState) {
+		setHasOptionsMenu(true);
 		outState.putSerializable(DATASET, dataset == null ? null : dataset.toArray());
 		super.onSaveInstanceState(outState);
 	}

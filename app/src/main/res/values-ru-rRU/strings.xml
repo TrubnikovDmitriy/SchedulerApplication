@@ -1,5 +1,6 @@
 <resources>
 
+    <!--Message for toast-->
     <string name="app_name">Расписание</string>
     <string name="network_err">Ошибка соединения с сервером. Проверьте интеренет соединение</string>
     <string name="parse_err">Не могу прочесть данные сервера</string>
@@ -8,10 +9,16 @@
     <string name="success_load_events">Расписание успешно загружено</string>
     <string name="network_failure">Некорректный ответ сервера</string>
     <string name="db_failure">Ошибка при обращении к базе данных</string>
+    <string name="empty_title">Заголовок не может быть пустым</string>
 
     <string-array name="navigation_menu">
         <item>Мои расписания</item>
         <item>Облако расписаний</item>
     </string-array>
+
+    <!--Text for labels-->
+    <string name="title_of_dashboard">Название расписания</string>
+    <string name="create_button">Создать</string>
+    <string name="cancel_button">Отмена</string>
 
 </resources>

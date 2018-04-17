@@ -17,6 +17,11 @@ public class ShortDashboard implements Serializable {
 		this.dashID = dashID;
 	}
 
+	public ShortDashboard(Dashboard dashboard) {
+		this.title = dashboard.getTitle();
+		this.dashID = dashboard.getDashID();
+	}
+
 	public String getTitle() {
 		return title;
 	}

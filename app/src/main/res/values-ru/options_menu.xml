@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="create_dashboard">Создать расписание</string>
+    <string name="create_event">Создать событие</string>
+
+    <string name="edit_dashboard">Редактировать расписание</string>
+    <string name="edit_event">Редактировать событие</string>
+
+    <string name="delete_dashboard">Удалить расписание</string>
+    <string name="delete_event">Удалить событие</string>
+
+    <string name="update_dashboard">Обновить список</string>
+    <string name="update_event">Обновить события</string>
+</resources>

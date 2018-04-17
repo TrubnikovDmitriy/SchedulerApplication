@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.park.mail.ru.appandroid.models.Dashboard;
 import android.park.mail.ru.appandroid.models.Event;
 import android.park.mail.ru.appandroid.models.ShortDashboard;
 
@@ -87,7 +88,7 @@ public class SchedulerDBHelper extends SQLiteOpenHelper {
 	public void onCreate(SQLiteDatabase db) {
 		db.execSQL("CREATE TABLE " + TABLE_SCHEDULER_NAME + "(" +
 				"_id INTEGER PRIMARY KEY AUTOINCREMENT," +
-				"dash_id INTEGER NOT NULL," +
+				"dash_id INTEGER," +
 				"title TEXT NOT NULL," +
 				"author_id INTEGER NOT NULL," +
 				"author TEXT NOT NULL" +
@@ -136,7 +137,7 @@ public class SchedulerDBHelper extends SQLiteOpenHelper {
 		});
 	}
 
-	public void insertDashboard(final ShortDashboard dashboard) {
+	public void insertDashboard(final Dashboard dashboard) {
 
 		executor.execute(new Runnable() {
 			@Override
@@ -145,9 +146,8 @@ public class SchedulerDBHelper extends SQLiteOpenHelper {
 
 				values.put(DASH.ID.getName(), dashboard.getDashID());
 				values.put(DASH.TITLE.getName(), dashboard.getTitle());
-				// TODO delete stubs
-				values.put(DASH.AUTHOR_ID.getName(), 1L);
-				values.put(DASH.AUTHOR.getName(), "Dmitriy");
+				values.put(DASH.AUTHOR_ID.getName(), dashboard.getAuthorID());
+				values.put(DASH.AUTHOR.getName(), dashboard.getAuthor());
 
 				getWritableDatabase().insertOrThrow(TABLE_SCHEDULER_NAME, null, values);
 			}

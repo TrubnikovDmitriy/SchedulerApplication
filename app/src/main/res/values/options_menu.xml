@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="create_dashboard">Create dashboard</string>
+    <string name="create_event">Create event</string>
+
+    <string name="edit_dashboard">Edit dashboard</string>
+    <string name="edit_event">Edit event</string>
+
+    <string name="delete_dashboard">Delete dashboard</string>
+    <string name="delete_event">Delete event</string>
+
+    <string name="update_dashboard">Update list</string>
+    <string name="update_event">Update events</string>
+</resources>
