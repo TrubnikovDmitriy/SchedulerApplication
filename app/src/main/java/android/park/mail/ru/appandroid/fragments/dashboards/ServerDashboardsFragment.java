@@ -3,12 +3,14 @@ package android.park.mail.ru.appandroid.fragments.dashboards;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.park.mail.ru.appandroid.App;
 import android.park.mail.ru.appandroid.fragments.events.ServerEventsFragment;
 import android.park.mail.ru.appandroid.network.ServerAPI;
 import android.park.mail.ru.appandroid.models.ShortDashboard;
 import android.park.mail.ru.appandroid.recycler.DashboardAdapter;
 import android.park.mail.ru.appandroid.utils.ListenerWrapper;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
@@ -27,12 +29,23 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import retrofit2.Response;
 
 
 public class ServerDashboardsFragment extends DashboardsFragment {
 
+	@Inject
+	public ServerAPI networkManager;
+
 	public ServerDashboardsFragment() { }
+
+	@Override
+	public void onCreate(@Nullable Bundle savedInstanceState) {
+		App.getComponent().inject(this);
+		super.onCreate(savedInstanceState);
+	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -50,7 +63,7 @@ public class ServerDashboardsFragment extends DashboardsFragment {
 
 		if (savedInstanceState == null) {
 			// Receiving data from server
-			ListenerWrapper wrapper = ServerAPI.getInstance().getDashboards(new NetworkLoadDashboardsListener());
+			ListenerWrapper wrapper = networkManager.getDashboards(new NetworkLoadDashboardsListener());
 			wrappers.add(wrapper);
 
 		} else {
@@ -84,7 +97,7 @@ public class ServerDashboardsFragment extends DashboardsFragment {
 		switch (item.getItemId()) {
 
 			case R.id.update_dashboards:
-				ListenerWrapper wrapper = ServerAPI.getInstance().getDashboards(new NetworkLoadDashboardsListener());
+				ListenerWrapper wrapper = networkManager.getDashboards(new NetworkLoadDashboardsListener());
 				wrappers.add(wrapper);
 				return true;
 

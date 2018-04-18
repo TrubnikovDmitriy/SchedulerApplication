@@ -1,7 +1,6 @@
 package android.park.mail.ru.appandroid.fragments.dashboards;
 
 import android.os.Bundle;
-import android.park.mail.ru.appandroid.R;
 import android.park.mail.ru.appandroid.models.ShortDashboard;
 import android.park.mail.ru.appandroid.recycler.DashboardAdapter;
 import android.park.mail.ru.appandroid.utils.ListenerWrapper;
@@ -12,8 +11,6 @@ import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.widget.ProgressBar;
 
 import java.util.ArrayList;

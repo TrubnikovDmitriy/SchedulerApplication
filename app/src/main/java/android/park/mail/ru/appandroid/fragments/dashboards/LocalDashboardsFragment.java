@@ -4,6 +4,7 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.park.mail.ru.appandroid.App;
 import android.park.mail.ru.appandroid.R;
 import android.park.mail.ru.appandroid.database.SchedulerDBHelper;
 import android.park.mail.ru.appandroid.dialogs.DialogDashboardCreator;
@@ -16,7 +17,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -29,18 +29,21 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import javax.inject.Inject;
+
 
 public class LocalDashboardsFragment extends DashboardsFragment {
 
-	private SchedulerDBHelper dbHelper;
+	@Inject
+	public SchedulerDBHelper dbManager;
 	private DialogDashboardCreator dialogDashboardCreator = new DialogDashboardCreator();
 
 	public LocalDashboardsFragment() { }
 
 	@Override
 	public void onCreate(@Nullable Bundle savedInstanceState) {
+		App.getComponent().inject(this);
 		super.onCreate(savedInstanceState);
-		dbHelper = new SchedulerDBHelper(getContext());
 		setDialogListeners();
 	}
 
@@ -60,7 +63,7 @@ public class LocalDashboardsFragment extends DashboardsFragment {
 		if (savedInstanceState == null) {
 			// Receiving data from DB
 			final ListenerWrapper wrapper =
-					dbHelper.selectShortDashboards(new DatabaseLoadDashboardsListener());
+					dbManager.selectShortDashboards(new DatabaseLoadDashboardsListener());
 			wrappers.add(wrapper);
 
 		} else {
@@ -118,7 +121,7 @@ public class LocalDashboardsFragment extends DashboardsFragment {
 				final Dashboard dashboard = new Dashboard("Dmitriy", 1L,
 						newTitle, null, null);
 				final ListenerWrapper wrapper =
-						dbHelper.insertDashboard(dashboard, new SchedulerDBHelper.OnInsertCompleteListener() {
+						dbManager.insertDashboard(dashboard, new SchedulerDBHelper.OnInsertCompleteListener() {
 					@Override
 					public void onSuccess(@NonNull Long rowID) {
 						dashboard.setDashID(rowID);

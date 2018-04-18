@@ -3,15 +3,12 @@ package android.park.mail.ru.appandroid.fragments.events;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.park.mail.ru.appandroid.App;
 import android.park.mail.ru.appandroid.R;
-import android.park.mail.ru.appandroid.calendar.SchedulerCaldroidFragment;
-import android.park.mail.ru.appandroid.database.SchedulerDBHelper;
 import android.park.mail.ru.appandroid.network.ServerAPI;
 import android.park.mail.ru.appandroid.models.Dashboard;
 import android.park.mail.ru.appandroid.utils.ListenerWrapper;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,16 +16,25 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import com.roomorama.caldroid.CaldroidFragment;
-
 import java.io.IOException;
+
+import javax.inject.Inject;
 
 import retrofit2.Response;
 
 
 public class ServerEventsFragment extends EventsFragment {
 
+	@Inject
+	public ServerAPI networkManager;
+
 	public ServerEventsFragment() { }
+
+	@Override
+	public void onCreate(@Nullable Bundle savedInstanceState) {
+		App.getComponent().inject(this);
+		super.onCreate(savedInstanceState);
+	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater,
@@ -40,7 +46,7 @@ public class ServerEventsFragment extends EventsFragment {
 		if (savedInstanceState == null) {
 			progressBar.setVisibility(ProgressBar.VISIBLE);
 			final Long dashID = getArguments().getLong(DASHBOARD_ID);
-			ListenerWrapper wrapper = ServerAPI.getInstance().getEvents(dashID, new LoadEventsListener());
+			ListenerWrapper wrapper = networkManager.getEvents(dashID, new LoadEventsListener());
 			wrappers.add(wrapper);
 
 		} else {

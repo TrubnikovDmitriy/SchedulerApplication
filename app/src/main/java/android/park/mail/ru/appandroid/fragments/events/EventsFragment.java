@@ -1,12 +1,9 @@
 package android.park.mail.ru.appandroid.fragments.events;
 
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.park.mail.ru.appandroid.R;
 import android.park.mail.ru.appandroid.calendar.SchedulerCaldroidFragment;
 import android.park.mail.ru.appandroid.models.Dashboard;
-import android.park.mail.ru.appandroid.network.ServerAPI;
 import android.park.mail.ru.appandroid.utils.ListenerWrapper;
 import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
@@ -14,20 +11,13 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
-import com.roomorama.caldroid.CaldroidFragment;
-
-import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
-
-import retrofit2.Response;
 
 
 public abstract class EventsFragment extends Fragment {

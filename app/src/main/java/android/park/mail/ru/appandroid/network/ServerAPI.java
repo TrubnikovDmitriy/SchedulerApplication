@@ -23,8 +23,7 @@ public class ServerAPI {
 	private final DashboardService service;
 	private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
-
-	private ServerAPI() {
+	public ServerAPI() {
 		service = new Retrofit.Builder()
 				.baseUrl("http://138.68.173.73:5050/api/")
 				.addConverterFactory(GsonConverterFactory.create())

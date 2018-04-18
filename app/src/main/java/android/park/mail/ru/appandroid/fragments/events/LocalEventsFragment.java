@@ -1,13 +1,12 @@
 package android.park.mail.ru.appandroid.fragments.events;
 
-
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.park.mail.ru.appandroid.App;
 import android.park.mail.ru.appandroid.R;
 import android.park.mail.ru.appandroid.database.SchedulerDBHelper;
 import android.park.mail.ru.appandroid.models.Dashboard;
-import android.park.mail.ru.appandroid.models.Event;
 import android.park.mail.ru.appandroid.utils.ListenerWrapper;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -16,11 +15,21 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import java.util.ArrayList;
+import javax.inject.Inject;
+
 
 public class LocalEventsFragment extends EventsFragment {
 
+	@Inject
+	public SchedulerDBHelper dbManager;
+
 	public LocalEventsFragment() { }
+
+	@Override
+	public void onCreate(@Nullable Bundle savedInstanceState) {
+		App.getComponent().inject(this);
+		super.onCreate(savedInstanceState);
+	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater,
@@ -33,7 +42,7 @@ public class LocalEventsFragment extends EventsFragment {
 			progressBar.setVisibility(ProgressBar.VISIBLE);
 			final Long dashID = getArguments().getLong(DASHBOARD_ID);
 			final ListenerWrapper wrapper =
-					new SchedulerDBHelper(getContext()).selectDashboard(dashID, new OnLoadDashboardListener());
+					dbManager.selectDashboard(dashID, new OnLoadDashboardListener());
 			wrappers.add(wrapper);
 
 		} else {

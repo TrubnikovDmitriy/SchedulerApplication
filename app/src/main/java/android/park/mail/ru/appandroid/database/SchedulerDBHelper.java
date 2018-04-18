@@ -20,8 +20,6 @@ import java.util.concurrent.Executors;
 @SuppressWarnings("unused")
 public class SchedulerDBHelper extends SQLiteOpenHelper {
 
-	// TODO Singleton
-
 	private static final String DB_NAME = "scheduler.db";
 	private static final String TABLE_SCHEDULER_NAME = "schedulers";
 	private static final String TABLE_EVENTS_NAME = "events";
@@ -80,6 +78,7 @@ public class SchedulerDBHelper extends SQLiteOpenHelper {
 	}
 
 	private final ExecutorService executor = Executors.newSingleThreadExecutor();
+
 
 	public SchedulerDBHelper(Context context) {
 		super(context, DB_NAME, null, VERSION);
