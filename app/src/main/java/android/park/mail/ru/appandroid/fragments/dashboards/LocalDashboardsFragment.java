@@ -7,10 +7,13 @@ import android.os.Looper;
 import android.park.mail.ru.appandroid.R;
 import android.park.mail.ru.appandroid.database.SchedulerDBHelper;
 import android.park.mail.ru.appandroid.dialogs.DashboardCreate;
+import android.park.mail.ru.appandroid.fragments.events.LocalEventsFragment;
 import android.park.mail.ru.appandroid.models.Dashboard;
 import android.park.mail.ru.appandroid.models.ShortDashboard;
 import android.park.mail.ru.appandroid.recycler.DashboardAdapter;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -19,7 +22,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
@@ -38,25 +40,7 @@ public class LocalDashboardsFragment extends DashboardsFragment {
 	public void onCreate(@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		dbHelper = new SchedulerDBHelper(getContext());
-
-		dashboardCreate.setOnPositiveClick(new DialogInterface.OnClickListener() {
-			@Override
-			public void onClick(DialogInterface dialog, int which) {
-
-				final String newTitle = dashboardCreate.getInputText().trim();
-				if (newTitle.isEmpty()) {
-					Toast.makeText(getContext(), R.string.empty_title, Toast.LENGTH_SHORT).show();
-					return;
-				}
-
-				// TODO delete stubs and try exceptions
-				final Dashboard dashboard = new Dashboard("Dmitriy", 1L,
-						newTitle, null, null);
-				dbHelper.insertDashboard(dashboard);
-				dataset.add(new ShortDashboard(dashboard));
-				adapter.notifyItemInserted(dataset.size() - 1);
-			}
-		});
+		createOptionsMenu();
 	}
 
 	@Override
@@ -66,6 +50,7 @@ public class LocalDashboardsFragment extends DashboardsFragment {
 
 		final View view = inflater.inflate(R.layout.fragment_dashboards,
 				container, false);
+		setActionBarTitle(getResources().getString(R.string.local_dashes_title));
 
 		RecyclerView recyclerView = view.findViewById(R.id.recycle_dash);
 		progressBar = view.findViewById(R.id.progressbar_dash_load);
@@ -73,7 +58,7 @@ public class LocalDashboardsFragment extends DashboardsFragment {
 
 		if (savedInstanceState == null) {
 			// Receiving data from DB
-			dbHelper.getDashboards(new DatabaseLoadDashboardsListener());
+			dbHelper.selectShortDashboards(new DatabaseLoadDashboardsListener());
 
 		} else {
 			Object[] objects = (Object[]) savedInstanceState.getSerializable(DATASET);
@@ -87,7 +72,7 @@ public class LocalDashboardsFragment extends DashboardsFragment {
 			progressBar.setVisibility(ProgressBar.INVISIBLE);
 		}
 
-		adapter = new DashboardAdapter(dataset, null);
+		adapter = new DashboardAdapter(dataset, new OnDashboardClickListener());
 		recyclerView.setAdapter(adapter);
 		recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
@@ -96,6 +81,7 @@ public class LocalDashboardsFragment extends DashboardsFragment {
 
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+		menu.clear();
 		inflater.inflate(R.menu.local_dashboards, menu);
 		super.onCreateOptionsMenu(menu, inflater);
 	}
@@ -113,7 +99,59 @@ public class LocalDashboardsFragment extends DashboardsFragment {
 		}
 	}
 
-	class DatabaseLoadDashboardsListener implements SchedulerDBHelper.OnQueryCompleteListener<ShortDashboard> {
+	private void createOptionsMenu() {
+		dashboardCreate.setOnPositiveClick(new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+
+				final String newTitle = dashboardCreate.getInputText().trim();
+				if (newTitle.isEmpty()) {
+					Toast.makeText(getContext(), R.string.empty_title, Toast.LENGTH_SHORT).show();
+					return;
+				}
+
+				// TODO delete stubs
+				final Dashboard dashboard = new Dashboard("Dmitriy", 1L,
+						newTitle, null, null);
+				dbHelper.insertDashboard(dashboard, new SchedulerDBHelper.OnInsertCompleteListener() {
+					@Override
+					public void onSuccess(@NonNull Long rowID) {
+						dashboard.setDashID(rowID);
+						dataset.add(new ShortDashboard(dashboard));
+					}
+
+					@Override
+					public void onFailure(Exception exception) {
+						Toast.makeText(getContext(), R.string.db_failure, Toast.LENGTH_LONG).show();
+					}
+				});
+
+			}
+		});
+	}
+
+	class OnDashboardClickListener implements DashboardAdapter.OnDashboardClickListener {
+
+		@Override
+		public void onClick(@NonNull final ShortDashboard dashboard) {
+
+			// Create fragment and set arguments
+			final Fragment fragment = new LocalEventsFragment();
+			final Bundle bundle = new Bundle();
+			bundle.putLong(LocalEventsFragment.DASHBOARD_ID, dashboard.getDashID());
+			fragment.setArguments(bundle);
+
+			// Replace content in FrameLayout-container
+			getFragmentManager()
+					.beginTransaction()
+					.replace(R.id.container, fragment)
+					.addToBackStack(null)
+					.commit();
+		}
+	}
+
+	class DatabaseLoadDashboardsListener implements
+			SchedulerDBHelper.OnSelectCompleteListener<ArrayList<ShortDashboard>> {
 
 		private final Handler handler = new Handler(Looper.getMainLooper());
 

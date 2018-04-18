@@ -4,8 +4,11 @@ import android.os.Bundle;
 import android.park.mail.ru.appandroid.R;
 import android.park.mail.ru.appandroid.models.ShortDashboard;
 import android.park.mail.ru.appandroid.recycler.DashboardAdapter;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.widget.ProgressBar;
@@ -43,6 +46,13 @@ public abstract class DashboardsFragment extends Fragment {
 		if (adapter != null) {
 			adapter.setNewDataset(dataset);
 			adapter.notifyDataSetChanged();
+		}
+	}
+
+	protected final void setActionBarTitle(@NonNull final String title) {
+		final ActionBar bar = ((AppCompatActivity)getActivity()).getSupportActionBar();
+		if (bar != null) {
+			bar.setTitle(title);
 		}
 	}
 

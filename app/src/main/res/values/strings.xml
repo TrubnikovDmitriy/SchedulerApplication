@@ -16,6 +16,9 @@
         <item>Cloud of schedulers</item>
     </string-array>
 
+    <string name="local_dashes_title">My schedulers</string>
+    <string name="cloud_dashes_title">Cloud of schedulers</string>
+
     <!--Text for labels-->
     <string name="title_of_dashboard">Title of dashboard</string>
     <string name="create_button">Create</string>

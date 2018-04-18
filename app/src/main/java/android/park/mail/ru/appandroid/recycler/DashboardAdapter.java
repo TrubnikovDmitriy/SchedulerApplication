@@ -15,15 +15,25 @@ import java.util.ArrayList;
 
 public class DashboardAdapter extends RecyclerView.Adapter<DashboardAdapter.DashboardHolder> {
 
-	static class DashboardHolder extends RecyclerView.ViewHolder {
+	static public class DashboardHolder extends RecyclerView.ViewHolder {
 
 		private CardView cardItemView;
 		private TextView textButton;
+		private ShortDashboard dashboard;
 
 		DashboardHolder(CardView cardItemView) {
 			super(cardItemView);
 			this.cardItemView = cardItemView;
 			this.textButton = cardItemView.findViewById(R.id.dash_title);
+		}
+
+		private void updateContent(@NonNull final ShortDashboard dashboard) {
+			this.dashboard = dashboard;
+			textButton.setText(dashboard.getTitle());
+		}
+
+		public ShortDashboard getDashboard() {
+			return dashboard;
 		}
 	}
 
@@ -47,11 +57,15 @@ public class DashboardAdapter extends RecyclerView.Adapter<DashboardAdapter.Dash
 
 	@Override
 	public void onBindViewHolder(final DashboardHolder holder, final int position) {
-		holder.textButton.setText(dashSet.get(position).getTitle());
-		if (onItemClickListener != null) {
-			onItemClickListener.setDashboard(dashSet.get(position));
-			holder.cardItemView.setOnClickListener(onItemClickListener);
-		}
+		holder.updateContent(dashSet.get(position));
+		holder.cardItemView.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				if (onItemClickListener != null) {
+					onItemClickListener.onClick(dashSet.get(holder.getAdapterPosition()));
+				}
+			}
+		});
 	}
 
 	@Override
@@ -64,16 +78,8 @@ public class DashboardAdapter extends RecyclerView.Adapter<DashboardAdapter.Dash
 				newDataset : new ArrayList<ShortDashboard>();
 	}
 
-	public static abstract class OnDashboardClickListener implements View.OnClickListener {
+	public interface OnDashboardClickListener {
 
-		private ShortDashboard dashboard;
-
-		private void setDashboard(ShortDashboard dashboard) {
-			this.dashboard = dashboard;
-		}
-
-		protected ShortDashboard getDashboard() {
-			return dashboard;
-		}
+		void onClick(@NonNull final ShortDashboard dashboard);
 	}
 }

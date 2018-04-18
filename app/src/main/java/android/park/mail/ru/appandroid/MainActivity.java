@@ -26,7 +26,6 @@ public class MainActivity extends AppCompatActivity {
 	private DrawerLayout drawerLayout;
 	private ListView navigationMenuList;
 	private ArrayList<String> navigationMenu;
-	private ActionBar bar;
 
 	public static final int LOCAL = 0;
 	public static final int SERVER = 1;
@@ -48,9 +47,9 @@ public class MainActivity extends AppCompatActivity {
 		navigationMenuList.setOnItemClickListener(new NavigationMenuListener());
 
 
-		if (savedInstanceState != null) {
-			final ActionBar bar = getSupportActionBar();
-			if (bar != null) {
+		final ActionBar bar = getSupportActionBar();
+		if (bar != null) {
+			if (savedInstanceState != null) {
 				final String title = savedInstanceState.getString(TITLE);
 				if (title != null) {
 					bar.setTitle(title);
@@ -58,6 +57,7 @@ public class MainActivity extends AppCompatActivity {
 					bar.setTitle(R.string.app_name);
 				}
 			}
+//			bar.setDisplayHomeAsUpEnabled(true);
 		}
 	}
 
@@ -76,7 +76,6 @@ public class MainActivity extends AppCompatActivity {
 		                        View view, int position, long id) {
 
 			selectMenuItem(position);
-			setActionBarTitle(position);
 
 			if (drawerLayout == null) {
 				drawerLayout = findViewById(R.id.drawer_layout);
@@ -105,20 +104,6 @@ public class MainActivity extends AppCompatActivity {
 					.replace(R.id.container, fragment)
 					.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
 					.commit();
-		}
-
-		private void setActionBarTitle(int position) {
-			final ActionBar bar = getSupportActionBar();
-			if (bar == null) {
-				return;
-			}
-
-			try {
-				bar.setTitle(navigationMenu.get(position));
-			} catch (IndexOutOfBoundsException e) {
-				Log.w(getClass().getSimpleName(), e);
-				bar.setTitle(R.string.app_name);
-			}
 		}
 	}
 }

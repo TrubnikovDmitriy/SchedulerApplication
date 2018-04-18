@@ -40,7 +40,6 @@ public class ServerEventsFragment extends EventsFragment {
 			progressBar.setVisibility(ProgressBar.VISIBLE);
 			final Long dashID = getArguments().getLong(DASHBOARD_ID);
 			ServerAPI.getInstance().getEvents(dashID, new LoadEventsListener());
-			// TODO Singleton
 
 		} else {
 			dashboard = (Dashboard) savedInstanceState.getSerializable(DASHBOARD);

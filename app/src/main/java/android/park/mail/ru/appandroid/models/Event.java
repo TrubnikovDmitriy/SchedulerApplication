@@ -5,6 +5,7 @@ import com.google.gson.annotations.SerializedName;
 import java.io.Serializable;
 
 
+@SuppressWarnings("using")
 public class Event implements Serializable {
 
 	@SerializedName("eventID")
@@ -17,8 +18,6 @@ public class Event implements Serializable {
 	private final Long timestamp;
 	@SerializedName("title")
 	private final String title;
-	@SerializedName("wholeDay")
-	private final Boolean isWholeDay;
 	@SerializedName("type")
 	private final EventType type;
 	@SerializedName("priority")
@@ -26,15 +25,14 @@ public class Event implements Serializable {
 
 
 	public Event(String text, Long timestamp, Long eventID,
-	             Long dashID, String title, Boolean isWholeDay,
-	             EventType type, Priority priority) {
+	             Long dashID, String title, EventType type,
+	             Priority priority) {
 
 		this.text = text;
 		this.timestamp = timestamp;
 		this.eventID = eventID;
 		this.dashID = dashID;
 		this.title = title;
-		this.isWholeDay = isWholeDay;
 		this.type = type;
 		this.priority = priority;
 	}
@@ -60,10 +58,6 @@ public class Event implements Serializable {
 		return title;
 	}
 
-	public Boolean getWholeDay() {
-		return isWholeDay;
-	}
-
 	public EventType getType() {
 		return type;
 	}
@@ -77,7 +71,7 @@ public class Event implements Serializable {
 		EVERY_DAY,
 		EVERY_WEEK,
 		EVERY_YEAR,
-		EVERY_CENTURY
+		EVERY_CENTURY;
 	}
 
 	public enum Priority {
@@ -95,7 +89,6 @@ public class Event implements Serializable {
 				", text='" + text + '\'' +
 				", timestamp=" + timestamp +
 				", title='" + title + '\'' +
-				", isWholeDay=" + isWholeDay +
 				", type=" + type +
 				", priority=" + priority +
 				'}';

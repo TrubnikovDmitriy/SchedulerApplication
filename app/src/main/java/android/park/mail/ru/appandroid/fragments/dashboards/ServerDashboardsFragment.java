@@ -7,6 +7,7 @@ import android.park.mail.ru.appandroid.fragments.events.ServerEventsFragment;
 import android.park.mail.ru.appandroid.network.ServerAPI;
 import android.park.mail.ru.appandroid.models.ShortDashboard;
 import android.park.mail.ru.appandroid.recycler.DashboardAdapter;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -41,6 +42,7 @@ public class ServerDashboardsFragment extends DashboardsFragment {
 		final View view = inflater.inflate(R.layout.fragment_dashboards,
 				container, false);
 		RecyclerView recyclerView = view.findViewById(R.id.recycle_dash);
+		setActionBarTitle(getResources().getString(R.string.cloud_dashes_title));
 		progressBar = view.findViewById(R.id.progressbar_dash_load);
 		progressBar.setVisibility(ProgressBar.VISIBLE);
 
@@ -70,19 +72,19 @@ public class ServerDashboardsFragment extends DashboardsFragment {
 
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+		menu.clear();
 		inflater.inflate(R.menu.server_dashboards, menu);
 		super.onCreateOptionsMenu(menu, inflater);
 	}
 
-	class OnDashboardClickListener extends DashboardAdapter.OnDashboardClickListener {
+	class OnDashboardClickListener implements DashboardAdapter.OnDashboardClickListener {
 
 		@Override
-		public void onClick(View view) {
-
+		public void onClick(@NonNull final ShortDashboard dashboard) {
 			// Create fragment and set arguments
 			final Fragment fragment = new ServerEventsFragment();
 			final Bundle bundle = new Bundle();
-			bundle.putLong(ServerEventsFragment.DASHBOARD_ID, getDashboard().getDashID());
+			bundle.putLong(ServerEventsFragment.DASHBOARD_ID, dashboard.getDashID());
 			fragment.setArguments(bundle);
 
 			// Replace content in FrameLayout-container

@@ -10,6 +10,8 @@ import android.park.mail.ru.appandroid.network.ServerAPI;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -62,14 +64,16 @@ public abstract class EventsFragment extends Fragment {
 		final SchedulerCaldroidFragment caldroid = new SchedulerCaldroidFragment();
 		caldroid.setEvents(dashboard.getEvents());
 
-		Bundle args = new Bundle();
-		args.putBoolean(CaldroidFragment.SHOW_NAVIGATION_ARROWS, false);
-		caldroid.setArguments(args);
-
 		getFragmentManager()
 				.beginTransaction()
 				.replace(R.id.caldroid_container, caldroid)
 				.commit();
+
+		// Set title of dashboard in ActionBar
+		final ActionBar bar = ((AppCompatActivity)getActivity()).getSupportActionBar();
+		if (bar != null) {
+			bar.setTitle(dashboard.getTitle());
+		}
 	}
 
 }

@@ -9,17 +9,21 @@ import java.util.ArrayList;
 public class Dashboard implements Serializable {
 
 	@SerializedName("title")
-	private final String title;
+	private String title;
 	@SerializedName("dashID")
-	private final Long dashID;
+	private Long dashID;
 	@SerializedName("author")
-	private final String author;
+	private String author;
 	@SerializedName("authorID")
-	private final Long authorID;
+	private Long authorID;
 	@SerializedName("events")
-	private final ArrayList<Event> events;
+	private ArrayList<Event> events;
 
-	public Dashboard(String author, Long authorID, String title, Long dashID, ArrayList<Event> events) {
+
+	public Dashboard() { }
+
+	public Dashboard(String author, Long authorID, String title,
+	                 Long dashID, ArrayList<Event> events) {
 		this.author = author;
 		this.authorID = authorID;
 		this.title = title;
@@ -48,6 +52,25 @@ public class Dashboard implements Serializable {
 		return events;
 	}
 
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
+	public void setDashID(Long dashID) {
+		this.dashID = dashID;
+	}
+
+	public void setAuthor(String author) {
+		this.author = author;
+	}
+
+	public void setAuthorID(Long authorID) {
+		this.authorID = authorID;
+	}
+
+	public void setEvents(ArrayList<Event> events) {
+		this.events = events;
+	}
 
 	@Override
 	public String toString() {
