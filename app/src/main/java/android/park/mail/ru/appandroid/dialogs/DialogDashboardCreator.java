@@ -7,16 +7,20 @@ import android.park.mail.ru.appandroid.R;
 import android.park.mail.ru.appandroid.database.SchedulerDBHelper;
 import android.park.mail.ru.appandroid.models.Dashboard;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.EditText;
 
+import java.io.Serializable;
 
-public class DashboardCreate extends DialogFragment {
 
-	public DashboardCreate() { }
+public class DialogDashboardCreator extends DialogFragment implements Serializable {
+
+	public DialogDashboardCreator() { }
 
 	private EditText editText;
 	private DialogInterface.OnClickListener onPositiveClick;

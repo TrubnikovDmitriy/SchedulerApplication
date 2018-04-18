@@ -8,6 +8,7 @@ import android.park.mail.ru.appandroid.R;
 import android.park.mail.ru.appandroid.database.SchedulerDBHelper;
 import android.park.mail.ru.appandroid.models.Dashboard;
 import android.park.mail.ru.appandroid.models.Event;
+import android.park.mail.ru.appandroid.utils.ListenerWrapper;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,7 +32,9 @@ public class LocalEventsFragment extends EventsFragment {
 		if (savedInstanceState == null) {
 			progressBar.setVisibility(ProgressBar.VISIBLE);
 			final Long dashID = getArguments().getLong(DASHBOARD_ID);
-			new SchedulerDBHelper(getContext()).selectDashboard(dashID, new OnLoadDashboardListener());
+			final ListenerWrapper wrapper =
+					new SchedulerDBHelper(getContext()).selectDashboard(dashID, new OnLoadDashboardListener());
+			wrappers.add(wrapper);
 
 		} else {
 			dashboard = (Dashboard) savedInstanceState.getSerializable(DASHBOARD);

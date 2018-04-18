@@ -8,6 +8,7 @@ import android.park.mail.ru.appandroid.calendar.SchedulerCaldroidFragment;
 import android.park.mail.ru.appandroid.database.SchedulerDBHelper;
 import android.park.mail.ru.appandroid.network.ServerAPI;
 import android.park.mail.ru.appandroid.models.Dashboard;
+import android.park.mail.ru.appandroid.utils.ListenerWrapper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -39,7 +40,8 @@ public class ServerEventsFragment extends EventsFragment {
 		if (savedInstanceState == null) {
 			progressBar.setVisibility(ProgressBar.VISIBLE);
 			final Long dashID = getArguments().getLong(DASHBOARD_ID);
-			ServerAPI.getInstance().getEvents(dashID, new LoadEventsListener());
+			ListenerWrapper wrapper = ServerAPI.getInstance().getEvents(dashID, new LoadEventsListener());
+			wrappers.add(wrapper);
 
 		} else {
 			dashboard = (Dashboard) savedInstanceState.getSerializable(DASHBOARD);

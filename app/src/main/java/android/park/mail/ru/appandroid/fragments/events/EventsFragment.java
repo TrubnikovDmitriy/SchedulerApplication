@@ -7,6 +7,7 @@ import android.park.mail.ru.appandroid.R;
 import android.park.mail.ru.appandroid.calendar.SchedulerCaldroidFragment;
 import android.park.mail.ru.appandroid.models.Dashboard;
 import android.park.mail.ru.appandroid.network.ServerAPI;
+import android.park.mail.ru.appandroid.utils.ListenerWrapper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -22,6 +23,8 @@ import android.widget.Toast;
 import com.roomorama.caldroid.CaldroidFragment;
 
 import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
 
 import retrofit2.Response;
 
@@ -32,6 +35,7 @@ public abstract class EventsFragment extends Fragment {
 	protected static final String DASHBOARD = "dashboard_bundle";
 	protected Dashboard dashboard;
 	protected ProgressBar progressBar;
+	@NonNull protected List<ListenerWrapper> wrappers = new LinkedList<>();
 
 	public EventsFragment() { }
 
@@ -58,6 +62,13 @@ public abstract class EventsFragment extends Fragment {
 		super.onSaveInstanceState(outState);
 	}
 
+	@Override
+	public void onStop() {
+		super.onStop();
+		for (ListenerWrapper wrapper : wrappers) {
+			wrapper.unregister();
+		}
+	}
 
 	protected void setCalendar(@NonNull final Dashboard dashboard) {
 

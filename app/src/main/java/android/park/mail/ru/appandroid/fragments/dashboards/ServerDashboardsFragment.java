@@ -7,14 +7,14 @@ import android.park.mail.ru.appandroid.fragments.events.ServerEventsFragment;
 import android.park.mail.ru.appandroid.network.ServerAPI;
 import android.park.mail.ru.appandroid.models.ShortDashboard;
 import android.park.mail.ru.appandroid.recycler.DashboardAdapter;
+import android.park.mail.ru.appandroid.utils.ListenerWrapper;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -41,15 +41,17 @@ public class ServerDashboardsFragment extends DashboardsFragment {
 		// Inflate the layout for this fragment
 		final View view = inflater.inflate(R.layout.fragment_dashboards,
 				container, false);
-		RecyclerView recyclerView = view.findViewById(R.id.recycle_dash);
 		setActionBarTitle(getResources().getString(R.string.cloud_dashes_title));
+		recyclerView = view.findViewById(R.id.recycle_dash);
+
 		progressBar = view.findViewById(R.id.progressbar_dash_load);
 		progressBar.setVisibility(ProgressBar.VISIBLE);
 
 
 		if (savedInstanceState == null) {
 			// Receiving data from server
-			ServerAPI.getInstance().getDashboards(new NetworkLoadDashboardsListener());
+			ListenerWrapper wrapper = ServerAPI.getInstance().getDashboards(new NetworkLoadDashboardsListener());
+			wrappers.add(wrapper);
 
 		} else {
 			Object[] objects = (Object[]) savedInstanceState.getSerializable(DATASET);
@@ -75,6 +77,20 @@ public class ServerDashboardsFragment extends DashboardsFragment {
 		menu.clear();
 		inflater.inflate(R.menu.server_dashboards, menu);
 		super.onCreateOptionsMenu(menu, inflater);
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+
+			case R.id.update_dashboards:
+				ListenerWrapper wrapper = ServerAPI.getInstance().getDashboards(new NetworkLoadDashboardsListener());
+				wrappers.add(wrapper);
+				return true;
+
+			default:
+				return false;
+		}
 	}
 
 	class OnDashboardClickListener implements DashboardAdapter.OnDashboardClickListener {
@@ -103,7 +119,8 @@ public class ServerDashboardsFragment extends DashboardsFragment {
 
 		@Override
 		public void onSuccess(Response<List<ShortDashboard>> response, List<ShortDashboard> list) {
-			if (response.code() == 200) {
+			final int HTTP_OK = 200;
+			if (response.code() == HTTP_OK) {
 				dashboards = new ArrayList<>(list);
 				handler.post(new Runnable() {
 					@Override

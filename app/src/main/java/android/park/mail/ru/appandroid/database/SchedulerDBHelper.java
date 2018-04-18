@@ -9,6 +9,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.park.mail.ru.appandroid.models.Dashboard;
 import android.park.mail.ru.appandroid.models.Event;
 import android.park.mail.ru.appandroid.models.ShortDashboard;
+import android.park.mail.ru.appandroid.utils.ListenerWrapper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -16,7 +17,7 @@ import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-
+@SuppressWarnings("unused")
 public class SchedulerDBHelper extends SQLiteOpenHelper {
 
 	// TODO Singleton
@@ -108,9 +109,10 @@ public class SchedulerDBHelper extends SQLiteOpenHelper {
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) { }
 
 
-	public void selectShortDashboards(
-			@NonNull final OnSelectCompleteListener<ArrayList<ShortDashboard>> listener) {
+	public ListenerWrapper<OnSelectCompleteListener<ArrayList<ShortDashboard>>> selectShortDashboards(
+			@NonNull OnSelectCompleteListener<ArrayList<ShortDashboard>> listener) {
 
+		final ListenerWrapper<OnSelectCompleteListener<ArrayList<ShortDashboard>>> wrapper = new ListenerWrapper<>(listener);
 		executor.execute(new Runnable() {
 			@Override
 			public void run() {
@@ -130,20 +132,25 @@ public class SchedulerDBHelper extends SQLiteOpenHelper {
 						);
 						dashboards.add(dashboard);
 					}
-
-					listener.onSuccess(dashboards);
+					if (wrapper.getListener() != null) {
+						wrapper.getListener().onSuccess(dashboards);
+					}
 
 				} catch (Exception e) {
-					listener.onFailure(e);
+					if (wrapper.getListener() != null) {
+						wrapper.getListener().onFailure(e);
+					}
 				}
 			}
 		});
+		return wrapper;
 	}
 
-	public void selectDashboard(
+	public ListenerWrapper<OnSelectCompleteListener<Dashboard>> selectDashboard(
 			@NonNull final Long dashID,
-			@NonNull final OnSelectCompleteListener<Dashboard> listener) {
+			@NonNull OnSelectCompleteListener<Dashboard> listener) {
 
+		final ListenerWrapper<OnSelectCompleteListener<Dashboard>> wrapper = new ListenerWrapper<>(listener);
 		final Dashboard dashboard = new Dashboard();
 		dashboard.setDashID(dashID);
 
@@ -185,7 +192,9 @@ public class SchedulerDBHelper extends SQLiteOpenHelper {
 					dashboard.setEvents(events);
 
 				} catch (Exception e) {
-					listener.onFailure(e);
+					if (wrapper.getListener() != null) {
+						wrapper.getListener().onFailure(e);
+					}
 				}
 
 
@@ -207,22 +216,29 @@ public class SchedulerDBHelper extends SQLiteOpenHelper {
 						dashboard.setAuthorID(cursor.getLong(DASH.AUTHOR_ID.getNumber()));
 						dashboard.setTitle(cursor.getString(DASH.TITLE.getNumber()));
 					} else {
-						listener.onFailure(new SQLException("This dashboards does not exist"));
+						if (wrapper.getListener() != null) {
+							wrapper.getListener().onFailure(new SQLException("This dashboards does not exist"));
+						}
+					}
+					if (wrapper.getListener() != null) {
+						wrapper.getListener().onSuccess(dashboard);
 					}
 
-					listener.onSuccess(dashboard);
-
 				}  catch (Exception e) {
-					listener.onFailure(e);
+					if (wrapper.getListener() != null) {
+						wrapper.getListener().onFailure(e);
+					}
 				}
 			}
 		});
+		return wrapper;
 	}
 
-	public void selectEvents(
+	public ListenerWrapper<OnSelectCompleteListener<ArrayList<Event>>> selectEvents(
 			@NonNull final Long dashID,
-			@NonNull final OnSelectCompleteListener<ArrayList<Event>> listener) {
+			@NonNull OnSelectCompleteListener<ArrayList<Event>> listener) {
 
+		final ListenerWrapper<OnSelectCompleteListener<ArrayList<Event>>> wrapper = new ListenerWrapper<>(listener);
 		executor.execute(new Runnable() {
 			@Override
 			public void run() {
@@ -241,7 +257,6 @@ public class SchedulerDBHelper extends SQLiteOpenHelper {
 						new String[] {String.valueOf(dashID)},
 						null, null, null)) {
 
-
 					final ArrayList<Event> events = new ArrayList<>(cursor.getCount());
 					while(cursor.moveToNext()) {
 						Event event = new Event(
@@ -257,20 +272,26 @@ public class SchedulerDBHelper extends SQLiteOpenHelper {
 						);
 						events.add(event);
 					}
-					listener.onSuccess(events);
+					if (wrapper.getListener() != null) {
+						wrapper.getListener().onSuccess(events);
+					}
 
 				} catch (Exception e) {
-					listener.onFailure(e);
+					if (wrapper.getListener() != null) {
+						wrapper.getListener().onFailure(e);
+					}
 				}
 			}
 		});
+		return wrapper;
 	}
 
 
-	public void insertDashboard(
+	public ListenerWrapper<OnInsertCompleteListener> insertDashboard(
 			@NonNull final Dashboard dashboard,
-			@NonNull final OnInsertCompleteListener listener) {
+			@NonNull OnInsertCompleteListener listener) {
 
+		final ListenerWrapper<OnInsertCompleteListener> wrapper = new ListenerWrapper<>(listener);
 		executor.execute(new Runnable() {
 			@Override
 			public void run() {
@@ -283,19 +304,25 @@ public class SchedulerDBHelper extends SQLiteOpenHelper {
 				try {
 					final Long rowID = getWritableDatabase()
 							.insertOrThrow(TABLE_SCHEDULER_NAME, null, values);
-					listener.onSuccess(rowID);
+					if (wrapper.getListener() != null) {
+						wrapper.getListener().onSuccess(rowID);
+					}
 
 				} catch (SQLException e) {
-					listener.onFailure(e);
+					if (wrapper.getListener() != null) {
+						wrapper.getListener().onFailure(e);
+					}
 				}
 			}
 		});
+		return wrapper;
 	}
 
-	public void insertEvent(
+	public ListenerWrapper<OnInsertCompleteListener> insertEvent(
 			@NonNull final Event event,
-			@NonNull final OnInsertCompleteListener listener) {
+			@NonNull OnInsertCompleteListener listener) {
 
+		final ListenerWrapper<OnInsertCompleteListener> wrapper = new ListenerWrapper<>(listener);
 		executor.execute(new Runnable() {
 			@Override
 			public void run() {
@@ -312,13 +339,18 @@ public class SchedulerDBHelper extends SQLiteOpenHelper {
 				try {
 					final Long rowID = getWritableDatabase()
 							.insertOrThrow(TABLE_EVENTS_NAME, null, values);
-					listener.onSuccess(rowID);
+					if (wrapper.getListener() != null) {
+						wrapper.getListener().onSuccess(rowID);
+					}
 
 				} catch (SQLException e) {
-					listener.onFailure(e);
+					if (wrapper.getListener() != null) {
+						wrapper.getListener().onFailure(e);
+					}
 				}
 			}
 		});
+		return wrapper;
 	}
 
 

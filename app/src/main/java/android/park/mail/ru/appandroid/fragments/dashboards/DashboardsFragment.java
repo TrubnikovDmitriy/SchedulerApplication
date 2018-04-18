@@ -4,16 +4,20 @@ import android.os.Bundle;
 import android.park.mail.ru.appandroid.R;
 import android.park.mail.ru.appandroid.models.ShortDashboard;
 import android.park.mail.ru.appandroid.recycler.DashboardAdapter;
+import android.park.mail.ru.appandroid.utils.ListenerWrapper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.widget.ProgressBar;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 
 public abstract class DashboardsFragment extends Fragment {
@@ -24,6 +28,8 @@ public abstract class DashboardsFragment extends Fragment {
 	protected DashboardAdapter adapter;
 	protected ProgressBar progressBar;
 	protected ArrayList<ShortDashboard> dataset;
+	protected RecyclerView recyclerView;
+	@NonNull protected List<ListenerWrapper> wrappers = new LinkedList<>();
 
 
 	public DashboardsFragment() { }
@@ -36,9 +42,18 @@ public abstract class DashboardsFragment extends Fragment {
 
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
-		setHasOptionsMenu(true);
-		outState.putSerializable(DATASET, dataset == null ? null : dataset.toArray());
 		super.onSaveInstanceState(outState);
+		outState.putSerializable(DATASET, dataset == null ? null : dataset.toArray());
+		setHasOptionsMenu(true);
+	}
+
+
+	@Override
+	public void onStop() {
+		super.onStop();
+		for (ListenerWrapper wrapper : wrappers) {
+			wrapper.unregister();
+		}
 	}
 
 	protected void updateDataset(@Nullable ArrayList<ShortDashboard> newDataset) {

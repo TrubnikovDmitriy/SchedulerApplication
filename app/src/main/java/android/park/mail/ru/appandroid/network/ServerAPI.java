@@ -3,6 +3,9 @@ package android.park.mail.ru.appandroid.network;
 
 import android.park.mail.ru.appandroid.models.Dashboard;
 import android.park.mail.ru.appandroid.models.ShortDashboard;
+import android.park.mail.ru.appandroid.utils.ListenerWrapper;
+import android.support.annotation.NonNull;
+import android.util.Log;
 
 import java.io.IOException;
 import java.util.List;
@@ -34,38 +37,52 @@ public class ServerAPI {
 	}
 
 
-	public void getDashboards(final OnRequestCompleteListener<List<ShortDashboard>> listener) {
+	public ListenerWrapper<OnRequestCompleteListener<List<ShortDashboard>>> getDashboards(
+			@NonNull OnRequestCompleteListener<List<ShortDashboard>> listener) {
 
+		final ListenerWrapper<OnRequestCompleteListener<List<ShortDashboard>>> wrapper = new ListenerWrapper<>(listener);
 		executor.execute(new Runnable() {
 			@Override
 			public void run() {
 				Call<List<ShortDashboard>> call = service.getDashboards();
 				try {
 					Response<List<ShortDashboard>> response = call.execute();
-					listener.onSuccess(response, response.body());
+					if (wrapper.getListener() != null) {
+						wrapper.getListener().onSuccess(response, response.body());
+					}
 
 				} catch (IOException | RuntimeException exception) {
-					listener.onFailure(exception);
+					if (wrapper.getListener() != null) {
+						wrapper.getListener().onFailure(exception);
+					}
 				}
 			}
 		});
+		return wrapper;
 	}
 
-	public void getEvents(final Long ID, final OnRequestCompleteListener<Dashboard> listener) {
+	public ListenerWrapper<OnRequestCompleteListener<Dashboard>> getEvents(
+			final long ID, @NonNull OnRequestCompleteListener<Dashboard> listener) {
 
+		final ListenerWrapper<OnRequestCompleteListener<Dashboard>> wrapper = new ListenerWrapper<>(listener);
 		executor.execute(new Runnable() {
 			@Override
 			public void run() {
 				Call<Dashboard> call = service.getEvents(ID);
 				try {
 					Response<Dashboard> response = call.execute();
-					listener.onSuccess(response, response.body());
+					if (wrapper.getListener() != null) {
+						wrapper.getListener().onSuccess(response, response.body());
+					}
 
 				} catch (IOException | RuntimeException e) {
-					listener.onFailure(e);
+					if (wrapper.getListener() != null) {
+						wrapper.getListener().onFailure(e);
+					}
 				}
 			}
 		});
+		return wrapper;
 	}
 
 

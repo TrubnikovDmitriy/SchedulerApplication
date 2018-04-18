@@ -1,7 +1,9 @@
 package android.park.mail.ru.appandroid;
 
+import android.os.StrictMode;
 import android.park.mail.ru.appandroid.fragments.dashboards.LocalDashboardsFragment;
 import android.park.mail.ru.appandroid.fragments.dashboards.ServerDashboardsFragment;
+import android.park.mail.ru.appandroid.utils.ListenerWrapper;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -19,13 +21,13 @@ import android.widget.ListView;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 
 public class MainActivity extends AppCompatActivity {
 
 	private DrawerLayout drawerLayout;
 	private ListView navigationMenuList;
-	private ArrayList<String> navigationMenu;
 
 	public static final int LOCAL = 0;
 	public static final int SERVER = 1;
@@ -36,10 +38,15 @@ public class MainActivity extends AppCompatActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
+				.detectActivityLeaks()
+				.detectLeakedSqlLiteObjects()
+				.build());
+
 		setContentView(R.layout.activity_main);
 
 		navigationMenuList = findViewById(R.id.main_navigation);
-		navigationMenu = new ArrayList<>(Arrays.asList(
+		final ArrayList<String> navigationMenu = new ArrayList<>(Arrays.asList(
 				getResources().getStringArray(R.array.navigation_menu)));
 
 		navigationMenuList.setAdapter(new ArrayAdapter<>(

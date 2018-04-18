@@ -6,11 +6,12 @@ import android.os.Handler;
 import android.os.Looper;
 import android.park.mail.ru.appandroid.R;
 import android.park.mail.ru.appandroid.database.SchedulerDBHelper;
-import android.park.mail.ru.appandroid.dialogs.DashboardCreate;
+import android.park.mail.ru.appandroid.dialogs.DialogDashboardCreator;
 import android.park.mail.ru.appandroid.fragments.events.LocalEventsFragment;
 import android.park.mail.ru.appandroid.models.Dashboard;
 import android.park.mail.ru.appandroid.models.ShortDashboard;
 import android.park.mail.ru.appandroid.recycler.DashboardAdapter;
+import android.park.mail.ru.appandroid.utils.ListenerWrapper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -32,7 +33,7 @@ import java.util.Arrays;
 public class LocalDashboardsFragment extends DashboardsFragment {
 
 	private SchedulerDBHelper dbHelper;
-	private final DashboardCreate dashboardCreate = new DashboardCreate();
+	private DialogDashboardCreator dialogDashboardCreator = new DialogDashboardCreator();
 
 	public LocalDashboardsFragment() { }
 
@@ -40,7 +41,7 @@ public class LocalDashboardsFragment extends DashboardsFragment {
 	public void onCreate(@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		dbHelper = new SchedulerDBHelper(getContext());
-		createOptionsMenu();
+		setDialogListeners();
 	}
 
 	@Override
@@ -51,14 +52,16 @@ public class LocalDashboardsFragment extends DashboardsFragment {
 		final View view = inflater.inflate(R.layout.fragment_dashboards,
 				container, false);
 		setActionBarTitle(getResources().getString(R.string.local_dashes_title));
+		recyclerView = view.findViewById(R.id.recycle_dash);
 
-		RecyclerView recyclerView = view.findViewById(R.id.recycle_dash);
 		progressBar = view.findViewById(R.id.progressbar_dash_load);
 		progressBar.setVisibility(ProgressBar.VISIBLE);
 
 		if (savedInstanceState == null) {
 			// Receiving data from DB
-			dbHelper.selectShortDashboards(new DatabaseLoadDashboardsListener());
+			final ListenerWrapper wrapper =
+					dbHelper.selectShortDashboards(new DatabaseLoadDashboardsListener());
+			wrappers.add(wrapper);
 
 		} else {
 			Object[] objects = (Object[]) savedInstanceState.getSerializable(DATASET);
@@ -91,7 +94,7 @@ public class LocalDashboardsFragment extends DashboardsFragment {
 		switch (item.getItemId()) {
 
 			case R.id.create_dashboard:
-				dashboardCreate.show(getFragmentManager(), null);
+				dialogDashboardCreator.show(getFragmentManager(), null);
 				return true;
 
 			default:
@@ -99,12 +102,13 @@ public class LocalDashboardsFragment extends DashboardsFragment {
 		}
 	}
 
-	private void createOptionsMenu() {
-		dashboardCreate.setOnPositiveClick(new DialogInterface.OnClickListener() {
+	private void setDialogListeners() {
+		// TODO обработать кейс с поворотом экрана и уже открытого диалога
+		dialogDashboardCreator.setOnPositiveClick(new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 
-				final String newTitle = dashboardCreate.getInputText().trim();
+				final String newTitle = dialogDashboardCreator.getInputText().trim();
 				if (newTitle.isEmpty()) {
 					Toast.makeText(getContext(), R.string.empty_title, Toast.LENGTH_SHORT).show();
 					return;
@@ -113,7 +117,8 @@ public class LocalDashboardsFragment extends DashboardsFragment {
 				// TODO delete stubs
 				final Dashboard dashboard = new Dashboard("Dmitriy", 1L,
 						newTitle, null, null);
-				dbHelper.insertDashboard(dashboard, new SchedulerDBHelper.OnInsertCompleteListener() {
+				final ListenerWrapper wrapper =
+						dbHelper.insertDashboard(dashboard, new SchedulerDBHelper.OnInsertCompleteListener() {
 					@Override
 					public void onSuccess(@NonNull Long rowID) {
 						dashboard.setDashID(rowID);
@@ -125,6 +130,7 @@ public class LocalDashboardsFragment extends DashboardsFragment {
 						Toast.makeText(getContext(), R.string.db_failure, Toast.LENGTH_LONG).show();
 					}
 				});
+				wrappers.add(wrapper);
 
 			}
 		});
