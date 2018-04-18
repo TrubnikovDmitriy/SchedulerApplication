@@ -20,7 +20,7 @@
     <string name="cloud_dashes_title">Облако расписаний</string>
 
     <!--Text for labels-->
-    <string name="title_of_dashboard">Название расписания</string>
+    <string name="title_of_dashboard">Название нового расписания</string>
     <string name="create_button">Создать</string>
     <string name="cancel_button">Отмена</string>
 

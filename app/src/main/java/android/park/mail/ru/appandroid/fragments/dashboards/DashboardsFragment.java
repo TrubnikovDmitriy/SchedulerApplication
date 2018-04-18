@@ -5,6 +5,7 @@ import android.park.mail.ru.appandroid.R;
 import android.park.mail.ru.appandroid.models.ShortDashboard;
 import android.park.mail.ru.appandroid.recycler.DashboardAdapter;
 import android.park.mail.ru.appandroid.utils.ListenerWrapper;
+import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -41,12 +42,12 @@ public abstract class DashboardsFragment extends Fragment {
 	}
 
 	@Override
+	@CallSuper
 	public void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
 		outState.putSerializable(DATASET, dataset == null ? null : dataset.toArray());
 		setHasOptionsMenu(true);
 	}
-
 
 	@Override
 	public void onStop() {

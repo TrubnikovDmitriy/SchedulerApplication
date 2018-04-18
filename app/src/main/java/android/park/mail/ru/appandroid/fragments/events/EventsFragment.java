@@ -8,6 +8,7 @@ import android.park.mail.ru.appandroid.calendar.SchedulerCaldroidFragment;
 import android.park.mail.ru.appandroid.models.Dashboard;
 import android.park.mail.ru.appandroid.network.ServerAPI;
 import android.park.mail.ru.appandroid.utils.ListenerWrapper;
+import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -46,6 +47,7 @@ public abstract class EventsFragment extends Fragment {
 	}
 
 	@Override
+	@CallSuper
 	public View onCreateView(LayoutInflater inflater,
 	                         @Nullable ViewGroup container,
 	                         @Nullable Bundle savedInstanceState) {
@@ -56,10 +58,11 @@ public abstract class EventsFragment extends Fragment {
 	}
 
 	@Override
+	@CallSuper
 	public void onSaveInstanceState(Bundle outState) {
-		setHasOptionsMenu(true);
-		outState.putSerializable(DASHBOARD, dashboard);
 		super.onSaveInstanceState(outState);
+		outState.putSerializable(DASHBOARD, dashboard);
+		setHasOptionsMenu(true);
 	}
 
 	@Override

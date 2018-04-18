@@ -26,6 +26,7 @@ public class DialogDashboardCreator extends DialogFragment implements Serializab
 	private DialogInterface.OnClickListener onPositiveClick;
 	private DialogInterface.OnClickListener onNegativeClick;
 
+
 	@NonNull
 	@Override
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -36,6 +37,7 @@ public class DialogDashboardCreator extends DialogFragment implements Serializab
 		editText = viewDialog.findViewById(R.id.edit_creating_dashboard);
 
 		builder
+				.setIcon(R.mipmap.create_icon)
 				.setTitle(R.string.title_of_dashboard)
 				.setView(viewDialog)
 				.setPositiveButton(R.string.create_button, onPositiveClick)

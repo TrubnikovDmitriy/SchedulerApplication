@@ -20,7 +20,7 @@
     <string name="cloud_dashes_title">Cloud of schedulers</string>
 
     <!--Text for labels-->
-    <string name="title_of_dashboard">Title of dashboard</string>
+    <string name="title_of_dashboard">Title of new dashboard</string>
     <string name="create_button">Create</string>
     <string name="cancel_button">Cancel</string>
 
