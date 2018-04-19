@@ -30,6 +30,7 @@ public class SchedulerCaldroidFragment extends CaldroidFragment {
 		this.events = events;
 	}
 
+	@SuppressWarnings("unused")
 	public void updateEvents(@NonNull ArrayList<Event> events) {
 		this.events = events;
 		for (CaldroidGridAdapter adapter : getDatePagerAdapters()) {

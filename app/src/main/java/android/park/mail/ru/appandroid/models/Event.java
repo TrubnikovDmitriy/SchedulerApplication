@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName;
 import java.io.Serializable;
 
 
-@SuppressWarnings("using")
+@SuppressWarnings("unused")
 public class Event implements Serializable {
 
 	@SerializedName("eventID")
@@ -71,7 +71,7 @@ public class Event implements Serializable {
 		EVERY_DAY,
 		EVERY_WEEK,
 		EVERY_YEAR,
-		EVERY_CENTURY;
+		EVERY_CENTURY
 	}
 
 	public enum Priority {

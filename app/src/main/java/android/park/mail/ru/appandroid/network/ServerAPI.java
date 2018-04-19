@@ -1,11 +1,9 @@
 package android.park.mail.ru.appandroid.network;
 
-
 import android.park.mail.ru.appandroid.models.Dashboard;
 import android.park.mail.ru.appandroid.models.ShortDashboard;
 import android.park.mail.ru.appandroid.utils.ListenerWrapper;
 import android.support.annotation.NonNull;
-import android.util.Log;
 
 import java.io.IOException;
 import java.util.List;
@@ -17,11 +15,12 @@ import retrofit2.Call;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
+
 public class ServerAPI {
 
-	private static final ServerAPI instance = new ServerAPI();
 	private final DashboardService service;
 	private final ExecutorService executor = Executors.newSingleThreadExecutor();
+
 
 	public ServerAPI() {
 		service = new Retrofit.Builder()
@@ -30,11 +29,6 @@ public class ServerAPI {
 				.build()
 				.create(DashboardService.class);
 	}
-
-	public static ServerAPI getInstance() {
-		return instance;
-	}
-
 
 	public ListenerWrapper<OnRequestCompleteListener<List<ShortDashboard>>> getDashboards(
 			@NonNull OnRequestCompleteListener<List<ShortDashboard>> listener) {

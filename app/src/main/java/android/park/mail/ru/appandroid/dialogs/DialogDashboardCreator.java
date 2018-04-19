@@ -50,6 +50,7 @@ public class DialogDashboardCreator extends DialogFragment implements Serializab
 		this.onPositiveClick = onPositiveClick;
 	}
 
+	@SuppressWarnings("unused")
 	public void setOnNegativeClick(DialogInterface.OnClickListener onNegativeClick) {
 		this.onNegativeClick = onNegativeClick;
 	}

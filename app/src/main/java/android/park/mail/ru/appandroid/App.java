@@ -4,7 +4,6 @@ import android.app.Application;
 import android.park.mail.ru.appandroid.injectons.AppComponent;
 import android.park.mail.ru.appandroid.injectons.AppModule;
 import android.park.mail.ru.appandroid.injectons.DaggerAppComponent;
-import android.park.mail.ru.appandroid.injectons.DataBaseModule;
 
 
 public class App extends Application {
@@ -20,7 +19,6 @@ public class App extends Application {
 		super.onCreate();
 		component = DaggerAppComponent.builder()
 				.appModule(new AppModule(this))
-				.dataBaseModule(new DataBaseModule())
 				.build();
 	}
 }

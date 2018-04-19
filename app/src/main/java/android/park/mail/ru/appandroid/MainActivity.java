@@ -29,7 +29,6 @@ public class MainActivity extends AppCompatActivity {
 	public static final String TITLE = "bundle_title";
 
 
-
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);

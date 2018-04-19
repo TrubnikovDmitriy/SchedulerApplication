@@ -9,7 +9,7 @@ import dagger.Module;
 import dagger.Provides;
 
 @Module
-public class DataBaseModule {
+class DataBaseModule {
 
 	@Provides
 	@Singleton

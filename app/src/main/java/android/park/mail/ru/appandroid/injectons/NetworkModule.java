@@ -9,11 +9,11 @@ import dagger.Provides;
 
 
 @Module
-public class NetworkModule {
+class NetworkModule {
 
 	@Provides
 	@Singleton
-	public ServerAPI getNetworkManager() {
+	ServerAPI getNetworkManager() {
 		return new ServerAPI();
 	}
 }
