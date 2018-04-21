@@ -16,6 +16,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
+import com.roomorama.caldroid.CaldroidFragment;
+
 import java.util.LinkedList;
 import java.util.List;
 
@@ -66,7 +68,13 @@ public abstract class EventsFragment extends Fragment {
 	protected void setCalendar(@NonNull final Dashboard dashboard) {
 
 		final SchedulerCaldroidFragment caldroid = new SchedulerCaldroidFragment();
+
+		final Bundle bundle = new Bundle();
+		bundle.putInt(CaldroidFragment.START_DAY_OF_WEEK, CaldroidFragment.MONDAY);
+		caldroid.setArguments(bundle);
+
 		caldroid.setEvents(dashboard.getEvents());
+
 
 		getFragmentManager()
 				.beginTransaction()

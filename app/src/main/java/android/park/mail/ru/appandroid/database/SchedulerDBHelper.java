@@ -135,7 +135,7 @@ public class SchedulerDBHelper extends SQLiteOpenHelper {
 						wrapper.getListener().onSuccess(dashboards);
 					}
 
-				} catch (Exception e) {
+				} catch (SQLException e) {
 					if (wrapper.getListener() != null) {
 						wrapper.getListener().onFailure(e);
 					}
@@ -190,7 +190,7 @@ public class SchedulerDBHelper extends SQLiteOpenHelper {
 					}
 					dashboard.setEvents(events);
 
-				} catch (Exception e) {
+				} catch (SQLException e) {
 					if (wrapper.getListener() != null) {
 						wrapper.getListener().onFailure(e);
 					}
@@ -223,7 +223,7 @@ public class SchedulerDBHelper extends SQLiteOpenHelper {
 						wrapper.getListener().onSuccess(dashboard);
 					}
 
-				}  catch (Exception e) {
+				}  catch (SQLException e) {
 					if (wrapper.getListener() != null) {
 						wrapper.getListener().onFailure(e);
 					}
@@ -275,7 +275,7 @@ public class SchedulerDBHelper extends SQLiteOpenHelper {
 						wrapper.getListener().onSuccess(events);
 					}
 
-				} catch (Exception e) {
+				} catch (SQLException e) {
 					if (wrapper.getListener() != null) {
 						wrapper.getListener().onFailure(e);
 					}

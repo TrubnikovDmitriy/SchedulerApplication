@@ -4,6 +4,7 @@ import android.os.StrictMode;
 import android.park.mail.ru.appandroid.fragments.dashboards.LocalDashboardsFragment;
 import android.park.mail.ru.appandroid.fragments.dashboards.ServerDashboardsFragment;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
@@ -100,7 +101,10 @@ public class MainActivity extends AppCompatActivity {
 					return;
 			}
 
-			getSupportFragmentManager()
+			final FragmentManager fragmentManager = getSupportFragmentManager();
+			fragmentManager
+					.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+			fragmentManager
 					.beginTransaction()
 					.replace(R.id.container, fragment)
 					.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
