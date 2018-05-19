@@ -15,4 +15,5 @@
     <!--Main navigation menu-->
     <string name="navigation_local_dash">My schedulers</string>
     <string name="navigation_server_dash">Cloud of schedulers</string>
+    <string name="navigation_settings">Settings</string>
 </resources>

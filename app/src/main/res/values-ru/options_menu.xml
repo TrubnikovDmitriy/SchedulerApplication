@@ -15,4 +15,5 @@
     <!--Main navigation menu-->
     <string name="navigation_local_dash">Мои расписания</string>
     <string name="navigation_server_dash">Облако расписаний</string>
+    <string name="navigation_settings">Настройки</string>
 </resources>

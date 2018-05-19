@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:id="@+id/general"
+        android:checkableBehavior="single">
+        <item
+            android:id="@+id/local_dashboards"
+            android:icon="@drawable/ic_nav_local"
+            android:title="@string/navigation_local_dash"/>
+        <item
+            android:id="@+id/server_dashboards"
+            android:icon="@drawable/ic_nav_server"
+            android:title="@string/navigation_server_dash"/>
+    </group>
+
+    <group android:id="@+id/setting">
+        <item
+            android:id="@+id/server_settings"
+            android:icon="@drawable/ic_nav_settings"
+            android:title="@string/navigation_settings"/>
+    </group>
+</menu>
