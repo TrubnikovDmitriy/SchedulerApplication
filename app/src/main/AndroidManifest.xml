@@ -3,15 +3,18 @@
     package="android.park.mail.ru.appandroid">
 
     <uses-permission android:name="android.permission.INTERNET" />
+
     <application
+        android:name=".App"
         android:allowBackup="true"
-        android:icon="@mipmap/dashboard_launcher"
+        android:icon="@mipmap/ic_logo"
+        android:roundIcon="@mipmap/ic_logo"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
-        android:supportsRtl="true"
-        android:theme="@style/AppTheme"
-        android:name=".App">
-        <activity android:name=".MainActivity">
+        android:supportsRtl="false"
+        android:theme="@style/AppTheme">
+        <activity
+            android:name=".MainActivity"
+            android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

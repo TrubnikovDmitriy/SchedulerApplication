@@ -3,36 +3,33 @@ package android.park.mail.ru.appandroid;
 import android.os.StrictMode;
 import android.park.mail.ru.appandroid.fragments.dashboards.LocalDashboardsFragment;
 import android.park.mail.ru.appandroid.fragments.dashboards.ServerDashboardsFragment;
+import android.support.annotation.NonNull;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
-
-import java.util.ArrayList;
-import java.util.Arrays;
+import android.view.MenuItem;
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity
+		implements NavigationView.OnNavigationItemSelectedListener {
 
 	private DrawerLayout drawerLayout;
-	private ListView navigationMenuList;
-
-	public static final int LOCAL = 0;
-	public static final int SERVER = 1;
-	public static final String TITLE = "bundle_title";
+	private NavigationView mainNavigation;
+	private Toolbar toolbar;
 
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		// TODO remove
 		StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
 				.detectActivityLeaks()
 				.detectLeakedSqlLiteObjects()
@@ -40,75 +37,52 @@ public class MainActivity extends AppCompatActivity {
 
 		setContentView(R.layout.activity_main);
 
-		navigationMenuList = findViewById(R.id.main_navigation);
-		final ArrayList<String> navigationMenu = new ArrayList<>(Arrays.asList(
-				getResources().getStringArray(R.array.navigation_menu)));
 
-		navigationMenuList.setAdapter(new ArrayAdapter<>(
-				this, android.R.layout.simple_list_item_1, navigationMenu));
-		navigationMenuList.setOnItemClickListener(new NavigationMenuListener());
+		toolbar = findViewById(R.id.toolbar);
+		setSupportActionBar(toolbar);
 
+		drawerLayout = findViewById(R.id.drawer_layout);
+		ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+				this, drawerLayout, toolbar,
+				R.string.navigation_drawer_open,
+				R.string.navigation_drawer_close
+		);
+		drawerLayout.addDrawerListener(toggle);
+		toggle.syncState();
 
-		final ActionBar bar = getSupportActionBar();
-		if (bar != null) {
-			if (savedInstanceState != null) {
-				final String title = savedInstanceState.getString(TITLE);
-				if (title != null) {
-					bar.setTitle(title);
-				} else {
-					bar.setTitle(R.string.app_name);
-				}
-			}
-//			bar.setDisplayHomeAsUpEnabled(true);
-		}
+		mainNavigation = findViewById(R.id.main_navigation);
+		mainNavigation.setNavigationItemSelectedListener(this);
 	}
+
 
 	@Override
-	protected void onSaveInstanceState(Bundle outState) {
-		if (getSupportActionBar() != null && getSupportActionBar().getTitle() != null) {
-			outState.putString(TITLE, getSupportActionBar().getTitle().toString());
-		}
-		super.onSaveInstanceState(outState);
-	}
+	public boolean onNavigationItemSelected(@NonNull MenuItem item) {
 
-	private class NavigationMenuListener implements AdapterView.OnItemClickListener  {
+		final Fragment fragment;
+		switch (item.getItemId()) {
+			case R.id.local_dashboards:
+				fragment = new LocalDashboardsFragment();
+				break;
 
-		@Override
-		public void onItemClick(AdapterView<?> adapterView,
-		                        View view, int position, long id) {
+			case R.id.server_dashboards:
+				fragment = new ServerDashboardsFragment();
+				break;
 
-			selectMenuItem(position);
-
-			if (drawerLayout == null) {
-				drawerLayout = findViewById(R.id.drawer_layout);
-			}
-			drawerLayout.closeDrawer(navigationMenuList);
+			default:
+				Log.w(this.getClass().getSimpleName(), "Fall to default navigation case");
+				return false;
 		}
 
-		private void selectMenuItem(int position) {
-			final Fragment fragment;
-			switch (position) {
-				case LOCAL:
-					fragment = new LocalDashboardsFragment();
-					break;
+		final FragmentManager fragmentManager = getSupportFragmentManager();
+		fragmentManager
+				.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+		fragmentManager
+				.beginTransaction()
+				.replace(R.id.container, fragment)
+				.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+				.commit();
 
-				case SERVER:
-					fragment = new ServerDashboardsFragment();
-					break;
-
-				default:
-					Log.w(this.getClass().getSimpleName(), "Fall to default case");
-					return;
-			}
-
-			final FragmentManager fragmentManager = getSupportFragmentManager();
-			fragmentManager
-					.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-			fragmentManager
-					.beginTransaction()
-					.replace(R.id.container, fragment)
-					.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
-					.commit();
-		}
+		drawerLayout.closeDrawer(GravityCompat.START);
+		return true;
 	}
 }

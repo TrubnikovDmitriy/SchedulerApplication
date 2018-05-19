@@ -11,17 +11,17 @@
     <string name="db_failure">Ошибка при обращении к базе данных</string>
     <string name="empty_title">Заголовок не может быть пустым</string>
 
-    <string-array name="navigation_menu">
-        <item>Мои расписания</item>
-        <item>Облако расписаний</item>
-    </string-array>
-
     <string name="local_dashes_title">Мои расписания</string>
     <string name="cloud_dashes_title">Облако расписаний</string>
+
+    <string name="navigation_drawer_open">Отркыть панель навигации</string>
+    <string name="navigation_drawer_close">Закрыть панель навигации</string>
 
     <!--Text for labels-->
     <string name="title_of_dashboard">Название нового расписания</string>
     <string name="create_button">Создать</string>
     <string name="cancel_button">Отмена</string>
+
+    <string name="logo_description">Расписания и напоминания</string>
 
 </resources>

@@ -1,26 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.v4.widget.DrawerLayout
-    android:id="@+id/drawer_layout"
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    tools:openDrawer="start"
     tools:context="android.park.mail.ru.appandroid.MainActivity">
 
-    <!--Container for content-->
-    <FrameLayout
-        android:id="@+id/container"
+
+    <include
+        layout="@layout/app_bar_main"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 
-    <!--Navigation drawer menu-->
-    <ListView
+    <android.support.design.widget.NavigationView
         android:id="@+id/main_navigation"
-        android:layout_width="@dimen/width_nav_menu"
+        android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="start"
-        android:choiceMode="singleChoice"
-        android:background="@android:color/background_light"/>
-
+        android:fitsSystemWindows="true"
+        app:menu="@menu/navigation_main"
+        app:headerLayout="@layout/nav_header_main" />
 
 </android.support.v4.widget.DrawerLayout>

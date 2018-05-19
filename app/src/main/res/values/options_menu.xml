@@ -11,4 +11,8 @@
 
     <string name="update_dashboard">Update list</string>
     <string name="update_event">Update events</string>
+
+    <!--Main navigation menu-->
+    <string name="navigation_local_dash">My schedulers</string>
+    <string name="navigation_server_dash">Cloud of schedulers</string>
 </resources>

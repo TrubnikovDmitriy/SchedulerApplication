@@ -11,4 +11,8 @@
 
     <string name="update_dashboard">Обновить список</string>
     <string name="update_event">Обновить события</string>
+
+    <!--Main navigation menu-->
+    <string name="navigation_local_dash">Мои расписания</string>
+    <string name="navigation_server_dash">Облако расписаний</string>
 </resources>

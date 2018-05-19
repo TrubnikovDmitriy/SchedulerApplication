@@ -11,17 +11,18 @@
     <string name="db_failure">Error accessing database</string>
     <string name="empty_title">The title can\'t be empty</string>
 
-    <string-array name="navigation_menu">
-        <item>My schedulers</item>
-        <item>Cloud of schedulers</item>
-    </string-array>
-
     <string name="local_dashes_title">My schedulers</string>
     <string name="cloud_dashes_title">Cloud of schedulers</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <!--Text for labels-->
     <string name="title_of_dashboard">Title of new dashboard</string>
     <string name="create_button">Create</string>
     <string name="cancel_button">Cancel</string>
+    <string name="title_activity_main2">Main2Activity</string>
+
+    <string name="logo_description">Dashboards &amp; notifications</string>
 
 </resources>
