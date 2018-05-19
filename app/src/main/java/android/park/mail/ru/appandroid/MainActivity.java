@@ -35,7 +35,7 @@ public class MainActivity extends AppCompatActivity
 				.detectLeakedSqlLiteObjects()
 				.build());
 
-		setContentView(R.layout.activity_main);
+		setContentView(R.layout.main_activity);
 
 
 		toolbar = findViewById(R.id.toolbar);

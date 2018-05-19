@@ -23,6 +23,6 @@
     </android.support.design.widget.AppBarLayout>
 
     <!--Container for content-->
-    <include layout="@layout/content_main" />
+    <include layout="@layout/main_content" />
 
 </android.support.design.widget.CoordinatorLayout>
