@@ -10,6 +10,9 @@
     <string name="network_failure">Invalid server response</string>
     <string name="db_failure">Error accessing database</string>
     <string name="empty_title">The title can\'t be empty</string>
+    <string name="too_short_title">The title is too short</string>
+    <string name="too_long_title">The title is too long</string>
+    <string name="options_dialog_dashboard">Select action</string>
 
     <string name="local_dashes_title">My schedulers</string>
     <string name="cloud_dashes_title">Cloud of schedulers</string>

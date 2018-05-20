@@ -7,6 +7,7 @@ import android.park.mail.ru.appandroid.utils.ListenerWrapper;
 import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -27,6 +28,7 @@ public abstract class DashboardsFragment extends Fragment {
 	protected ProgressBar progressBar;
 	protected ArrayList<ShortDashboard> dataset;
 	protected RecyclerView recyclerView;
+	protected FloatingActionButton floatingButton;
 	@NonNull protected List<ListenerWrapper> wrappers = new LinkedList<>();
 
 
@@ -63,7 +65,7 @@ public abstract class DashboardsFragment extends Fragment {
 	}
 
 	protected final void setActionBarTitle(@NonNull final String title) {
-		final ActionBar bar = ((AppCompatActivity)getActivity()).getSupportActionBar();
+		final ActionBar bar = ((AppCompatActivity) getActivity()).getSupportActionBar();
 		if (bar != null) {
 			bar.setTitle(title);
 		}

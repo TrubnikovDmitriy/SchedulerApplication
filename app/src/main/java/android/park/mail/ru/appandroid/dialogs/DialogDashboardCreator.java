@@ -1,5 +1,6 @@
 package android.park.mail.ru.appandroid.dialogs;
 
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -14,13 +15,14 @@ import android.widget.EditText;
 import java.io.Serializable;
 
 
-public class DialogDashboardCreator extends DialogFragment implements Serializable {
+public class DialogDashboardCreator extends DialogFragment {
 
 	public DialogDashboardCreator() { }
 
 	private EditText editText;
 	private DialogInterface.OnClickListener onPositiveClick;
 	private DialogInterface.OnClickListener onNegativeClick;
+	public static final String CREATE_DIALOG_TAG = "CREATE_DIALOG_TAG";
 
 
 	@NonNull
@@ -29,8 +31,10 @@ public class DialogDashboardCreator extends DialogFragment implements Serializab
 
 		final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 		final LayoutInflater inflater = getActivity().getLayoutInflater();
-		final View viewDialog = inflater.inflate(R.layout.creating_dashboard, null);
+		@SuppressLint("InflateParams") final View viewDialog =
+				inflater.inflate(R.layout.creating_dashboard, null);
 		editText = viewDialog.findViewById(R.id.edit_creating_dashboard);
+		setCancelable(false);
 
 		builder
 				.setIcon(R.mipmap.create_icon)

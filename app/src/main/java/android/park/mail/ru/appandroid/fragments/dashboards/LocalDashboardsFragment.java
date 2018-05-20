@@ -20,7 +20,6 @@ import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
@@ -36,7 +35,7 @@ public class LocalDashboardsFragment extends DashboardsFragment {
 
 	@Inject
 	public SchedulerDBHelper dbManager;
-	private DialogDashboardCreator dialogDashboardCreator = new DialogDashboardCreator();
+	private DialogDashboardCreator dialogDashboardCreator;
 
 	public LocalDashboardsFragment() { }
 
@@ -58,7 +57,11 @@ public class LocalDashboardsFragment extends DashboardsFragment {
 		recyclerView = view.findViewById(R.id.recycle_dash);
 
 		progressBar = view.findViewById(R.id.progressbar_dash_load);
-		progressBar.setVisibility(ProgressBar.VISIBLE);
+		progressBar.setVisibility(View.VISIBLE);
+
+		floatingButton = view.findViewById(R.id.fab);
+		floatingButton.setVisibility(View.VISIBLE);
+		floatingButton.setOnClickListener(new onFloatingButtonClickListener());
 
 		if (savedInstanceState == null) {
 			// Receiving data from DB
@@ -91,55 +94,80 @@ public class LocalDashboardsFragment extends DashboardsFragment {
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 		menu.clear();
-		inflater.inflate(R.menu.local_dashboards, menu);
-		super.onCreateOptionsMenu(menu, inflater);
 	}
 
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-
-			case R.id.create_dashboard:
-				dialogDashboardCreator.show(getFragmentManager(), null);
-				return true;
-
-			default:
-				return false;
-		}
-	}
 
 	private void setDialogListeners() {
-		// TODO обработать кейс с поворотом экрана и уже открытого диалога
+		// If user rotates the screen the click-listeners will be lost
+		// We find an existing DialogFragment by tag to restore listeners after rotation
+		dialogDashboardCreator = (DialogDashboardCreator) getFragmentManager()
+				.findFragmentByTag(DialogDashboardCreator.CREATE_DIALOG_TAG);
+		// otherwise - create new one
+		if (dialogDashboardCreator == null) {
+			dialogDashboardCreator = new DialogDashboardCreator();
+		}
+
 		dialogDashboardCreator.setOnPositiveClick(new DialogInterface.OnClickListener() {
+
+			private static final int TITLE_MIN_LENGTH = 3;
+			private static final int TITLE_MAX_LENGTH = 50;
+
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 
+				// Validation of title
 				final String newTitle = dialogDashboardCreator.getInputText().trim();
-				if (newTitle.isEmpty()) {
-					Toast.makeText(getContext(), R.string.empty_title, Toast.LENGTH_SHORT).show();
+				if (newTitle.length() < TITLE_MIN_LENGTH) {
+					Toast.makeText(getContext(), R.string.too_short_title, Toast.LENGTH_SHORT).show();
+					return;
+				}
+				if (newTitle.length() > TITLE_MAX_LENGTH) {
+					Toast.makeText(getContext(), R.string.too_long_title, Toast.LENGTH_SHORT).show();
 					return;
 				}
 
 				// TODO delete stubs
+				// Added to database
 				final Dashboard dashboard = new Dashboard("Dmitriy", 1L,
 						newTitle, null, null);
-				final ListenerWrapper wrapper =
-						dbManager.insertDashboard(dashboard, new SchedulerDBHelper.OnInsertCompleteListener() {
-					@Override
-					public void onSuccess(@NonNull Long rowID) {
-						dashboard.setDashID(rowID);
-						dataset.add(new ShortDashboard(dashboard));
-					}
+				final ListenerWrapper wrapper = dbManager.insertDashboard(
+						dashboard, new SchedulerDBHelper.OnInsertCompleteListener() {
 
-					@Override
-					public void onFailure(Exception exception) {
-						Toast.makeText(getContext(), R.string.db_failure, Toast.LENGTH_LONG).show();
-					}
-				});
+							final Handler handler = new Handler(Looper.getMainLooper());
+
+							@Override
+							public void onSuccess(@NonNull Long rowID) {
+								dashboard.setDashID(rowID);
+								handler.post(new Runnable() {
+									@Override
+									public void run() {
+										adapter.addItem(new ShortDashboard(dashboard));
+										recyclerView.scrollToPosition(dataset.size() - 1);
+									}
+								});
+							}
+
+							@Override
+							public void onFailure(Exception exception) {
+								handler.post(new Runnable() {
+									@Override
+									public void run() {
+										Toast.makeText(getContext(), R.string.db_failure, Toast.LENGTH_LONG).show();
+									}
+								});
+							}
+						});
 				wrappers.add(wrapper);
-
 			}
 		});
+	}
+
+
+	class onFloatingButtonClickListener implements View.OnClickListener {
+		@Override
+		public void onClick(View v) {
+			dialogDashboardCreator.show(getFragmentManager(), DialogDashboardCreator.CREATE_DIALOG_TAG);
+		}
 	}
 
 	class OnDashboardClickListener implements DashboardAdapter.OnDashboardClickListener {
@@ -159,6 +187,11 @@ public class LocalDashboardsFragment extends DashboardsFragment {
 					.replace(R.id.container, fragment)
 					.addToBackStack(null)
 					.commit();
+		}
+
+		@Override
+		public boolean onLongClick(@NonNull ShortDashboard dashboard) {
+			return false;
 		}
 	}
 

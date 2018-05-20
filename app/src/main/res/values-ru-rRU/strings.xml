@@ -10,6 +10,9 @@
     <string name="network_failure">Некорректный ответ сервера</string>
     <string name="db_failure">Ошибка при обращении к базе данных</string>
     <string name="empty_title">Заголовок не может быть пустым</string>
+    <string name="too_short_title">Слишком короткий заголовок</string>
+    <string name="too_long_title">Слишком длинный заголовок</string>
+    <string name="options_dialog_dashboard">Выберите действие</string>
 
     <string name="local_dashes_title">Мои расписания</string>
     <string name="cloud_dashes_title">Облако расписаний</string>
