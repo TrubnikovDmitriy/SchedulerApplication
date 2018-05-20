@@ -55,21 +55,14 @@ public class DashboardAdapter extends RecyclerView.Adapter<DashboardAdapter.Dash
 				.inflate(R.layout.dashboard_holder, parent, false);
 		// Create holder and set listener
 		final DashboardHolder holder = new DashboardHolder(itemView);
-		if (onItemClickListener != null) {
 			holder.cardItemView.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					onItemClickListener.onClick(dashSet.get(holder.getAdapterPosition()));
+					if (onItemClickListener != null) {
+						onItemClickListener.onClick(dashSet.get(holder.getAdapterPosition()));
+					}
 				}
 			});
-
-			holder.cardItemView.setOnLongClickListener(new View.OnLongClickListener() {
-				@Override
-				public boolean onLongClick(View v) {
-					return onItemClickListener.onLongClick(dashSet.get(holder.getAdapterPosition()));
-				}
-			});
-		}
 		return holder;
 	}
 
@@ -96,7 +89,5 @@ public class DashboardAdapter extends RecyclerView.Adapter<DashboardAdapter.Dash
 	public interface OnDashboardClickListener {
 
 		void onClick(@NonNull final ShortDashboard dashboard);
-
-		boolean onLongClick(@NonNull final ShortDashboard dashboard);
 	}
 }

@@ -188,11 +188,6 @@ public class LocalDashboardsFragment extends DashboardsFragment {
 					.addToBackStack(null)
 					.commit();
 		}
-
-		@Override
-		public boolean onLongClick(@NonNull ShortDashboard dashboard) {
-			return false;
-		}
 	}
 
 	class DatabaseLoadDashboardsListener implements
