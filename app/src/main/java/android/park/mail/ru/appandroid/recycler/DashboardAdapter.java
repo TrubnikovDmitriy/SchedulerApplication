@@ -50,14 +50,11 @@ public class DashboardAdapter extends RecyclerView.Adapter<DashboardAdapter.Dash
 
 	@Override
 	public DashboardHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+		// Inflate item
 		final CardView itemView = (CardView) LayoutInflater.from(parent.getContext())
 				.inflate(R.layout.dashboard_holder, parent, false);
-		return new DashboardHolder(itemView);
-	}
-
-	@Override
-	public void onBindViewHolder(final DashboardHolder holder, final int position) {
-		holder.updateContent(dashSet.get(position));
+		// Create holder and set listener
+		final DashboardHolder holder = new DashboardHolder(itemView);
 		holder.cardItemView.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -66,6 +63,12 @@ public class DashboardAdapter extends RecyclerView.Adapter<DashboardAdapter.Dash
 				}
 			}
 		});
+		return holder;
+	}
+
+	@Override
+	public void onBindViewHolder(final DashboardHolder holder, final int position) {
+		holder.updateContent(dashSet.get(position));
 	}
 
 	@Override

@@ -5,14 +5,17 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginStart="@dimen/activity_horizontal_margin"
-    android:layout_marginEnd="@dimen/activity_horizontal_margin"
-    app:cardCornerRadius="15dp">
+    android:layout_margin="@dimen/margin_holder"
+    app:cardCornerRadius="@dimen/card_corner_radius">
 
     <TextView
         android:id="@+id/dash_title"
+        android:padding="@dimen/padding_holder"
+        android:textSize="@dimen/holder_text_size"
+        android:minHeight="@dimen/holder_min_height"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_gravity="center"
         android:gravity="center"
         />
 
