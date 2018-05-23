@@ -12,8 +12,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 
-import java.io.Serializable;
-
 
 public class DialogDashboardCreator extends DialogFragment {
 
@@ -32,7 +30,7 @@ public class DialogDashboardCreator extends DialogFragment {
 		final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 		final LayoutInflater inflater = getActivity().getLayoutInflater();
 		@SuppressLint("InflateParams") final View viewDialog =
-				inflater.inflate(R.layout.creating_dashboard, null);
+				inflater.inflate(R.layout.dialog_creating_dashboard, null);
 		editText = viewDialog.findViewById(R.id.edit_creating_dashboard);
 		setCancelable(false);
 

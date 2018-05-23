@@ -3,8 +3,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/primaryLight"
-    android:paddingStart="@dimen/activity_horizontal_margin"
-    android:paddingEnd="@dimen/activity_horizontal_margin"
+    android:paddingStart="@dimen/padding_holder"
+    android:paddingEnd="@dimen/padding_scrollbar"
     tools:context="android.park.mail.ru.appandroid.fragments.dashboards.ServerDashboardsFragment">
 
     <android.support.v7.widget.RecyclerView
@@ -12,6 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scrollbars="vertical"
+        android:scrollbarStyle="insideInset"
         />
 
     <ProgressBar

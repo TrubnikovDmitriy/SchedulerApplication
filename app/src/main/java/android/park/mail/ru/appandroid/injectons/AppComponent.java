@@ -2,6 +2,7 @@ package android.park.mail.ru.appandroid.injectons;
 
 import android.park.mail.ru.appandroid.fragments.dashboards.LocalDashboardsFragment;
 import android.park.mail.ru.appandroid.fragments.dashboards.ServerDashboardsFragment;
+import android.park.mail.ru.appandroid.fragments.events.CreateEventFragment;
 import android.park.mail.ru.appandroid.fragments.events.LocalEventsFragment;
 import android.park.mail.ru.appandroid.fragments.events.ServerEventsFragment;
 
@@ -20,4 +21,6 @@ public interface AppComponent {
 	void inject(ServerDashboardsFragment localDashboards);
 
 	void inject(ServerEventsFragment localEvents);
+
+	void inject(CreateEventFragment createEventFragment);
 }

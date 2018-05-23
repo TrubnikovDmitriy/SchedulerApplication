@@ -24,8 +24,34 @@
     <string name="title_of_dashboard">Title of new dashboard</string>
     <string name="create_button">Create</string>
     <string name="cancel_button">Cancel</string>
-    <string name="title_activity_main2">Main2Activity</string>
+    <string name="pick_date_time">Pick date and time of event</string>
+
 
     <string name="logo_description">Dashboards &amp; notifications</string>
+
+    <!--Input hints-->
+    <string name="event_title_hint">Title</string>
+    <string name="event_description_hint">Description</string>
+    <string name="event_date">Date</string>
+    <string name="event_type">Type of event</string>
+    <string name="event_priority">Priority</string>
+    <string name="event_create_button">Add event!</string>
+    <string name="date_picker_stub">Click to choose date</string>
+
+    <string-array name="event_priority">
+        <item>Low</item>
+        <item>Medium</item>
+        <item>High</item>
+        <item>Ultra-High</item>
+    </string-array>
+
+    <string-array name="event_type">
+        <item>One time</item>
+        <item>Every day</item>
+        <item>Every week</item>
+        <item>Every month</item>
+        <item>Every year</item>
+        <item>Every century</item>
+    </string-array>
 
 </resources>

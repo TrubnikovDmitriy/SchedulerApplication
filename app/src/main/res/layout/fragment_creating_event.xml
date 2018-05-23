@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/activity_horizontal_margin"
+        android:layout_marginEnd="@dimen/activity_horizontal_margin"
+        android:paddingTop="@dimen/big_top_margin"
+        android:paddingBottom="@dimen/activity_vertical_margin"
+        android:orientation="vertical">
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/margin_holder">
+
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/new_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/event_title_hint"
+                android:inputType="textShortMessage"
+                android:maxLines="1"
+                android:singleLine="true"
+                android:maxLength="@integer/max_title_length"
+                />
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/margin_holder">
+
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/new_description"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/event_description_hint"
+                android:inputType="textMultiLine"
+                android:maxLength="@integer/max_description_length"
+                android:maxLines="5"
+                />
+        </android.support.design.widget.TextInputLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="@dimen/activity_vertical_margin"
+            android:layout_marginBottom="@dimen/activity_vertical_margin"
+            android:baselineAligned="false">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_weight="3"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start"
+                android:orientation="vertical">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/event_type"
+                    android:textColor="@color/secondaryText"
+                    android:labelFor="@id/event_type"
+                    />
+                <Spinner
+                    android:id="@+id/event_type"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:entries="@array/event_type"
+                    android:spinnerMode="dialog"
+                    style="@style/Widget.AppCompat.Spinner.Underlined"
+                    />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_weight="2"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:orientation="vertical">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/event_priority"
+                    android:textColor="@color/secondaryText"
+                    android:labelFor="@id/event_priority"
+                    />
+                <Spinner
+                    android:id="@+id/event_priority"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:spinnerMode="dialog"
+                    android:entries="@array/event_priority"
+                    style="@style/Widget.AppCompat.Spinner.Underlined"
+                    />
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="@dimen/big_top_margin">
+
+            <Button
+                android:id="@+id/datetime_picker_button"
+                android:layout_width="0dp"
+                android:layout_weight="3"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start|center_vertical"
+                android:text="@string/date_picker_stub"
+                android:textStyle="bold"
+                android:background="@drawable/button_border"
+                style="?android:attr/buttonBarStyle"
+                />
+
+            <Button
+                android:id="@+id/create_event_button"
+                android:layout_width="0dp"
+                android:layout_weight="3"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end|center_vertical"
+                android:paddingTop="@dimen/button_vertical_padding"
+                android:paddingBottom="@dimen/button_vertical_padding"
+                android:paddingStart="@dimen/button_horizontal_padding"
+                android:paddingEnd="@dimen/button_horizontal_padding"
+                android:text="@string/event_create_button"
+                android:textStyle="bold"
+                style="@style/Widget.AppCompat.Button.Colored"
+                />
+
+        </LinearLayout>
+
+    </LinearLayout>
+</ScrollView>

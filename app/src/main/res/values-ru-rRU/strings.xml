@@ -24,7 +24,33 @@
     <string name="title_of_dashboard">Название нового расписания</string>
     <string name="create_button">Создать</string>
     <string name="cancel_button">Отмена</string>
+    <string name="pick_date_time">Выберите дату и время события</string>
 
     <string name="logo_description">Расписания и напоминания</string>
+
+    <!--Input hints-->
+    <string name="event_title_hint">Заголовок</string>
+    <string name="event_description_hint">Описание</string>
+    <string name="event_date">Дата</string>
+    <string name="event_type">Тип события</string>
+    <string name="event_priority">Важность</string>
+    <string name="event_create_button">Добавить!</string>
+    <string name="date_picker_stub">Кликните, чтобы выбрать дату</string>
+
+    <string-array name="event_priority">
+        <item>Низкая</item>
+        <item>Средняя</item>
+        <item>Высокая</item>
+        <item>Высшая</item>
+    </string-array>
+
+    <string-array name="event_type">
+        <item>Одноразовое</item>
+        <item>Каждый день</item>
+        <item>Каждую неделю</item>
+        <item>Каждый месяц</item>
+        <item>Каждый год</item>
+        <item>Каждый век</item>
+    </string-array>
 
 </resources>

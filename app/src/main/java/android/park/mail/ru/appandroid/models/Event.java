@@ -70,6 +70,7 @@ public class Event implements Serializable {
 		ONE_TIME,
 		EVERY_DAY,
 		EVERY_WEEK,
+		EVERY_MONTH,
 		EVERY_YEAR,
 		EVERY_CENTURY
 	}

@@ -12,7 +12,8 @@
         android:id="@+id/edit_creating_dashboard"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:inputType="text"
+        android:inputType="textMultiLine"
+        android:maxLength="@integer/max_title_length"
         />
 
 </LinearLayout>

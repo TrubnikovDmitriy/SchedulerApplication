@@ -110,7 +110,6 @@ public class LocalDashboardsFragment extends DashboardsFragment {
 		dialogDashboardCreator.setOnPositiveClick(new DialogInterface.OnClickListener() {
 
 			private static final int TITLE_MIN_LENGTH = 3;
-			private static final int TITLE_MAX_LENGTH = 50;
 
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
@@ -119,10 +118,6 @@ public class LocalDashboardsFragment extends DashboardsFragment {
 				final String newTitle = dialogDashboardCreator.getInputText().trim();
 				if (newTitle.length() < TITLE_MIN_LENGTH) {
 					Toast.makeText(getContext(), R.string.too_short_title, Toast.LENGTH_SHORT).show();
-					return;
-				}
-				if (newTitle.length() > TITLE_MAX_LENGTH) {
-					Toast.makeText(getContext(), R.string.too_long_title, Toast.LENGTH_SHORT).show();
 					return;
 				}
 
