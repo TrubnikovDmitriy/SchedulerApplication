@@ -39,6 +39,7 @@
     <string name="event_type">Type of event</string>
     <string name="event_priority">Priority</string>
     <string name="event_create_button">Add event!</string>
+    <string name="event_edit_button">Edit event</string>
     <string name="date_picker_stub">Click to choose date</string>
 
     <string-array name="event_priority">

@@ -9,19 +9,19 @@ import java.io.Serializable;
 public class Event implements Serializable {
 
 	@SerializedName("eventID")
-	private final Long eventID;
+	private Long eventID;
 	@SerializedName("dashID")
-	private final Long dashID;
+	private Long dashID;
 	@SerializedName("text")
-	private final String text;
+	private String text;
 	@SerializedName("timestamp")
-	private final Long timestamp;
+	private Long timestamp;
 	@SerializedName("title")
-	private final String title;
+	private String title;
 	@SerializedName("type")
-	private final EventType type;
+	private EventType type;
 	@SerializedName("priority")
-	private final Priority priority;
+	private Priority priority;
 
 	public Event(String text, Long timestamp, Long eventID,
 	             Long dashID, String title, EventType type,
@@ -81,16 +81,31 @@ public class Event implements Serializable {
 		ULTRA_HIGH
 	}
 
-	@Override
-	public String toString() {
-		return "Event{" +
-				"eventID=" + eventID +
-				", dashID=" + dashID +
-				", text='" + text + '\'' +
-				", timestamp=" + timestamp +
-				", title='" + title + '\'' +
-				", type=" + type +
-				", priority=" + priority +
-				'}';
+	public void setEventID(Long eventID) {
+		this.eventID = eventID;
+	}
+
+	public void setDashID(Long dashID) {
+		this.dashID = dashID;
+	}
+
+	public void setText(String text) {
+		this.text = text;
+	}
+
+	public void setTimestamp(Long timestamp) {
+		this.timestamp = timestamp;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
+	public void setType(EventType type) {
+		this.type = type;
+	}
+
+	public void setPriority(Priority priority) {
+		this.priority = priority;
 	}
 }

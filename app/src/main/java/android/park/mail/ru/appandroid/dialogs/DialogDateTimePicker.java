@@ -89,6 +89,7 @@ public class DialogDateTimePicker extends DialogFragment {
 		}
 		if (getArguments() != null) {
 			bundle = getArguments();
+			setArguments(null);
 		}
 
 		if (bundle != null) {

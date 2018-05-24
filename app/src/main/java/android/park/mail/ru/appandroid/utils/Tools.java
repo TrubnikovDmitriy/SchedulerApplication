@@ -1,7 +1,5 @@
 package android.park.mail.ru.appandroid.utils;
 
-
-import android.park.mail.ru.appandroid.calendar.SchedulerCaldroidGridAdapter;
 import android.park.mail.ru.appandroid.models.Event;
 import android.support.annotation.NonNull;
 
@@ -14,7 +12,7 @@ import hirondelle.date4j.DateTime;
 
 public class Tools {
 
-	private static final TimeZone TIME_ZONE = TimeZone.getTimeZone("GMT+3");
+	public static final TimeZone TIME_ZONE = TimeZone.getTimeZone("GMT+3");
 	private static final SimpleDateFormat DATE_FORMATTER =
 			new SimpleDateFormat("dd MMM yyyy, HH:mm", Locale.UK);
 
@@ -25,6 +23,11 @@ public class Tools {
 	@NonNull
 	public static Date getDate(@NonNull final DateTime dateTime) {
 		return new Date(dateTime.getMilliseconds(TIME_ZONE));
+	}
+
+	@NonNull
+	public static Date getDate(final long timestamp) {
+		return new Date(timestamp * 1000);
 	}
 
 	@NonNull

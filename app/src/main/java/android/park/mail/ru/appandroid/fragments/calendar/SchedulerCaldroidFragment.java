@@ -16,6 +16,7 @@ import com.roomorama.caldroid.CaldroidFragment;
 import com.roomorama.caldroid.CaldroidGridAdapter;
 import com.roomorama.caldroid.CaldroidListener;
 
+import java.time.Month;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -25,17 +26,34 @@ import hirondelle.date4j.DateTime;
 
 public class SchedulerCaldroidFragment extends CaldroidFragment {
 
+	public static final String DASH_ID_BUNDLE = "DASH_ID_BUNDLE";
+	private static DateTime currentMonth = DateTime.now(Tools.TIME_ZONE);
+	private boolean isFirst = true;
+
 	private ArrayList<Event> events = new ArrayList<>();
+	private Long dashID;
 
 	@Override
 	public void onCreate(@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		this.setCaldroidListener(new SchedulerCaldroidListener());
 	}
 
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+	                         @Nullable Bundle savedInstanceState) {
+		if (savedInstanceState != null) {
+			dashID = savedInstanceState.getLong(DASH_ID_BUNDLE);
+		}
+		if (getArguments() != null) {
+			dashID = getArguments().getLong(DASH_ID_BUNDLE);
+		}
 		return super.onCreateView(inflater, container, savedInstanceState);
+	}
+
+	@Override
+	public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+		super.onViewCreated(view, savedInstanceState);
+		setCalendarDateTime(currentMonth);
 	}
 
 	@Override
@@ -45,20 +63,23 @@ public class SchedulerCaldroidFragment extends CaldroidFragment {
 				month, year,
 				getCaldroidData(),
 				new HashMap<String, Object>(),
-				events
+				events, getResources()
 		);
 	}
+
+	@Override
+	public void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+		outState.putLong(DASH_ID_BUNDLE, dashID);
+	}
+
 
 	public void setEvents(@NonNull ArrayList<Event> events) {
 		this.events = events;
 	}
 
-	@SuppressWarnings("unused")
-	public void updateEvents(@NonNull ArrayList<Event> events) {
-		this.events = events;
-		for (CaldroidGridAdapter adapter : getDatePagerAdapters()) {
-			((SchedulerCaldroidGridAdapter) adapter).setEvents(events);
-		}
+	public void enableClicks() {
+		this.setCaldroidListener(new SchedulerCaldroidListener());
 	}
 
 	@Nullable
@@ -90,6 +111,7 @@ public class SchedulerCaldroidFragment extends CaldroidFragment {
 			bundle.putBoolean(CreateEventFragment.IS_NEW_BUNDLE, (event == null));
 			bundle.putSerializable(CreateEventFragment.EVENT_BUNDLE, event);
 			bundle.putSerializable(CreateEventFragment.DATE_BUNDLE, date);
+			bundle.putLong(CreateEventFragment.DASH_ID_BUNDLE, dashID);
 			fragment.setArguments(bundle);
 
 			// Replace content in FrameLayout-container
@@ -98,6 +120,15 @@ public class SchedulerCaldroidFragment extends CaldroidFragment {
 					.replace(R.id.container, fragment)
 					.addToBackStack(null)
 					.commit();
+		}
+
+		@Override
+		public void onChangeMonth(int month, int year) {
+			if (isFirst) {
+				isFirst = false;
+			} else {
+				currentMonth = new DateTime(year, month, 1, 0, 0, 0, 0);
+			}
 		}
 	}
 }

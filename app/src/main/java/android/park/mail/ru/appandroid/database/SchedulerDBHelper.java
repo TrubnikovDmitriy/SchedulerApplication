@@ -169,22 +169,22 @@ public class SchedulerDBHelper extends SQLiteOpenHelper {
 								EVENT.PRIORITY.getName(),
 								EVENT.TYPE.getName()
 						},
-						DASH.ID.getName() + " = ?",
-						new String[] {String.valueOf(dashID)},
+						EVENT.DASH_ID.getName() + " = ?",
+						new String[] { String.valueOf(dashID) },
 						null, null, null)) {
 
 					final ArrayList<Event> events = new ArrayList<>(cursor.getCount());
 					while(cursor.moveToNext()) {
 						Event event = new Event(
-								cursor.getString(EVENT.TEXT.getNumber()),
-								cursor.getLong(EVENT.TIMESTAMP.getNumber()),
-								cursor.getLong(EVENT.EVENT_ID.getNumber()),
+								cursor.getString(cursor.getColumnIndex(EVENT.TEXT.getName())),
+								cursor.getLong(cursor.getColumnIndex(EVENT.TIMESTAMP.getName())),
+								cursor.getLong(cursor.getColumnIndex(EVENT.EVENT_ID.getName())),
 								dashID,
-								cursor.getString(EVENT.TITLE.getNumber()),
+								cursor.getString(cursor.getColumnIndex(EVENT.TITLE.getName())),
 								Event.EventType.valueOf(
-										cursor.getString(EVENT.TYPE.getNumber())),
+										cursor.getString(cursor.getColumnIndex(EVENT.TYPE.getName()))),
 								Event.Priority.valueOf(
-										cursor.getString(EVENT.PRIORITY.getNumber()))
+										cursor.getString(cursor.getColumnIndex(EVENT.PRIORITY.getName())))
 						);
 						events.add(event);
 					}

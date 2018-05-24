@@ -28,6 +28,7 @@ public abstract class EventsFragment extends Fragment {
 	protected static final String DASHBOARD = "dashboard_bundle";
 	protected Dashboard dashboard;
 	protected ProgressBar progressBar;
+	protected SchedulerCaldroidFragment calendarFragment;
 	@NonNull protected List<ListenerWrapper> wrappers = new LinkedList<>();
 
 	public EventsFragment() { }
@@ -67,18 +68,18 @@ public abstract class EventsFragment extends Fragment {
 
 	protected void setCalendar(@NonNull final Dashboard dashboard) {
 
-		final SchedulerCaldroidFragment caldroid = new SchedulerCaldroidFragment();
+		calendarFragment = new SchedulerCaldroidFragment();
 
 		final Bundle bundle = new Bundle();
 		bundle.putInt(CaldroidFragment.START_DAY_OF_WEEK, CaldroidFragment.MONDAY);
-		caldroid.setArguments(bundle);
+		bundle.putLong(SchedulerCaldroidFragment.DASH_ID_BUNDLE, dashboard.getDashID());
+		calendarFragment.setArguments(bundle);
 
-		caldroid.setEvents(dashboard.getEvents());
-
+		calendarFragment.setEvents(dashboard.getEvents());
 
 		getFragmentManager()
 				.beginTransaction()
-				.replace(R.id.caldroid_container, caldroid)
+				.replace(R.id.caldroid_container, calendarFragment)
 				.commit();
 
 		// Set title of dashboard in ActionBar

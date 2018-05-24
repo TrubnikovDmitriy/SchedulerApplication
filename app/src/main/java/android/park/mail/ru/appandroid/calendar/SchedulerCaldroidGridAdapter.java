@@ -1,7 +1,9 @@
 package android.park.mail.ru.appandroid.calendar;
 
 import android.content.Context;
-import android.graphics.Color;
+import android.content.res.Resources;
+import android.os.Build;
+import android.park.mail.ru.appandroid.R;
 import android.park.mail.ru.appandroid.models.Event;
 import android.park.mail.ru.appandroid.utils.Tools;
 import android.support.annotation.NonNull;
@@ -12,7 +14,6 @@ import com.roomorama.caldroid.CellView;
 
 import java.util.ArrayList;
 import java.util.Map;
-import java.util.TimeZone;
 
 import hirondelle.date4j.DateTime;
 
@@ -20,19 +21,25 @@ import hirondelle.date4j.DateTime;
 public class SchedulerCaldroidGridAdapter extends CaldroidGridAdapter {
 
 	private ArrayList<Event> events;
+	private Resources resources;
 
-	public static final int ULTRA_HIGH_COLOR = Color.RED;
-	public static final int HIGH_COLOR = Color.BLUE;
-	public static final int MEDIUM_COLOR = Color.GREEN;
-	public static final int LOW_COLOR = Color.LTGRAY;
+	private static int ULTRA_HIGH_COLOR;
+	private static int HIGH_COLOR;
+	private static int MEDIUM_COLOR;
+	private static int LOW_COLOR;
 
 
 	public SchedulerCaldroidGridAdapter(Context context, int month, int year,
-	                             Map<String, Object> caldroidData,
-	                             Map<String, Object> extraData,
-	                             ArrayList<Event> events) {
-
+	                                    Map<String, Object> caldroidData,
+	                                    Map<String, Object> extraData,
+	                                    ArrayList<Event> events,
+	                                    Resources resources) {
 		super(context, month, year, caldroidData, extraData);
+		ULTRA_HIGH_COLOR = resources.getColor(R.color.event_color_ultra_high);
+		HIGH_COLOR = resources.getColor(R.color.event_color_high);
+		MEDIUM_COLOR = resources.getColor(R.color.event_color_medium);
+		LOW_COLOR = resources.getColor(R.color.event_color_low);
+		this.resources = resources;
 		this.events = events;
 	}
 
@@ -84,6 +91,12 @@ public class SchedulerCaldroidGridAdapter extends CaldroidGridAdapter {
 	                                @Nullable final Event.Priority priority) {
 		if (priority == null) {
 			return;
+		}
+
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+			cellView.setAutoSizeTextTypeWithDefaults(resources.getDimensionPixelSize(R.dimen.cell_text_size));
+		} else {
+			cellView.setTextSize(resources.getDimensionPixelSize(R.dimen.cell_text_size));
 		}
 
 		switch(priority) {

@@ -1,6 +1,5 @@
 package android.park.mail.ru.appandroid.fragments.events;
 
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -9,6 +8,7 @@ import android.park.mail.ru.appandroid.R;
 import android.park.mail.ru.appandroid.database.SchedulerDBHelper;
 import android.park.mail.ru.appandroid.models.Dashboard;
 import android.park.mail.ru.appandroid.utils.ListenerWrapper;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -54,6 +54,12 @@ public class LocalEventsFragment extends EventsFragment {
 		}
 
 		return view;
+	}
+
+	@Override
+	protected void setCalendar(@NonNull Dashboard dashboard) {
+		super.setCalendar(dashboard);
+		calendarFragment.enableClicks();
 	}
 
 	class OnLoadDashboardListener implements

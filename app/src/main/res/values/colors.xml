@@ -8,4 +8,14 @@
     <color name="secondaryText">#757575</color>
     <color name="icons">#FFFFFF</color>
     <color name="divider">#BDBDBD</color>
+
+    <!--<color name="event_color_ultra_high">#96ff0000</color>-->
+    <!--<color name="event_color_high">#9600ff0c</color>-->
+    <!--<color name="event_color_medium">#96304ffe</color>-->
+    <!--<color name="event_color_low">#fff59d</color>-->
+
+    <color name="event_color_ultra_high">#96dd2c00</color>
+    <color name="event_color_high">#9600c853</color>
+    <color name="event_color_medium">#96304ffe</color>
+    <color name="event_color_low">#96616161</color>
 </resources>

@@ -38,6 +38,7 @@
     <string name="event_type">Тип события</string>
     <string name="event_priority">Важность</string>
     <string name="event_create_button">Добавить!</string>
+    <string name="event_edit_button">Изменить</string>
     <string name="date_picker_stub">Кликните, чтобы выбрать дату</string>
 
     <string-array name="event_priority">
