@@ -16,6 +16,8 @@
 
     <string name="local_dashes_title">Мои расписания</string>
     <string name="cloud_dashes_title">Облако расписаний</string>
+    <string name="event_create_title">Создать новое событие</string>
+    <string name="event_edit_title">Редактировать событие</string>
 
     <string name="navigation_drawer_open">Отркыть панель навигации</string>
     <string name="navigation_drawer_close">Закрыть панель навигации</string>
@@ -23,6 +25,7 @@
     <!--Text for labels-->
     <string name="title_of_dashboard">Название нового расписания</string>
     <string name="create_button">Создать</string>
+    <string name="apply_button">Применить</string>
     <string name="cancel_button">Отмена</string>
     <string name="pick_date_time">Выберите дату и время события</string>
 

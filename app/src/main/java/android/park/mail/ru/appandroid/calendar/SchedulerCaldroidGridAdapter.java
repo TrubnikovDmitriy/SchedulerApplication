@@ -3,6 +3,7 @@ package android.park.mail.ru.appandroid.calendar;
 import android.content.Context;
 import android.graphics.Color;
 import android.park.mail.ru.appandroid.models.Event;
+import android.park.mail.ru.appandroid.utils.Tools;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -25,7 +26,8 @@ public class SchedulerCaldroidGridAdapter extends CaldroidGridAdapter {
 	public static final int MEDIUM_COLOR = Color.GREEN;
 	public static final int LOW_COLOR = Color.LTGRAY;
 
-	SchedulerCaldroidGridAdapter(Context context, int month, int year,
+
+	public SchedulerCaldroidGridAdapter(Context context, int month, int year,
 	                             Map<String, Object> caldroidData,
 	                             Map<String, Object> extraData,
 	                             ArrayList<Event> events) {
@@ -34,7 +36,7 @@ public class SchedulerCaldroidGridAdapter extends CaldroidGridAdapter {
 		this.events = events;
 	}
 
-	void setEvents(@Nullable ArrayList<Event> events) {
+	public void setEvents(@Nullable ArrayList<Event> events) {
 		this.events = (events != null) ? events : new ArrayList<Event>();
 	}
 
@@ -44,10 +46,8 @@ public class SchedulerCaldroidGridAdapter extends CaldroidGridAdapter {
 
 		DateTime dateTime = this.datetimeList.get(position);
 		for (final Event event : events) {
-			final DateTime eventTime = DateTime.forInstant(
-					event.getTimestamp() * 1000,
-					TimeZone.getTimeZone("Russia/Moscow")
-			);
+
+			final DateTime eventTime = Tools.getDate(event);
 
 			if (eventTime.isSameDayAs(dateTime)) {
 				createEvent(cellView, event);

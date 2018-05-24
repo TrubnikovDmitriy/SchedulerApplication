@@ -161,7 +161,10 @@ public class LocalDashboardsFragment extends DashboardsFragment {
 	class onFloatingButtonClickListener implements View.OnClickListener {
 		@Override
 		public void onClick(View v) {
-			dialogDashboardCreator.show(getFragmentManager(), DialogDashboardCreator.CREATE_DIALOG_TAG);
+			if (!dialogDashboardCreator.isAdded()) {
+				dialogDashboardCreator.show(
+						getFragmentManager(), DialogDashboardCreator.CREATE_DIALOG_TAG);
+			}
 		}
 	}
 

@@ -2,7 +2,7 @@ package android.park.mail.ru.appandroid.fragments.events;
 
 import android.os.Bundle;
 import android.park.mail.ru.appandroid.R;
-import android.park.mail.ru.appandroid.calendar.SchedulerCaldroidFragment;
+import android.park.mail.ru.appandroid.fragments.calendar.SchedulerCaldroidFragment;
 import android.park.mail.ru.appandroid.models.Dashboard;
 import android.park.mail.ru.appandroid.utils.ListenerWrapper;
 import android.support.annotation.CallSuper;

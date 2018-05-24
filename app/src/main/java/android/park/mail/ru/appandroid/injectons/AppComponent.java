@@ -2,7 +2,7 @@ package android.park.mail.ru.appandroid.injectons;
 
 import android.park.mail.ru.appandroid.fragments.dashboards.LocalDashboardsFragment;
 import android.park.mail.ru.appandroid.fragments.dashboards.ServerDashboardsFragment;
-import android.park.mail.ru.appandroid.fragments.events.CreateEventFragment;
+import android.park.mail.ru.appandroid.fragments.calendar.CreateEventFragment;
 import android.park.mail.ru.appandroid.fragments.events.LocalEventsFragment;
 import android.park.mail.ru.appandroid.fragments.events.ServerEventsFragment;
 
