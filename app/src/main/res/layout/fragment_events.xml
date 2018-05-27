@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_margin="@dimen/activity_horizontal_margin"
-    tools:context="android.park.mail.ru.appandroid.fragments.events.ServerEventsFragment">
+    tools:context="ru.mail.park.android.fragments.events.ServerEventsFragment">
 
     <FrameLayout
         android:id="@+id/caldroid_container"

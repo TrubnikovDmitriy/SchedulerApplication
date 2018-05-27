@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="android.park.mail.ru.appandroid.MainActivity">
+    tools:context="ru.mail.park.android.MainActivity">
 
     <!--AppBar-->
     <android.support.design.widget.AppBarLayout

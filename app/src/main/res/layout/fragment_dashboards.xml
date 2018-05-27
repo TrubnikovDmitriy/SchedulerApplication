@@ -5,7 +5,7 @@
     android:background="@color/primaryLight"
     android:paddingStart="@dimen/padding_holder"
     android:paddingEnd="@dimen/padding_scrollbar"
-    tools:context="android.park.mail.ru.appandroid.fragments.dashboards.ServerDashboardsFragment">
+    tools:context="ru.mail.park.android.fragments.dashboards.ServerDashboardsFragment">
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recycle_dash"
