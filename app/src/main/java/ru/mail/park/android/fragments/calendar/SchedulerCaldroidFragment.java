@@ -2,7 +2,6 @@ package ru.mail.park.android.fragments.calendar;
 
 import android.os.Bundle;
 import park.mail.ru.android.R;
-import ru.mail.park.android.calendar.SchedulerCaldroidGridAdapter;
 import ru.mail.park.android.models.Event;
 import ru.mail.park.android.utils.Tools;
 import android.support.annotation.NonNull;
@@ -14,10 +13,14 @@ import android.view.ViewGroup;
 
 import com.roomorama.caldroid.CaldroidFragment;
 import com.roomorama.caldroid.CaldroidListener;
+import com.roomorama.caldroid.CalendarHelper;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import hirondelle.date4j.DateTime;
 
@@ -27,14 +30,12 @@ public class SchedulerCaldroidFragment extends CaldroidFragment {
 	public static final String DASH_ID_BUNDLE = "DASH_ID_BUNDLE";
 	private static DateTime currentMonth = DateTime.now(Tools.TIME_ZONE);
 	private boolean isFirst = true;
+	private HashMap<DateTime, HashSet<Event>> eventsCounter = new HashMap<>();
+	private ExecutorService executor = Executors.newSingleThreadExecutor();
+
 
 	private ArrayList<Event> events = new ArrayList<>();
 	private Long dashID;
-
-	@Override
-	public void onCreate(@Nullable Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -55,17 +56,6 @@ public class SchedulerCaldroidFragment extends CaldroidFragment {
 	}
 
 	@Override
-	public SchedulerCaldroidGridAdapter getNewDatesGridAdapter(int month, int year) {
-		return new SchedulerCaldroidGridAdapter(
-				getActivity(),
-				month, year,
-				getCaldroidData(),
-				new HashMap<String, Object>(),
-				events, getResources()
-		);
-	}
-
-	@Override
 	public void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
 		outState.putLong(DASH_ID_BUNDLE, dashID);
@@ -83,7 +73,7 @@ public class SchedulerCaldroidFragment extends CaldroidFragment {
 	@Nullable
 	private Event getEventByDate(@NonNull final DateTime date) {
 		for (final Event event : events) {
-			final DateTime eventDate = Tools.getDate(event);
+			final DateTime eventDate = Tools.getDateTime(event);
 			if (date.isSameDayAs(eventDate)) {
 				return event;
 			}
@@ -105,7 +95,7 @@ public class SchedulerCaldroidFragment extends CaldroidFragment {
 			final Fragment fragment = new CreateEventFragment();
 			final Bundle bundle = new Bundle();
 
-			final Event event = getEventByDate(Tools.getDate(date));
+			final Event event = getEventByDate(CalendarHelper.convertDateToDateTime(date));
 			bundle.putBoolean(CreateEventFragment.IS_NEW_BUNDLE, (event == null));
 			bundle.putSerializable(CreateEventFragment.EVENT_BUNDLE, event);
 			bundle.putSerializable(CreateEventFragment.DATE_BUNDLE, date);

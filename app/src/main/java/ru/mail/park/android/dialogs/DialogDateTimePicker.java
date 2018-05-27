@@ -15,6 +15,8 @@ import android.view.View;
 import android.widget.DatePicker;
 import android.widget.TimePicker;
 
+import com.roomorama.caldroid.CalendarHelper;
+
 import java.util.Date;
 
 import hirondelle.date4j.DateTime;
@@ -54,7 +56,7 @@ public class DialogDateTimePicker extends DialogFragment {
 				.setPositiveButton(R.string.apply_button, new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
-						onApplyListener.onApply(Tools.getDate(getCurrentDate()));
+						onApplyListener.onApply(CalendarHelper.convertDateTimeToDate(getCurrentDate()));
 					}
 				})
 				.setNegativeButton(R.string.cancel_button, null);
@@ -96,7 +98,7 @@ public class DialogDateTimePicker extends DialogFragment {
 			oldDate = (Date) bundle.getSerializable(OLD_DATE_BUNDLE);
 			DateTime currentDate = (DateTime) bundle.getSerializable(CURRENT_DATE_BUNDLE);
 			if (currentDate == null) {
-				currentDate = Tools.getDate(oldDate);
+				currentDate = CalendarHelper.convertDateToDateTime(oldDate);
 			}
 
 			// Update Date and Time at the user screen

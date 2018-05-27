@@ -95,7 +95,7 @@ public class CreateEventFragment extends Fragment {
 		});
 		buttonDateTimePicker.setText(Tools.formatDate(date));
 
-		// Listener for create event in database
+		// Listener for create event_high in database
 		buttonDone.setOnClickListener(new OnDoneClickListener());
 
 		return view;
@@ -126,7 +126,7 @@ public class CreateEventFragment extends Fragment {
 			isNew = bundle.getBoolean(IS_NEW_BUNDLE);
 			dashID = bundle.getLong(DASH_ID_BUNDLE);
 			if (!isNew) {
-				// If clicked at already existing event
+				// If clicked at already existing event_high
 				event = (Event) bundle.getSerializable(EVENT_BUNDLE);
 				buttonDone.setText(R.string.event_edit_button);
 				if (event != null) {
@@ -157,7 +157,6 @@ public class CreateEventFragment extends Fragment {
 			dialogPicker = new DialogDateTimePicker();
 
 		}
-
 		dialogPicker.setOnApplyListener(new DialogDateTimePicker.OnApplyListener() {
 			@Override
 			public void onApply(@NonNull Date newDate) {

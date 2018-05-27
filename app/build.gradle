@@ -44,4 +44,7 @@ dependencies {
 
     // Library for calendar
     implementation group: 'com.roomorama', name: 'caldroid', version: '3.0.1'
+
+    // Guava
+    implementation group: 'com.google.guava', name: 'guava', version: '25.1-android'
 }

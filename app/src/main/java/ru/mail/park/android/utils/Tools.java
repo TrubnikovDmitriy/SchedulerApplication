@@ -1,6 +1,9 @@
 package ru.mail.park.android.utils;
 
+import park.mail.ru.android.R;
 import ru.mail.park.android.models.Event;
+
+import android.content.res.Resources;
 import android.support.annotation.NonNull;
 
 import java.text.SimpleDateFormat;
@@ -9,6 +12,7 @@ import java.util.Locale;
 import java.util.TimeZone;
 
 import hirondelle.date4j.DateTime;
+
 
 public class Tools {
 
@@ -21,6 +25,7 @@ public class Tools {
 	}
 
 	@NonNull
+	@Deprecated
 	public static Date getDate(@NonNull final DateTime dateTime) {
 		return new Date(dateTime.getMilliseconds(TIME_ZONE));
 	}
@@ -31,13 +36,24 @@ public class Tools {
 	}
 
 	@NonNull
-	public static DateTime getDate(@NonNull final Date date) {
+	@Deprecated
+	public static DateTime getDateTime(@NonNull final Date date) {
 		return DateTime.forInstant(date.getTime(), TIME_ZONE);
 	}
 
 	@NonNull
-	public static DateTime getDate(@NonNull final Event event) {
+	public static DateTime getDateTime(@NonNull final Event event) {
 		// TODO remove *1000 for milliseconds
 		return DateTime.forInstant(event.getTimestamp() * 1000, TIME_ZONE);
+	}
+
+	public static float getCalendarCellWidthInPixels(@NonNull Resources resources) {
+		float cellSize = resources.getDisplayMetrics().widthPixels;
+		// Subtract the padding at the edges of calendar
+		cellSize -= 2 * resources.getDimensionPixelSize(R.dimen.activity_horizontal_margin);
+		// Seven days in week on one row
+		cellSize /= 7;
+
+		return cellSize;
 	}
 }

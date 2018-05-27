@@ -3,11 +3,15 @@ package ru.mail.park.android.fragments.events;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+
+import hirondelle.date4j.DateTime;
 import ru.mail.park.android.App;
 import park.mail.ru.android.R;
 import ru.mail.park.android.database.SchedulerDBHelper;
 import ru.mail.park.android.models.Dashboard;
 import ru.mail.park.android.utils.ListenerWrapper;
+import ru.mail.park.android.utils.Tools;
+
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -39,8 +43,8 @@ public class LocalEventsFragment extends EventsFragment {
 
 		final View view = super.onCreateView(inflater, container, savedInstanceState);
 
+		progressBar.setVisibility(ProgressBar.VISIBLE);
 		if (savedInstanceState == null) {
-			progressBar.setVisibility(ProgressBar.VISIBLE);
 			final Long dashID = getArguments().getLong(DASHBOARD_ID);
 			final ListenerWrapper wrapper =
 					dbManager.selectDashboard(dashID, new OnLoadDashboardListener());
@@ -49,6 +53,23 @@ public class LocalEventsFragment extends EventsFragment {
 		} else {
 			dashboard = (Dashboard) savedInstanceState.getSerializable(DASHBOARD);
 			if (dashboard != null) {
+				new Thread(new Runnable() {
+					@Override
+					public void run() {
+						final DateTime now = DateTime.now(Tools.TIME_ZONE);
+						eventsLabels = calculateCirclesForEventDates(
+								now.minusDays(365),
+								now.plusDays(365),
+								dashboard.getEvents()
+						);
+						new Handler(Looper.getMainLooper()).post(new Runnable() {
+							@Override
+							public void run() {
+								progressBar.setVisibility(ProgressBar.GONE);
+							}
+						});
+					}
+				});
 				setCalendar(dashboard);
 			}
 		}
@@ -57,8 +78,9 @@ public class LocalEventsFragment extends EventsFragment {
 	}
 
 	@Override
-	protected void setCalendar(@NonNull Dashboard dashboard) {
+	protected void setCalendar(@NonNull final Dashboard dashboard) {
 		super.setCalendar(dashboard);
+
 		calendarFragment.enableClicks();
 	}
 
@@ -70,13 +92,17 @@ public class LocalEventsFragment extends EventsFragment {
 		@Override
 		public void onSuccess(Dashboard data) {
 			dashboard = data;
+			final DateTime now = DateTime.now(Tools.TIME_ZONE);
+			eventsLabels = calculateCirclesForEventDates(
+					now.minusDays(365),
+					now.plusDays(365),
+					dashboard.getEvents()
+			);
 			handler.post(new Runnable() {
 				@Override
 				public void run() {
-					Toast.makeText(getContext(), R.string.success_load_events,
-							Toast.LENGTH_SHORT).show();
 					setCalendar(dashboard);
-					progressBar.setVisibility(ProgressBar.INVISIBLE);
+					progressBar.setVisibility(ProgressBar.GONE);
 				}
 			});
 		}
