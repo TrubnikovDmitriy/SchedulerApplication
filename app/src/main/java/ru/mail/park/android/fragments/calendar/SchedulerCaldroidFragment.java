@@ -17,11 +17,6 @@ import com.roomorama.caldroid.CalendarHelper;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
 import hirondelle.date4j.DateTime;
 
 
@@ -30,8 +25,6 @@ public class SchedulerCaldroidFragment extends CaldroidFragment {
 	public static final String DASH_ID_BUNDLE = "DASH_ID_BUNDLE";
 	private static DateTime currentMonth = DateTime.now(Tools.TIME_ZONE);
 	private boolean isFirst = true;
-	private HashMap<DateTime, HashSet<Event>> eventsCounter = new HashMap<>();
-	private ExecutorService executor = Executors.newSingleThreadExecutor();
 
 
 	private ArrayList<Event> events = new ArrayList<>();

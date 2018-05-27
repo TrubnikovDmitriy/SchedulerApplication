@@ -199,11 +199,9 @@ public class LocalDashboardsFragment extends DashboardsFragment {
 			handler.post(new Runnable() {
 				@Override
 				public void run() {
-					Toast.makeText(
-							getContext(),
-							data.isEmpty() ? R.string.empty_dataset : R.string.success_load_dashboards,
-							Toast.LENGTH_SHORT
-					).show();
+					if (data.isEmpty()) {
+						Toast.makeText(getContext(), R.string.empty_dataset, Toast.LENGTH_LONG).show();
+					}
 					progressBar.setVisibility(ProgressBar.INVISIBLE);
 					updateDataset(data);
 				}

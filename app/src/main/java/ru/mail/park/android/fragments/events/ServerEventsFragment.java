@@ -1,8 +1,7 @@
 package ru.mail.park.android.fragments.events;
 
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
+
 import ru.mail.park.android.App;
 import park.mail.ru.android.R;
 import ru.mail.park.android.network.ServerAPI;
@@ -38,8 +37,8 @@ public class ServerEventsFragment extends EventsFragment {
 
 	@Override
 	public View onCreateView(LayoutInflater inflater,
-	                         @Nullable ViewGroup container,
-	                         @Nullable Bundle savedInstanceState) {
+	                         @Nullable final ViewGroup container,
+	                         @Nullable final Bundle savedInstanceState) {
 
 		final View view = super.onCreateView(inflater, container, savedInstanceState);
 
@@ -50,9 +49,15 @@ public class ServerEventsFragment extends EventsFragment {
 			wrappers.add(wrapper);
 
 		} else {
-			dashboard = (Dashboard) savedInstanceState.getSerializable(DASHBOARD);
+			dashboard = (Dashboard) savedInstanceState.getSerializable(DASHBOARD_BUNDLE);
 			if (dashboard != null) {
-				setCalendar(dashboard);
+				executor.execute(new Runnable() {
+					@Override
+					public void run() {
+						createCalendarFragment(savedInstanceState);
+						updateEventSetFromBackground(dashboard);
+					}
+				});
 			}
 		}
 
@@ -61,28 +66,21 @@ public class ServerEventsFragment extends EventsFragment {
 
 	class LoadEventsListener implements ServerAPI.OnRequestCompleteListener<Dashboard> {
 
-		private final Handler handler = new Handler(Looper.getMainLooper());
-
 		@Override
 		public void onSuccess(Response<Dashboard> response, Dashboard payload) {
+
 			if (response.code() == 200) {
 				dashboard = payload;
-				handler.post(new Runnable() {
-					@Override
-					public void run() {
-						Toast.makeText(getContext(), R.string.success_load_events,
-								Toast.LENGTH_SHORT).show();
-						progressBar.setVisibility(ProgressBar.INVISIBLE);
-						setCalendar(dashboard);
-					}
-				});
+				createCalendarFragment(null);
+				updateEventSetFromBackground(dashboard);
+
 			} else {
 				handler.post(new Runnable() {
 					@Override
 					public void run() {
 						Toast.makeText(getContext(), R.string.network_failure,
 								Toast.LENGTH_LONG).show();
-						progressBar.setVisibility(ProgressBar.INVISIBLE);
+						progressBar.setVisibility(ProgressBar.GONE);
 					}
 				});
 			}
