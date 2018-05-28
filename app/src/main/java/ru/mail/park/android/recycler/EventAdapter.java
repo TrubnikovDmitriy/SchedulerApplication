@@ -19,9 +19,12 @@ import ru.mail.park.android.utils.Tools;
 
 public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventHolder> {
 
-	static class EventHolder extends RecyclerView.ViewHolder {
+	@NonNull private ArrayList<Event> eventSet = new ArrayList<>();
+	@NonNull private final String[] eventPriorities;
+	@NonNull private final String[] eventTypes;
 
-		private CardView cardItemView;
+	class EventHolder extends RecyclerView.ViewHolder {
+
 		private TextView title;
 		private TextView time;
 		private TextView description;
@@ -30,7 +33,6 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventHolder>
 
 		EventHolder(CardView cardItemView) {
 			super(cardItemView);
-			this.cardItemView = cardItemView;
 			this.title = cardItemView.findViewById(R.id.event_title);
 			this.time = cardItemView.findViewById(R.id.event_time);
 			this.description = cardItemView.findViewById(R.id.event_description);
@@ -40,17 +42,24 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventHolder>
 
 		private void updateContent(@NonNull final Event event) {
 			title.setText(event.getTitle());
-			description.setText(event.getText());
+
+			if (event.getText().isEmpty()) {
+				description.setText(R.string.no_description);
+			} else {
+				description.setText(event.getText());
+			}
 
 			final Date date = Tools.getDate(event.getTimestamp());
 			time.setText(Tools.formatTime(date));
+
+			type.setText(eventTypes[event.getType().ordinal()]);
+			priority.setText(eventPriorities[event.getPriority().ordinal()]);
 		}
 	}
 
-	@NonNull private ArrayList<Event> eventSet;
-
-	public EventAdapter(@Nullable final ArrayList<Event> dataset) {
-		this.eventSet = (dataset != null) ? dataset : new ArrayList<Event>();
+	public EventAdapter(@NonNull String[] eventPriorities, @NonNull String[] eventTypes) {
+		this.eventPriorities = eventPriorities;
+		this.eventTypes = eventTypes;
 	}
 
 	@Override

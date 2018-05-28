@@ -83,7 +83,10 @@ public abstract class EventsFragment extends Fragment {
 		progressBar = view.findViewById(R.id.progressbar_event_load);
 		resources = view.getResources();
 
-		adapter = new EventAdapter(null);
+		adapter = new EventAdapter(
+				resources.getStringArray(R.array.event_priority),
+				resources.getStringArray(R.array.event_type)
+		);
 		recyclerView = view.findViewById(R.id.recycler_events);
 		recyclerView.setAdapter(adapter);
 		recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));

@@ -58,4 +58,10 @@
         <item>Every century</item>
     </string-array>
 
+
+    <!--Event holder-->
+    <string name="event_type_label">Type of event: </string>
+    <string name="event_priority_label">Priority: </string>
+    <string name="no_description">No description available</string>
+
 </resources>

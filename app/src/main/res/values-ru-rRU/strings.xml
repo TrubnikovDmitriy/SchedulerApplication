@@ -57,4 +57,9 @@
         <item>Каждый век</item>
     </string-array>
 
+    <!--Event holder-->
+    <string name="event_type_label">Тип события: </string>
+    <string name="event_priority_label">Важность: </string>
+    <string name="no_description">Описание отсутсвует</string>
+
 </resources>
