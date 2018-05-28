@@ -32,7 +32,7 @@
             android:id="@+id/recycler_events"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:scrollbars="vertical"
+            android:paddingBottom="@dimen/padding_holder"
             android:layout_marginBottom="@dimen/activity_vertical_margin"
             />
 

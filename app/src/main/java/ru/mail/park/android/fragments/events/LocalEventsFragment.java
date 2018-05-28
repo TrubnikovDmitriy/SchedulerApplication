@@ -52,9 +52,11 @@ public class LocalEventsFragment extends EventsFragment {
 				executor.execute(new Runnable() {
 					@Override
 					public void run() {
+						updateActionBarTitle();
 						createCalendarFragment(null);
 						calendarFragment.enableClicks();
 						updateEventSetFromBackground(dashboard);
+						removeProgressBar();
 					}
 				});
 			}
@@ -69,9 +71,11 @@ public class LocalEventsFragment extends EventsFragment {
 		@Override
 		public void onSuccess(Dashboard data) {
 			dashboard = data;
+			updateActionBarTitle();
 			createCalendarFragment(null);
 			calendarFragment.enableClicks();
 			updateEventSetFromBackground(data);
+			removeProgressBar();
 		}
 
 		@Override

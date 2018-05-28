@@ -118,7 +118,6 @@ public abstract class EventsFragment extends Fragment {
 	protected void createCalendarFragment(@Nullable Bundle savedInstanceState) {
 
 		calendarFragment = new SchedulerCaldroidFragment();
-		calendarFragment.setOnDateClickListener(new OnDateClickListener());
 
 		if (savedInstanceState != null) {
 			calendarFragment.restoreStatesFromKey(savedInstanceState, DASHBOARD_BUNDLE);
@@ -144,9 +143,26 @@ public abstract class EventsFragment extends Fragment {
 		if (activity != null) {
 			final ActionBar bar = ((AppCompatActivity) activity).getSupportActionBar();
 			if (bar != null) {
-				bar.setTitle(dashboard.getTitle());
+				handler.post(new Runnable() {
+					@Override
+					public void run() {
+						bar.setTitle(dashboard.getTitle());
+					}
+				});
 			}
 		}
+	}
+
+	protected void removeProgressBar() {
+		// When data is loaded, we can set the listeners on calendar's cells
+		calendarFragment.setOnDateClickListener(new OnDateClickListener());
+		// And hide the progress bar indicating we are ready to work
+		handler.post(new Runnable() {
+			@Override
+			public void run() {
+				progressBar.setVisibility(View.GONE);
+			}
+		});
 	}
 
 	protected void updateEventSetFromBackground(@NonNull final Dashboard dashboard) {
@@ -159,9 +175,7 @@ public abstract class EventsFragment extends Fragment {
 		handler.post(new Runnable() {
 			@Override
 			public void run() {
-				updateActionBarTitle();
 				calendarFragment.setBackgroundDrawableForDateTimes(eventsLabels);
-				progressBar.setVisibility(ProgressBar.GONE);
 				calendarFragment.refreshView();
 			}
 		});

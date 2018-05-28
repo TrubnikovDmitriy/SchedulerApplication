@@ -54,8 +54,10 @@ public class ServerEventsFragment extends EventsFragment {
 				executor.execute(new Runnable() {
 					@Override
 					public void run() {
+						updateActionBarTitle();
 						createCalendarFragment(savedInstanceState);
 						updateEventSetFromBackground(dashboard);
+						removeProgressBar();
 					}
 				});
 			}
@@ -71,8 +73,10 @@ public class ServerEventsFragment extends EventsFragment {
 
 			if (response.code() == 200) {
 				dashboard = payload;
+				updateActionBarTitle();;
 				createCalendarFragment(null);
 				updateEventSetFromBackground(dashboard);
+				removeProgressBar();
 
 			} else {
 				handler.post(new Runnable() {
