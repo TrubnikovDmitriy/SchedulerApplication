@@ -1,6 +1,7 @@
 package ru.mail.park.android.fragments.calendar;
 
 
+import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -19,6 +20,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -41,6 +43,7 @@ public class CreateEventFragment extends Fragment {
 	private Button buttonDone;
 	private Spinner spinnerPriority;
 	private Spinner spinnerType;
+	private View view;
 
 	@Inject
 	SchedulerDBHelper dbHelper;
@@ -64,7 +67,7 @@ public class CreateEventFragment extends Fragment {
 	                         @Nullable ViewGroup container,
 	                         @Nullable Bundle savedInstanceState) {
 
-		final View view = inflater.inflate(R.layout.fragment_creating_event, container, false);
+		view = inflater.inflate(R.layout.fragment_creating_event, container, false);
 
 		// Bind views
 		editDescription = view.findViewById(R.id.edit_event_description);
@@ -85,7 +88,6 @@ public class CreateEventFragment extends Fragment {
 			@Override
 			public void onClick(View v) {
 				if (!dialogPicker.isAdded()) {
-
 					final Bundle bundle = new Bundle();
 					bundle.putSerializable(DialogDateTimePicker.OLD_DATE_BUNDLE, date);
 					dialogPicker.setArguments(bundle);
@@ -139,10 +141,7 @@ public class CreateEventFragment extends Fragment {
 		// Set correct title of action bar
 		final ActionBar bar = ((AppCompatActivity) getActivity()).getSupportActionBar();
 		if (bar != null) {
-			bar.setTitle(isNew ?
-					getResources().getString(R.string.event_create_title)
-					: getResources().getString(R.string.event_edit_title)
-			);
+			bar.setTitle(isNew ? getResources().getString(R.string.event_create_title) : getResources().getString(R.string.event_edit_title));
 		}
 	}
 
@@ -185,6 +184,13 @@ public class CreateEventFragment extends Fragment {
 					eventPriority
 			);
 
+			// Close keyboard
+			final InputMethodManager imm = (InputMethodManager)
+					view.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+			if (imm != null) {
+				imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
+			}
+
 			dbHelper.insertEvent(event, new OnEventInsert());
 		}
 	}
@@ -197,6 +203,7 @@ public class CreateEventFragment extends Fragment {
 		public void onSuccess(@NonNull Long rowID) {
 			if (event != null) {
 				event.setEventID(rowID);
+				// Return to calendar
 				getFragmentManager().popBackStack();
 			}
 		}
@@ -211,5 +218,4 @@ public class CreateEventFragment extends Fragment {
 			});
 		}
 	}
-
 }

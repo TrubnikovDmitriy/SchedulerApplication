@@ -14,17 +14,19 @@ import java.util.Date;
 
 import park.mail.ru.android.R;
 import ru.mail.park.android.models.Event;
-import ru.mail.park.android.models.ShortDashboard;
 import ru.mail.park.android.utils.Tools;
+
 
 public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventHolder> {
 
 	@NonNull private ArrayList<Event> eventSet = new ArrayList<>();
 	@NonNull private final String[] eventPriorities;
 	@NonNull private final String[] eventTypes;
+	@Nullable private OnCardEventClickListener listener;
 
 	class EventHolder extends RecyclerView.ViewHolder {
 
+		private CardView cardItemView;
 		private TextView title;
 		private TextView time;
 		private TextView description;
@@ -33,6 +35,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventHolder>
 
 		EventHolder(CardView cardItemView) {
 			super(cardItemView);
+			this.cardItemView = cardItemView;
 			this.title = cardItemView.findViewById(R.id.event_title);
 			this.time = cardItemView.findViewById(R.id.event_time);
 			this.description = cardItemView.findViewById(R.id.event_description);
@@ -67,7 +70,18 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventHolder>
 		// Inflate item
 		final CardView itemView = (CardView) LayoutInflater.from(parent.getContext())
 				.inflate(R.layout.holder_event, parent, false);
-		return new EventHolder(itemView);
+		// Set click listener
+		final EventHolder eventHolder = new EventHolder(itemView);
+		eventHolder.cardItemView.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				if (listener != null) {
+					final int position = eventHolder.getAdapterPosition();
+					listener.onEventCardClick(eventSet.get(position));
+				}
+			}
+		});
+		return eventHolder;
 	}
 
 	@Override
@@ -82,5 +96,13 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventHolder>
 
 	public void setNewDataset(@Nullable ArrayList<Event> newDataset) {
 		this.eventSet = (newDataset != null) ? newDataset : new ArrayList<Event>();
+	}
+
+	public void setListener(@Nullable OnCardEventClickListener listener) {
+		this.listener = listener;
+	}
+
+	public interface OnCardEventClickListener {
+		void onEventCardClick(@NonNull final Event event);
 	}
 }

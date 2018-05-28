@@ -7,7 +7,7 @@
             <corners
                 android:radius="@dimen/card_corner_radius"/>
             <solid
-                android:color="@color/divider"/>
+                android:color="@color/accent"/>
         </shape>
     </item>
 </selector>

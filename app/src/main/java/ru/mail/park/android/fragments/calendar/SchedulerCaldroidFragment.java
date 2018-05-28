@@ -27,8 +27,6 @@ public class SchedulerCaldroidFragment extends CaldroidFragment {
 	private boolean isFirst = true;
 
 	private OnDateClickListener onDateClickListener;
-
-	private ArrayList<Event> events = new ArrayList<>();
 	private Long dashID;
 
 	@Override
@@ -60,23 +58,8 @@ public class SchedulerCaldroidFragment extends CaldroidFragment {
 		this.onDateClickListener = onDateClickListener;
 	}
 
-	public void setEvents(@NonNull ArrayList<Event> events) {
-		this.events = events;
-	}
-
 	public void enableClicks() {
 		this.setCaldroidListener(new SchedulerCaldroidListener());
-	}
-
-	@Nullable
-	private Event getEventByDate(@NonNull final DateTime date) {
-		for (final Event event : events) {
-			final DateTime eventDate = Tools.getDateTime(event);
-			if (date.isSameDayAs(eventDate)) {
-				return event;
-			}
-		}
-		return null;
 	}
 
 	final class SchedulerCaldroidListener extends CaldroidListener {
@@ -95,9 +78,7 @@ public class SchedulerCaldroidFragment extends CaldroidFragment {
 			final Fragment fragment = new CreateEventFragment();
 			final Bundle bundle = new Bundle();
 
-			final Event event = getEventByDate(CalendarHelper.convertDateToDateTime(date));
-			bundle.putBoolean(CreateEventFragment.IS_NEW_BUNDLE, (event == null));
-			bundle.putSerializable(CreateEventFragment.EVENT_BUNDLE, event);
+			bundle.putBoolean(CreateEventFragment.IS_NEW_BUNDLE, false);
 			bundle.putSerializable(CreateEventFragment.DATE_BUNDLE, date);
 			bundle.putLong(CreateEventFragment.DASH_ID_BUNDLE, dashID);
 			fragment.setArguments(bundle);
