@@ -130,10 +130,12 @@ public class CreateEventFragment extends Fragment {
 				event = (Event) bundle.getSerializable(EVENT_BUNDLE);
 				buttonDone.setText(R.string.event_edit_button);
 				if (event != null) {
+					// Restore data in fields from event
 					editTitle.setText(event.getTitle());
 					editDescription.setText(event.getText());
 					date = Tools.getDate(event.getTimestamp());
-					// TODO spinners restore
+					spinnerPriority.setSelection(event.getPriority().ordinal());
+					spinnerType.setSelection(event.getType().ordinal());
 				}
 			}
 		}
