@@ -56,7 +56,7 @@ public class DialogDateTimePicker extends DialogFragment {
 				.setPositiveButton(R.string.apply_button, new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
-						onApplyListener.onApply(CalendarHelper.convertDateTimeToDate(getCurrentDate()));
+						onApplyListener.onApply(Tools.getDate(getCurrentDate()));
 					}
 				})
 				.setNegativeButton(R.string.cancel_button, null);
@@ -98,7 +98,7 @@ public class DialogDateTimePicker extends DialogFragment {
 			oldDate = (Date) bundle.getSerializable(OLD_DATE_BUNDLE);
 			DateTime currentDate = (DateTime) bundle.getSerializable(CURRENT_DATE_BUNDLE);
 			if (currentDate == null) {
-				currentDate = CalendarHelper.convertDateToDateTime(oldDate);
+				currentDate = Tools.getDate(oldDate);
 			}
 
 			// Update Date and Time at the user screen

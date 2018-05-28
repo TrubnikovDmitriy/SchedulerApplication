@@ -11,6 +11,7 @@ import park.mail.ru.android.R;
 import ru.mail.park.android.fragments.calendar.SchedulerCaldroidFragment;
 import ru.mail.park.android.models.Dashboard;
 import ru.mail.park.android.models.Event;
+import ru.mail.park.android.recycler.EventAdapter;
 import ru.mail.park.android.utils.ListenerWrapper;
 import ru.mail.park.android.utils.Tools;
 
@@ -22,6 +23,8 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,11 +32,14 @@ import android.widget.ProgressBar;
 
 import com.google.common.collect.HashMultimap;
 import com.roomorama.caldroid.CaldroidFragment;
+import com.roomorama.caldroid.CalendarHelper;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -52,6 +58,8 @@ public abstract class EventsFragment extends Fragment {
 	protected Dashboard dashboard;
 	protected ProgressBar progressBar;
 	protected SchedulerCaldroidFragment calendarFragment;
+	protected RecyclerView recyclerView;
+	protected EventAdapter adapter;
 	@Nullable protected HashMap<DateTime, Drawable> eventsLabels;
 	@NonNull protected List<ListenerWrapper> wrappers = new LinkedList<>();
 	@NonNull protected HashMultimap<DateTime, Event> dateAssociatedWithEvents = HashMultimap.create();
@@ -74,6 +82,12 @@ public abstract class EventsFragment extends Fragment {
 		final View view = inflater.inflate(R.layout.fragment_events, container, false);
 		progressBar = view.findViewById(R.id.progressbar_event_load);
 		resources = view.getResources();
+
+		adapter = new EventAdapter(null);
+		recyclerView = view.findViewById(R.id.recycler_events);
+		recyclerView.setAdapter(adapter);
+		recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+
 		return view;
 	}
 
@@ -97,9 +111,11 @@ public abstract class EventsFragment extends Fragment {
 		progressBar.setVisibility(View.GONE);
 	}
 
+
 	protected void createCalendarFragment(@Nullable Bundle savedInstanceState) {
 
 		calendarFragment = new SchedulerCaldroidFragment();
+		calendarFragment.setOnDateClickListener(new OnDateClickListener());
 
 		if (savedInstanceState != null) {
 			calendarFragment.restoreStatesFromKey(savedInstanceState, DASHBOARD_BUNDLE);
@@ -108,7 +124,6 @@ public abstract class EventsFragment extends Fragment {
 			bundle.putInt(CaldroidFragment.START_DAY_OF_WEEK, CaldroidFragment.MONDAY);
 			bundle.putLong(SchedulerCaldroidFragment.DASH_ID_BUNDLE, dashboard.getDashID());
 			bundle.putBoolean(SchedulerCaldroidFragment.SQUARE_TEXT_VIEW_CELL, true);
-			bundle.putBoolean(SchedulerCaldroidFragment.ENABLE_CLICK_ON_DISABLED_DATES, false);
 			calendarFragment.setArguments(bundle);
 		}
 
@@ -133,7 +148,7 @@ public abstract class EventsFragment extends Fragment {
 
 	protected void updateEventSetFromBackground(@NonNull final Dashboard dashboard) {
 		final DateTime now = DateTime.now(Tools.TIME_ZONE);
-		eventsLabels = calculateCirclesForEventDates(
+		eventsLabels = calculateBackgroundsForEventDates(
 				now.minusDays(365),
 				now.plusDays(365),
 				dashboard.getEvents()
@@ -149,12 +164,19 @@ public abstract class EventsFragment extends Fragment {
 		});
 	}
 
-	protected HashMap<DateTime, Drawable> calculateCirclesForEventDates(
+	protected HashMap<DateTime, Drawable> calculateBackgroundsForEventDates(
 			@NonNull final DateTime minDate,
 			@NonNull final DateTime maxDate,
 			@NonNull ArrayList<Event> events) {
 
-		DateTime iteratedDate = minDate;
+		// Hour, min, sec, msec, nsec must be reset to zero, otherwise
+		// it won't be able to update backgrounds of calendar's cells
+		DateTime iteratedDate = new DateTime(
+				minDate.getYear(),
+				minDate.getMonth(),
+				minDate.getDay(),
+				0, 0, 0, 0
+		);
 		final HashMap<DateTime, Drawable> backgrounds = new HashMap<>();
 
 		// Try to group all events by the dates (in multiMapEventDates)
@@ -251,15 +273,18 @@ public abstract class EventsFragment extends Fragment {
 			}
 
 			// At the end, add ready layer to map
-			backgrounds.put(
-					// Hour, min, sec, msec, nsec must be reset to zero, otherwise
-					// it won't be able to update backgrounds of calendar's cells
-					new DateTime(eventDate.getYear(), eventDate.getMonth(), eventDate.getDay(), 0, 0, 0, 0),
-					layerDrawable
-			);
+			backgrounds.put(eventDate, layerDrawable);
 		}
 
 		return backgrounds;
 	}
 
+	protected class OnDateClickListener implements SchedulerCaldroidFragment.OnDateClickListener {
+		@Override
+		public void onSelectDate(@NonNull Date date) {
+			final Set<Event> eventsSet = dateAssociatedWithEvents.get(CalendarHelper.convertDateToDateTime(date));
+			adapter.setNewDataset(new ArrayList<>(eventsSet));
+			adapter.notifyDataSetChanged();
+		}
+	}
 }

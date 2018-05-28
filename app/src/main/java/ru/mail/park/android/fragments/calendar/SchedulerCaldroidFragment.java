@@ -26,6 +26,7 @@ public class SchedulerCaldroidFragment extends CaldroidFragment {
 	private static DateTime currentMonth = DateTime.now(Tools.TIME_ZONE);
 	private boolean isFirst = true;
 
+	private OnDateClickListener onDateClickListener;
 
 	private ArrayList<Event> events = new ArrayList<>();
 	private Long dashID;
@@ -55,6 +56,10 @@ public class SchedulerCaldroidFragment extends CaldroidFragment {
 	}
 
 
+	public void setOnDateClickListener(OnDateClickListener onDateClickListener) {
+		this.onDateClickListener = onDateClickListener;
+	}
+
 	public void setEvents(@NonNull ArrayList<Event> events) {
 		this.events = events;
 	}
@@ -78,7 +83,9 @@ public class SchedulerCaldroidFragment extends CaldroidFragment {
 
 		@Override
 		public void onSelectDate(Date date, View view) {
-			onLongClickDate(date, view);
+			if (onDateClickListener != null) {
+				onDateClickListener.onSelectDate(date);
+			}
 		}
 
 		@Override
@@ -111,5 +118,9 @@ public class SchedulerCaldroidFragment extends CaldroidFragment {
 				currentMonth = new DateTime(year, month, 1, 0, 0, 0, 0);
 			}
 		}
+	}
+
+	public interface OnDateClickListener {
+		void onSelectDate(@NonNull final Date date);
 	}
 }

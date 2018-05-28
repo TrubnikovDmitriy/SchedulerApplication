@@ -22,7 +22,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/event_title_hint"
-                android:inputType="textShortMessage"
+                android:inputType="textShortMessage|textCapSentences"
                 android:maxLines="1"
                 android:singleLine="true"
                 android:maxLength="@integer/max_title_length"
@@ -39,7 +39,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/event_description_hint"
-                android:inputType="textMultiLine"
+                android:inputType="textMultiLine|textCapSentences"
                 android:maxLength="@integer/max_description_length"
                 android:maxLines="5"
                 />

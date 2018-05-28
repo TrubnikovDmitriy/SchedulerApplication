@@ -85,6 +85,7 @@ public class CreateEventFragment extends Fragment {
 			@Override
 			public void onClick(View v) {
 				if (!dialogPicker.isAdded()) {
+
 					final Bundle bundle = new Bundle();
 					bundle.putSerializable(DialogDateTimePicker.OLD_DATE_BUNDLE, date);
 					dialogPicker.setArguments(bundle);
@@ -94,9 +95,6 @@ public class CreateEventFragment extends Fragment {
 			}
 		});
 		buttonDateTimePicker.setText(Tools.formatDate(date));
-
-		// Listener for create event_high in database
-		buttonDone.setOnClickListener(new OnDoneClickListener());
 
 		return view;
 	}
@@ -155,7 +153,6 @@ public class CreateEventFragment extends Fragment {
 
 		if (dialogPicker == null) {
 			dialogPicker = new DialogDateTimePicker();
-
 		}
 		dialogPicker.setOnApplyListener(new DialogDateTimePicker.OnApplyListener() {
 			@Override
@@ -164,6 +161,9 @@ public class CreateEventFragment extends Fragment {
 				buttonDateTimePicker.setText(Tools.formatDate(date));
 			}
 		});
+
+		// Listener for create event_high in database
+		buttonDone.setOnClickListener(new OnDoneClickListener());
 	}
 
 	private class OnDoneClickListener implements View.OnClickListener {

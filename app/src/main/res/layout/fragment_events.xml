@@ -1,33 +1,40 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_margin="@dimen/activity_horizontal_margin"
+    android:layout_marginStart="@dimen/activity_horizontal_margin"
+    android:layout_marginEnd="@dimen/activity_horizontal_margin"
     tools:context="ru.mail.park.android.fragments.events.ServerEventsFragment">
-
-    <ScrollView
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingStart="0dp"
-        android:paddingEnd="0dp"
-        android:scrollbars="vertical"
-        android:layout_marginStart="0dp"
-        android:layout_marginEnd="0dp"
-        android:soundEffectsEnabled="true"
-        android:scrollbarStyle="outsideInset">
+        android:orientation="vertical">
+
         <FrameLayout
             android:id="@+id/caldroid_container"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/activity_vertical_margin"
+            android:layout_marginBottom="@dimen/activity_vertical_margin"
             />
-    </ScrollView>
 
-    <ProgressBar
-        android:id="@+id/progressbar_event_load"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:visibility="invisible"
-        android:layout_gravity="center"
-        />
+        <ProgressBar
+            android:id="@+id/progressbar_event_load"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="invisible"
+            android:layout_margin="@dimen/activity_vertical_margin"
+            android:layout_gravity="center_horizontal"
+            />
 
-</FrameLayout>
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recycler_events"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scrollbars="vertical"
+            android:layout_marginBottom="@dimen/activity_vertical_margin"
+            />
+
+    </LinearLayout>
+</ScrollView>

@@ -19,13 +19,18 @@ public class Tools {
 	public static final TimeZone TIME_ZONE = TimeZone.getTimeZone("GMT+3");
 	private static final SimpleDateFormat DATE_FORMATTER =
 			new SimpleDateFormat("dd MMM yyyy, HH:mm", Locale.UK);
+	private static final SimpleDateFormat TIME_FORMATTER =
+			new SimpleDateFormat("HH:mm", Locale.UK);
 
 	public static String formatDate(final Date date) {
 		return DATE_FORMATTER.format(date);
 	}
 
+	public static String formatTime(final Date date) {
+		return TIME_FORMATTER.format(date);
+	}
+
 	@NonNull
-	@Deprecated
 	public static Date getDate(@NonNull final DateTime dateTime) {
 		return new Date(dateTime.getMilliseconds(TIME_ZONE));
 	}
@@ -36,8 +41,7 @@ public class Tools {
 	}
 
 	@NonNull
-	@Deprecated
-	public static DateTime getDateTime(@NonNull final Date date) {
+	public static DateTime getDate(@NonNull final Date date) {
 		return DateTime.forInstant(date.getTime(), TIME_ZONE);
 	}
 

@@ -37,10 +37,8 @@ public class DashboardAdapter extends RecyclerView.Adapter<DashboardAdapter.Dash
 		}
 	}
 
-	private OnDashboardClickListener onItemClickListener;
-
-	@NonNull
-	private ArrayList<ShortDashboard> dashSet;
+	@Nullable private OnDashboardClickListener onItemClickListener;
+	@NonNull private ArrayList<ShortDashboard> dashSet;
 
 	public DashboardAdapter(@Nullable final ArrayList<ShortDashboard> dataset,
 	                        @Nullable final OnDashboardClickListener listener) {
@@ -52,17 +50,17 @@ public class DashboardAdapter extends RecyclerView.Adapter<DashboardAdapter.Dash
 	public DashboardHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 		// Inflate item
 		final CardView itemView = (CardView) LayoutInflater.from(parent.getContext())
-				.inflate(R.layout.dashboard_holder, parent, false);
+				.inflate(R.layout.holder_dashboard, parent, false);
 		// Create holder and set listener
 		final DashboardHolder holder = new DashboardHolder(itemView);
-			holder.cardItemView.setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					if (onItemClickListener != null) {
-						onItemClickListener.onClick(dashSet.get(holder.getAdapterPosition()));
-					}
+		holder.cardItemView.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				if (onItemClickListener != null) {
+					onItemClickListener.onClick(dashSet.get(holder.getAdapterPosition()));
 				}
-			});
+			}
+		});
 		return holder;
 	}
 

@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_marginStart="@dimen/margin_holder"
+    android:layout_marginEnd="@dimen/margin_holder"
+    android:layout_marginBottom="@dimen/margin_holder"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:cardCornerRadius="@dimen/card_corner_radius">
+
+    <LinearLayout
+        android:padding="@dimen/padding_holder"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <TextView
+                android:id="@+id/event_title"
+                android:textColor="@color/primaryText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start"
+                android:textStyle="bold"
+                />
+            <TextView
+                android:id="@+id/event_time"
+                android:textColor="@color/secondaryText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:textStyle="italic"
+                />
+        </FrameLayout>
+
+
+        <TextView
+            android:id="@+id/event_description"
+            android:textColor="@color/primaryText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:textAlignment="inherit"
+            />
+
+        <TextView
+            android:id="@+id/event_priority"
+            android:textColor="@color/secondaryText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:textStyle="italic"
+            android:textAlignment="textEnd"
+            />
+
+        <TextView
+            android:id="@+id/event_type"
+            android:textColor="@color/secondaryText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:textStyle="italic"
+            android:textAlignment="textEnd"
+            />
+
+    </LinearLayout>
+
+</android.support.v7.widget.CardView>
