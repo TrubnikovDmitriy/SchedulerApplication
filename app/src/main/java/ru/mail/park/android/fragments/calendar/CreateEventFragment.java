@@ -1,13 +1,15 @@
 package ru.mail.park.android.fragments.calendar;
 
-
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+
 import ru.mail.park.android.App;
 import park.mail.ru.android.R;
 import ru.mail.park.android.database.SchedulerDBHelper;
+import ru.mail.park.android.dialogs.DialogConfirm;
 import ru.mail.park.android.dialogs.DialogDateTimePicker;
 import ru.mail.park.android.models.Event;
 import ru.mail.park.android.utils.Tools;
@@ -18,6 +20,9 @@ import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
@@ -109,6 +114,32 @@ public class CreateEventFragment extends Fragment {
 		outState.putLong(DASH_ID_BUNDLE, dashID);
 	}
 
+	@Override
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+		menu.clear();
+		inflater.inflate(R.menu.create_event, menu);
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		if (item.getItemId() == R.id.menu_delete_event) {
+			if (event != null && event.getEventID() != null) {
+
+				final DialogConfirm dialogConfirm = new DialogConfirm();
+				dialogConfirm.setTitle(getResources().getString(R.string.delete_event_confirm));
+				dialogConfirm.setListener(new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						dbHelper.deleteEvent(event.getEventID(), new OnEventChange());
+					}
+				});
+				dialogConfirm.show(getFragmentManager(), null);
+				return true;
+			}
+		}
+		return false;
+	}
+
 
 	private void initialize(@Nullable Bundle savedInstanceState) {
 
@@ -138,6 +169,7 @@ public class CreateEventFragment extends Fragment {
 					spinnerType.setSelection(event.getType().ordinal());
 				}
 			}
+			setHasOptionsMenu(!isNew);
 		}
 
 		// Set correct title of action bar
@@ -202,7 +234,7 @@ public class CreateEventFragment extends Fragment {
 			if (isNew) {
 				dbHelper.insertEvent(event, new OnEventInsert());
 			} else {
-				dbHelper.updateEvent(event, new OnEventUpdate());
+				dbHelper.updateEvent(event, new OnEventChange());
 			}
 		}
 	}
@@ -231,7 +263,9 @@ public class CreateEventFragment extends Fragment {
 		}
 	}
 
-	private class OnEventUpdate implements SchedulerDBHelper.OnUpdateCompleteListener {
+	private class OnEventChange implements
+			SchedulerDBHelper.OnUpdateCompleteListener,
+			SchedulerDBHelper.OnDeleteCompleteListener {
 
 		private final Handler handler = new Handler(Looper.getMainLooper());
 

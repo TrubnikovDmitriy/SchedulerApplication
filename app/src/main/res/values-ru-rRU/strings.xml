@@ -26,6 +26,7 @@
     <string name="title_of_dashboard">Название нового расписания</string>
     <string name="rename_dashboard">Новое название расписания</string>
     <string name="delete_dashboard_confirm">Вы действительно хотите удалить расписание?</string>
+    <string name="delete_event_confirm">Вы действительно хотите удалить это событие?</string>
     <string name="create_button">Создать</string>
     <string name="apply_button">Применить</string>
     <string name="cancel_button">Отмена</string>

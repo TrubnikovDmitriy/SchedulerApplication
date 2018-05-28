@@ -387,14 +387,14 @@ public class SchedulerDBHelper extends SQLiteOpenHelper {
 	}
 
 	public ListenerWrapper<OnDeleteCompleteListener> deleteEvent(
-			@NonNull final Event event,
+			@NonNull final Long eventID,
 			@Nullable OnDeleteCompleteListener listener) {
 
 		final ListenerWrapper<OnDeleteCompleteListener> wrapper = new ListenerWrapper<>(listener);
 		executor.execute(new Runnable() {
 			@Override
 			public void run() {
-				final String WHERE = EVENT.EVENT_ID.getName() + "=" + event.getEventID().toString();
+				final String WHERE = EVENT.EVENT_ID.getName() + "=" + eventID;
 				try {
 					final int rowsAffected = getWritableDatabase().delete(
 							TABLE_EVENTS_NAME,
