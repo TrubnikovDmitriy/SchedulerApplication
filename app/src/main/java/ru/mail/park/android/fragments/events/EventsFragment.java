@@ -51,6 +51,8 @@ public abstract class EventsFragment extends Fragment {
 	public static final String DASHBOARD_ID = "DASHBOARD_ID";
 	protected static final String DASHBOARD_BUNDLE = "DASHBOARD_BUNDLE";
 	protected static final String CALENDAR_BUNDLE = "CALENDAR_BUNDLE";
+	private static final int MAX_DRAWABLES_EVENTS = 8;
+
 
 	protected final Handler handler = new Handler(Looper.getMainLooper());
 
@@ -111,6 +113,12 @@ public abstract class EventsFragment extends Fragment {
 		for (ListenerWrapper wrapper : wrappers) {
 			wrapper.unregister();
 		}
+		progressBar.setVisibility(View.GONE);
+	}
+
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
 		progressBar.setVisibility(View.GONE);
 	}
 
@@ -247,6 +255,10 @@ public abstract class EventsFragment extends Fragment {
 			for (final Event eventByDate : dateAssociatedWithEvents.get(eventDate)) {
 				if (eventByDate == null) {
 					throw new IllegalArgumentException("Event is null");
+				}
+				// Limit the number of drawables
+				if (eventCircleLayers.size() == MAX_DRAWABLES_EVENTS) {
+					break;
 				}
 
 				switch (eventByDate.getPriority()) {

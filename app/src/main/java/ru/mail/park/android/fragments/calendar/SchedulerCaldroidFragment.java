@@ -2,7 +2,6 @@ package ru.mail.park.android.fragments.calendar;
 
 import android.os.Bundle;
 import park.mail.ru.android.R;
-import ru.mail.park.android.models.Event;
 import ru.mail.park.android.utils.Tools;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -13,9 +12,7 @@ import android.view.ViewGroup;
 
 import com.roomorama.caldroid.CaldroidFragment;
 import com.roomorama.caldroid.CaldroidListener;
-import com.roomorama.caldroid.CalendarHelper;
 
-import java.util.ArrayList;
 import java.util.Date;
 import hirondelle.date4j.DateTime;
 
@@ -23,8 +20,7 @@ import hirondelle.date4j.DateTime;
 public class SchedulerCaldroidFragment extends CaldroidFragment {
 
 	public static final String DASH_ID_BUNDLE = "DASH_ID_BUNDLE";
-	private static DateTime currentMonth = DateTime.now(Tools.TIME_ZONE);
-	private boolean isFirst = true;
+	@Nullable static DateTime currentDateTime = null;
 
 	private OnDateClickListener onDateClickListener;
 	private Long dashID;
@@ -44,7 +40,9 @@ public class SchedulerCaldroidFragment extends CaldroidFragment {
 	@Override
 	public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
-		setCalendarDateTime(currentMonth);
+		if (currentDateTime != null) {
+			moveToDateTime(currentDateTime);
+		}
 	}
 
 	@Override
@@ -89,15 +87,9 @@ public class SchedulerCaldroidFragment extends CaldroidFragment {
 					.replace(R.id.container, fragment)
 					.addToBackStack(null)
 					.commit();
-		}
 
-		@Override
-		public void onChangeMonth(int month, int year) {
-			if (isFirst) {
-				isFirst = false;
-			} else {
-				currentMonth = new DateTime(year, month, 1, 0, 0, 0, 0);
-			}
+			// Remember the date to return at the same page of calendar
+			currentDateTime = Tools.getDate(date);
 		}
 	}
 

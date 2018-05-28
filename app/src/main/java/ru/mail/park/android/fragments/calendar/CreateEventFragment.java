@@ -186,11 +186,14 @@ public class CreateEventFragment extends Fragment {
 					eventPriority
 			);
 
+			// Change current month in calendar
+			SchedulerCaldroidFragment.currentDateTime = Tools.getDate(date);
+
 			// Close keyboard
 			final InputMethodManager imm = (InputMethodManager)
 					view.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
 			if (imm != null) {
-				imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
+				imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
 			}
 
 			dbHelper.insertEvent(event, new OnEventInsert());
