@@ -35,7 +35,7 @@ public class DialogDashboardCreator extends DialogFragment {
 		setCancelable(false);
 
 		builder
-				.setIcon(R.mipmap.create_icon)
+				.setIcon(R.mipmap.icon_create)
 				.setTitle(R.string.title_of_dashboard)
 				.setView(viewDialog)
 				.setPositiveButton(R.string.create_button, onPositiveClick)
