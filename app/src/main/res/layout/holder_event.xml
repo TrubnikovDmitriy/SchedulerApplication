@@ -18,7 +18,8 @@
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:layout_marginBottom="@dimen/padding_holder">
             <TextView
                 android:id="@+id/event_title"
                 android:textColor="@color/primaryText"

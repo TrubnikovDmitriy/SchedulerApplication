@@ -169,6 +169,9 @@ public abstract class EventsFragment extends Fragment {
 			@NonNull final DateTime maxDate,
 			@NonNull ArrayList<Event> events) {
 
+		// Clear previous data-set to avoid double events
+		dateAssociatedWithEvents.clear();
+
 		// Hour, min, sec, msec, nsec must be reset to zero, otherwise
 		// it won't be able to update backgrounds of calendar's cells
 		DateTime iteratedDate = new DateTime(
