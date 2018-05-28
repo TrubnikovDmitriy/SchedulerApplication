@@ -17,7 +17,6 @@ import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-@SuppressWarnings("unused")
 public class SchedulerDBHelper extends SQLiteOpenHelper {
 
 	private static final String DB_NAME = "scheduler.db";
@@ -50,15 +49,13 @@ public class SchedulerDBHelper extends SQLiteOpenHelper {
 	}
 	public enum EVENT {
 
-		PRIMARY_KEY(0, "_id"),
-		EVENT_ID(1, "event_id"),
-		DASH_ID(2, "dash_id"),
-		TITLE(3, "title"),
-		TEXT(4, "text"),
-		TIMESTAMP(5, "timestamp"),
-		TYPE(6, "type"),
-		PRIORITY(7, "priority");
-
+		EVENT_ID(0, "_id"),
+		DASH_ID(1, "dash_id"),
+		TITLE(2, "title"),
+		TEXT(3, "text"),
+		TIMESTAMP(4, "timestamp"),
+		TYPE(5, "type"),
+		PRIORITY(6, "priority");
 
 		EVENT(int column_number, String column_name) {
 			this.column_number = column_number;
@@ -86,22 +83,25 @@ public class SchedulerDBHelper extends SQLiteOpenHelper {
 
 	@Override
 	public void onCreate(SQLiteDatabase db) {
-		db.execSQL("CREATE TABLE " + TABLE_SCHEDULER_NAME + "(" +
-				"_id INTEGER PRIMARY KEY AUTOINCREMENT," +
-				"title TEXT NOT NULL," +
-				"author_id INTEGER NOT NULL," +
-				"author TEXT NOT NULL" +
-				");");
-		db.execSQL("CREATE TABLE " + TABLE_EVENTS_NAME + "(" +
-				"_id INTEGER PRIMARY KEY AUTOINCREMENT," +
-				"event_id INTEGER NOT NULL," +
-				"dash_id INTEGER NOT NULL," +
-				"title TEXT NOT NULL," +
-				"text BLOB," +
-				"timestamp NUMERIC NOT NULL," +
-				"type TEXT NOT NULL," +
-				"priority TEXT NOT NULL" +
-				");");
+		db.execSQL(
+				"CREATE TABLE " + TABLE_SCHEDULER_NAME + "(" +
+						"_id INTEGER PRIMARY KEY AUTOINCREMENT," +
+						"title TEXT NOT NULL," +
+						"author_id INTEGER NOT NULL," +
+						"author TEXT NOT NULL" +
+				");"
+		);
+		db.execSQL(
+				"CREATE TABLE " + TABLE_EVENTS_NAME + "(" +
+						"_id INTEGER PRIMARY KEY AUTOINCREMENT," +
+						"dash_id INTEGER NOT NULL," +
+						"title TEXT NOT NULL," +
+						"text BLOB," +
+						"timestamp NUMERIC NOT NULL," +
+						"type TEXT NOT NULL," +
+						"priority TEXT NOT NULL" +
+				");"
+		);
 	}
 
 	@Override
@@ -161,7 +161,6 @@ public class SchedulerDBHelper extends SQLiteOpenHelper {
 				try(final Cursor cursor = getReadableDatabase().query(
 						TABLE_EVENTS_NAME,
 						new String[] {
-								EVENT.PRIMARY_KEY.getName(),
 								EVENT.EVENT_ID.getName(),
 								EVENT.TITLE.getName(),
 								EVENT.TEXT.getName(),
@@ -233,59 +232,6 @@ public class SchedulerDBHelper extends SQLiteOpenHelper {
 		return wrapper;
 	}
 
-	public ListenerWrapper<OnSelectCompleteListener<ArrayList<Event>>> selectEvents(
-			@NonNull final Long dashID,
-			@NonNull OnSelectCompleteListener<ArrayList<Event>> listener) {
-
-		final ListenerWrapper<OnSelectCompleteListener<ArrayList<Event>>> wrapper = new ListenerWrapper<>(listener);
-		executor.execute(new Runnable() {
-			@Override
-			public void run() {
-				try(final Cursor cursor = getReadableDatabase().query(
-						TABLE_EVENTS_NAME,
-						new String[] {
-								EVENT.PRIMARY_KEY.getName(),
-								EVENT.EVENT_ID.getName(),
-								EVENT.TITLE.getName(),
-								EVENT.TEXT.getName(),
-								EVENT.TIMESTAMP.getName(),
-								EVENT.PRIORITY.getName(),
-								EVENT.TYPE.getName()
-						},
-						DASH.ID.getName() + " = ?",
-						new String[] {String.valueOf(dashID)},
-						null, null, null)) {
-
-					final ArrayList<Event> events = new ArrayList<>(cursor.getCount());
-					while(cursor.moveToNext()) {
-						Event event = new Event(
-								cursor.getString(EVENT.TEXT.getNumber()),
-								cursor.getLong(EVENT.TIMESTAMP.getNumber()),
-								cursor.getLong(EVENT.EVENT_ID.getNumber()),
-								dashID,
-								cursor.getString(EVENT.TITLE.getNumber()),
-								Event.EventType.valueOf(
-										cursor.getString(EVENT.TYPE.getNumber())),
-								Event.Priority.valueOf(
-										cursor.getString(EVENT.PRIORITY.getNumber()))
-						);
-						events.add(event);
-					}
-					if (wrapper.getListener() != null) {
-						wrapper.getListener().onSuccess(events);
-					}
-
-				} catch (SQLException e) {
-					if (wrapper.getListener() != null) {
-						wrapper.getListener().onFailure(e);
-					}
-				}
-			}
-		});
-		return wrapper;
-	}
-
-
 	public ListenerWrapper<OnInsertCompleteListener> insertDashboard(
 			@NonNull final Dashboard dashboard,
 			@NonNull OnInsertCompleteListener listener) {
@@ -325,19 +271,41 @@ public class SchedulerDBHelper extends SQLiteOpenHelper {
 		executor.execute(new Runnable() {
 			@Override
 			public void run() {
-				final ContentValues values = new ContentValues();
-
-				values.put(EVENT.EVENT_ID.getName(), event.getEventID());
-				values.put(EVENT.DASH_ID.getName(), event.getDashID());
-				values.put(EVENT.TITLE.getName(), event.getTitle());
-				values.put(EVENT.TEXT.getName(), event.getText());
-				values.put(EVENT.TIMESTAMP.getName(), event.getTimestamp());
-				values.put(EVENT.TYPE.getName(), event.getType().toString());
-				values.put(EVENT.PRIORITY.getName(), event.getPriority().toString());
-
+				final ContentValues values = getContentValueFromEvent(event);
 				try {
-					final Long rowID = getWritableDatabase()
-							.insertOrThrow(TABLE_EVENTS_NAME, null, values);
+					final Long rowID = getWritableDatabase().insertOrThrow(
+							TABLE_EVENTS_NAME, null, values);
+					if (wrapper.getListener() != null) {
+						wrapper.getListener().onSuccess(rowID);
+					}
+
+				} catch (SQLException e) {
+					if (wrapper.getListener() != null) {
+						wrapper.getListener().onFailure(e);
+					}
+				}
+			}
+		});
+		return wrapper;
+	}
+
+	public ListenerWrapper<OnUpdateCompleteListener> updateEvent(
+			@NonNull final Event event,
+			@NonNull OnUpdateCompleteListener listener) {
+
+		final ListenerWrapper<OnUpdateCompleteListener> wrapper = new ListenerWrapper<>(listener);
+		executor.execute(new Runnable() {
+			@Override
+			public void run() {
+				final ContentValues values = getContentValueFromEvent(event);
+				final String WHERE = EVENT.EVENT_ID.getName() + "=" + event.getEventID().toString();
+				try {
+					final int rowID = getWritableDatabase().update(
+							TABLE_EVENTS_NAME,
+							values,
+							WHERE,
+							null
+					);
 					if (wrapper.getListener() != null) {
 						wrapper.getListener().onSuccess(rowID);
 					}
@@ -353,6 +321,20 @@ public class SchedulerDBHelper extends SQLiteOpenHelper {
 	}
 
 
+	@NonNull
+	private ContentValues getContentValueFromEvent(@NonNull final Event event) {
+		final ContentValues values = new ContentValues();
+
+		values.put(EVENT.DASH_ID.getName(), event.getDashID());
+		values.put(EVENT.TITLE.getName(), event.getTitle());
+		values.put(EVENT.TEXT.getName(), event.getText());
+		values.put(EVENT.TIMESTAMP.getName(), event.getTimestamp());
+		values.put(EVENT.TYPE.getName(), event.getType().toString());
+		values.put(EVENT.PRIORITY.getName(), event.getPriority().toString());
+
+		return values;
+	}
+
 	public interface OnSelectCompleteListener<T> {
 
 		void onSuccess(@Nullable final T data);
@@ -363,6 +345,13 @@ public class SchedulerDBHelper extends SQLiteOpenHelper {
 	public interface OnInsertCompleteListener {
 
 		void onSuccess(@NonNull final Long rowID);
+
+		void onFailure(final Exception exception);
+	}
+
+	public interface OnUpdateCompleteListener {
+
+		void onSuccess(final int numberOfRowsAffected);
 
 		void onFailure(final Exception exception);
 	}

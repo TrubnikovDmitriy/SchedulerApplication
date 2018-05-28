@@ -177,10 +177,13 @@ public class CreateEventFragment extends Fragment {
 			final Event.Priority eventPriority = Event.Priority
 					.values()[(int) spinnerPriority.getSelectedItemId()];
 
+			final Long eventID = (event == null) ? 0 : event.getEventID();
+
 			event = new Event(
 					description,
 					date.getTime() / 1000,
-					0L, dashID,
+					eventID,
+					dashID,
 					title,
 					eventType,
 					eventPriority
@@ -196,7 +199,11 @@ public class CreateEventFragment extends Fragment {
 				imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
 			}
 
-			dbHelper.insertEvent(event, new OnEventInsert());
+			if (isNew) {
+				dbHelper.insertEvent(event, new OnEventInsert());
+			} else {
+				dbHelper.updateEvent(event, new OnEventUpdate());
+			}
 		}
 	}
 
@@ -215,6 +222,29 @@ public class CreateEventFragment extends Fragment {
 
 		@Override
 		public void onFailure(Exception exception) {
+			handler.post(new Runnable() {
+				@Override
+				public void run() {
+					Toast.makeText(getContext(), R.string.db_failure, Toast.LENGTH_LONG).show();
+				}
+			});
+		}
+	}
+
+	private class OnEventUpdate implements SchedulerDBHelper.OnUpdateCompleteListener {
+
+		private final Handler handler = new Handler(Looper.getMainLooper());
+
+		@Override
+		public void onSuccess(int numberOfRowsAffected) {
+			if (numberOfRowsAffected != 1) {
+				onFailure(null);
+			}
+			getFragmentManager().popBackStack();
+		}
+
+		@Override
+		public void onFailure(@Nullable Exception exception) {
 			handler.post(new Runnable() {
 				@Override
 				public void run() {

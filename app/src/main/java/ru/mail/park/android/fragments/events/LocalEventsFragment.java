@@ -47,7 +47,6 @@ public class LocalEventsFragment extends EventsFragment {
 		final View view = super.onCreateView(inflater, container, savedInstanceState);
 
 		progressBar.setVisibility(ProgressBar.VISIBLE);
-		recyclerView.setNestedScrollingEnabled(false);
 		adapter.setListener(new OnCardEventClickListener());
 
 		if (savedInstanceState == null) {

@@ -76,7 +76,7 @@ public class SchedulerCaldroidFragment extends CaldroidFragment {
 			final Fragment fragment = new CreateEventFragment();
 			final Bundle bundle = new Bundle();
 
-			bundle.putBoolean(CreateEventFragment.IS_NEW_BUNDLE, false);
+			bundle.putBoolean(CreateEventFragment.IS_NEW_BUNDLE, true);
 			bundle.putSerializable(CreateEventFragment.DATE_BUNDLE, date);
 			bundle.putLong(CreateEventFragment.DASH_ID_BUNDLE, dashID);
 			fragment.setArguments(bundle);

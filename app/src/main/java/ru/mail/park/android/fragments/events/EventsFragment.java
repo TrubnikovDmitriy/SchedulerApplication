@@ -116,12 +116,6 @@ public abstract class EventsFragment extends Fragment {
 		progressBar.setVisibility(View.GONE);
 	}
 
-	@Override
-	public void onDestroy() {
-		super.onDestroy();
-		progressBar.setVisibility(View.GONE);
-	}
-
 
 	protected void createCalendarFragment(@Nullable Bundle savedInstanceState) {
 
@@ -192,7 +186,11 @@ public abstract class EventsFragment extends Fragment {
 	protected HashMap<DateTime, Drawable> calculateBackgroundsForEventDates(
 			@NonNull final DateTime minDate,
 			@NonNull final DateTime maxDate,
-			@NonNull ArrayList<Event> events) {
+			@Nullable ArrayList<Event> events) {
+
+		if (events == null) {
+			return new HashMap<>();
+		}
 
 		// Clear previous data-set to avoid double events
 		dateAssociatedWithEvents.clear();
