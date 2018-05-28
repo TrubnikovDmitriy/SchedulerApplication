@@ -24,9 +24,12 @@
 
     <!--Text for labels-->
     <string name="title_of_dashboard">Название нового расписания</string>
+    <string name="rename_dashboard">Новое название расписания</string>
+    <string name="delete_dashboard_confirm">Вы действительно хотите удалить расписание?</string>
     <string name="create_button">Создать</string>
     <string name="apply_button">Применить</string>
     <string name="cancel_button">Отмена</string>
+    <string name="delete_button">Удалить</string>
     <string name="pick_date_time">Выберите дату и время события</string>
 
     <string name="logo_description">Расписания и напоминания</string>

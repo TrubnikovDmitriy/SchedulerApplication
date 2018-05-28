@@ -329,7 +329,7 @@ public class SchedulerDBHelper extends SQLiteOpenHelper {
 			@Override
 			public void run() {
 				final ContentValues values = new ContentValues();
-				values.put(DASH.TITLE.getName(), dashboard.getDashID());
+				values.put(DASH.TITLE.getName(), dashboard.getTitle());
 				final String WHERE = DASH.DASH_ID.getName() + "=" + dashboard.getDashID().toString();
 				try {
 					final int rowsAffected = getWritableDatabase().update(
@@ -353,15 +353,15 @@ public class SchedulerDBHelper extends SQLiteOpenHelper {
 	}
 
 	public ListenerWrapper<OnDeleteCompleteListener> deleteDashboard(
-			@NonNull final Dashboard dashboard,
+			@NonNull final Long dashID,
 			@NonNull OnDeleteCompleteListener listener) {
 
 		final ListenerWrapper<OnDeleteCompleteListener> wrapper = new ListenerWrapper<>(listener);
 		executor.execute(new Runnable() {
 			@Override
 			public void run() {
-				final String WHERE_EVENT = EVENT.DASH_ID.getName() + "=" + dashboard.getDashID().toString();
-				final String WHERE_DASH = DASH.DASH_ID.getName() + "=" + dashboard.getDashID().toString();
+				final String WHERE_EVENT = EVENT.DASH_ID.getName() + "=" + dashID;
+				final String WHERE_DASH = DASH.DASH_ID.getName() + "=" + dashID;
 				try {
 					getWritableDatabase().delete(
 							TABLE_EVENTS_NAME,
@@ -388,7 +388,7 @@ public class SchedulerDBHelper extends SQLiteOpenHelper {
 
 	public ListenerWrapper<OnDeleteCompleteListener> deleteEvent(
 			@NonNull final Event event,
-			@NonNull OnDeleteCompleteListener listener) {
+			@Nullable OnDeleteCompleteListener listener) {
 
 		final ListenerWrapper<OnDeleteCompleteListener> wrapper = new ListenerWrapper<>(listener);
 		executor.execute(new Runnable() {

@@ -24,9 +24,12 @@
 
     <!--Text for labels-->
     <string name="title_of_dashboard">Title of new dashboard</string>
+    <string name="rename_dashboard">New title of dashboard</string>
+    <string name="delete_dashboard_confirm">Do you really want to delete the dashboard?</string>
     <string name="create_button">Create</string>
     <string name="apply_button">Apply</string>
     <string name="cancel_button">Cancel</string>
+    <string name="delete_button">Delete</string>
     <string name="pick_date_time">Pick date and time of event</string>
 
 

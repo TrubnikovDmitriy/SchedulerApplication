@@ -14,6 +14,8 @@ import ru.mail.park.android.models.Dashboard;
 import ru.mail.park.android.models.ShortDashboard;
 import ru.mail.park.android.recycler.DashboardAdapter;
 import ru.mail.park.android.utils.ListenerWrapper;
+import ru.mail.park.android.utils.Tools;
+
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -27,7 +29,6 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import javax.inject.Inject;
 
@@ -72,25 +73,9 @@ public class LocalDashboardsFragment extends DashboardsFragment {
 				StaggeredGridLayoutManager.VERTICAL
 		));
 
-		if (savedInstanceState == null) {
-			// Receiving data from DB
-			final ListenerWrapper wrapper =
-					dbManager.selectShortDashboards(new DatabaseLoadDashboardsListener());
-			wrappers.add(wrapper);
-
-		} else {
-			Object[] objects = (Object[]) savedInstanceState.getSerializable(DATASET);
-
-			if (objects != null) {
-				// Try to cast Object[] to ShortDashboard[]
-				ShortDashboard[] dashes = Arrays.copyOf(
-						objects, objects.length, ShortDashboard[].class);
-				dataset = new ArrayList<>(Arrays.asList(dashes));
-				updateDataset(dataset);
-			}
-			progressBar.setVisibility(ProgressBar.INVISIBLE);
-		}
-
+		// Receiving data from DB
+		final ListenerWrapper wrapper = dbManager.selectShortDashboards(new DatabaseLoadDashboardsListener());
+		wrappers.add(wrapper);
 
 		return view;
 	}
@@ -105,7 +90,7 @@ public class LocalDashboardsFragment extends DashboardsFragment {
 		// If user rotates the screen the click-listeners will be lost
 		// We find an existing DialogFragment by tag to restore listeners after rotation
 		dialogDashboardCreator = (DialogDashboardCreator) getFragmentManager()
-				.findFragmentByTag(DialogDashboardCreator.CREATE_DIALOG_TAG);
+				.findFragmentByTag(DialogDashboardCreator.DIALOG_TAG);
 		// otherwise - create new one
 		if (dialogDashboardCreator == null) {
 			dialogDashboardCreator = new DialogDashboardCreator();
@@ -113,14 +98,11 @@ public class LocalDashboardsFragment extends DashboardsFragment {
 
 		dialogDashboardCreator.setOnPositiveClick(new DialogInterface.OnClickListener() {
 
-			private static final int TITLE_MIN_LENGTH = 3;
-
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
-
 				// Validation of title
 				final String newTitle = dialogDashboardCreator.getInputText().trim();
-				if (newTitle.length() < TITLE_MIN_LENGTH) {
+				if (newTitle.length() < Tools.TITLE_MIN_LENGTH) {
 					Toast.makeText(getContext(), R.string.too_short_title, Toast.LENGTH_SHORT).show();
 					return;
 				}
@@ -167,7 +149,7 @@ public class LocalDashboardsFragment extends DashboardsFragment {
 		public void onClick(View v) {
 			if (!dialogDashboardCreator.isAdded()) {
 				dialogDashboardCreator.show(
-						getFragmentManager(), DialogDashboardCreator.CREATE_DIALOG_TAG);
+						getFragmentManager(), DialogDashboardCreator.DIALOG_TAG);
 			}
 		}
 	}

@@ -1,11 +1,13 @@
 package ru.mail.park.android.utils;
 
 
+import android.support.annotation.Nullable;
+
 public class ListenerWrapper<T> {
 
 	private T listener;
 
-	public ListenerWrapper(T listener) {
+	public ListenerWrapper(@Nullable T listener) {
 		this.listener = listener;
 	}
 

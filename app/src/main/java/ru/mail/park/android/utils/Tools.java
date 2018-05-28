@@ -16,7 +16,9 @@ import hirondelle.date4j.DateTime;
 
 public class Tools {
 
+	public static final int TITLE_MIN_LENGTH = 3;
 	public static final TimeZone TIME_ZONE = TimeZone.getTimeZone("GMT+3");
+
 	private static final SimpleDateFormat DATE_FORMATTER =
 			new SimpleDateFormat("dd MMM yyyy, HH:mm", Locale.UK);
 	private static final SimpleDateFormat TIME_FORMATTER =

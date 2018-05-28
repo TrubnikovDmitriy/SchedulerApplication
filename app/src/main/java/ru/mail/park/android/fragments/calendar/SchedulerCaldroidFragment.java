@@ -70,7 +70,7 @@ public class SchedulerCaldroidFragment extends CaldroidFragment {
 		}
 
 		@Override
-		public void onLongClickDate(Date date, View view) {
+		public void onLongClickDate(Date date, @Nullable View view) {
 
 			// Create fragment and set arguments
 			final Fragment fragment = new CreateEventFragment();

@@ -15,8 +15,6 @@ import android.view.View;
 import android.widget.DatePicker;
 import android.widget.TimePicker;
 
-import com.roomorama.caldroid.CalendarHelper;
-
 import java.util.Date;
 
 import hirondelle.date4j.DateTime;
@@ -24,7 +22,8 @@ import hirondelle.date4j.DateTime;
 
 public class DialogDateTimePicker extends DialogFragment {
 
-	public static final String CREATE_DIALOG_TAG = "DATE_TIME_PICKER_DIALOG";
+	public static final String CREATE_DIALOG_TAG = "DialogDateTimePicker";
+
 	public static final String CURRENT_DATE_BUNDLE = "CURRENT_DATE";
 	public static final String OLD_DATE_BUNDLE = "OLD_DATE";
 
