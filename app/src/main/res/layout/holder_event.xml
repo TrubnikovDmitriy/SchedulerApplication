@@ -55,7 +55,7 @@
             android:layout_gravity="end"
             android:orientation="horizontal">
             <TextView
-                android:text="@string/event_priority_label"
+                android:text="@string/event_type_label"
                 android:textColor="@color/secondaryText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -63,9 +63,8 @@
                 android:paddingStart="@dimen/padding_holder"
                 android:paddingEnd="@dimen/padding_holder"
                 />
-
             <TextView
-                android:id="@+id/event_priority"
+                android:id="@+id/event_type"
                 android:textColor="@color/secondaryText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -80,7 +79,7 @@
             android:layout_gravity="end"
             android:orientation="horizontal">
             <TextView
-                android:text="@string/event_type_label"
+                android:text="@string/event_priority_label"
                 android:textColor="@color/secondaryText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -88,8 +87,9 @@
                 android:paddingStart="@dimen/padding_holder"
                 android:paddingEnd="@dimen/padding_holder"
                 />
+
             <TextView
-                android:id="@+id/event_type"
+                android:id="@+id/event_priority"
                 android:textColor="@color/secondaryText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

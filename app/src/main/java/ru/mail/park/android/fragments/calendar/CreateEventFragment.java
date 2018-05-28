@@ -202,8 +202,13 @@ public class CreateEventFragment extends Fragment {
 	private class OnDoneClickListener implements View.OnClickListener {
 		@Override
 		public void onClick(View v) {
-			final String title = editTitle.getText().toString();
-			final String description = editDescription.getText().toString();
+			final String title = editTitle.getText().toString().trim();
+			// Validationgit
+			if (title.length() < Tools.TITLE_MIN_LENGTH) {
+				Toast.makeText(getContext(), R.string.too_short_title, Toast.LENGTH_SHORT).show();
+				return;
+			}
+			final String description = editDescription.getText().toString().trim();
 			final Event.EventType eventType = Event.EventType
 					.values()[(int) spinnerType.getSelectedItemId()];
 			final Event.Priority eventPriority = Event.Priority
