@@ -20,13 +20,13 @@ import java.util.concurrent.Executors;
 public class SchedulerDBHelper extends SQLiteOpenHelper {
 
 	private static final String DB_NAME = "scheduler.db";
-	private static final String TABLE_SCHEDULER_NAME = "schedulers";
+	private static final String TABLE_DASHBOARDS_NAME = "schedulers";
 	private static final String TABLE_EVENTS_NAME = "events";
 	private static final int VERSION = 1;
 
 	public enum DASH {
 
-		ID(0, "_id"),
+		DASH_ID(0, "_id"),
 		TITLE(1, "title"),
 		AUTHOR_ID(2, "author_id"),
 		AUTHOR(3, "author");
@@ -84,7 +84,7 @@ public class SchedulerDBHelper extends SQLiteOpenHelper {
 	@Override
 	public void onCreate(SQLiteDatabase db) {
 		db.execSQL(
-				"CREATE TABLE " + TABLE_SCHEDULER_NAME + "(" +
+				"CREATE TABLE " + TABLE_DASHBOARDS_NAME + "(" +
 						"_id INTEGER PRIMARY KEY AUTOINCREMENT," +
 						"title TEXT NOT NULL," +
 						"author_id INTEGER NOT NULL," +
@@ -116,9 +116,9 @@ public class SchedulerDBHelper extends SQLiteOpenHelper {
 			@Override
 			public void run() {
 				try (final Cursor cursor = getReadableDatabase().query(
-						TABLE_SCHEDULER_NAME,
+						TABLE_DASHBOARDS_NAME,
 						new String[] {
-								DASH.ID.getName(),
+								DASH.DASH_ID.getName(),
 								DASH.TITLE.getName()
 						},
 						null, null, null, null, null)) {
@@ -127,7 +127,7 @@ public class SchedulerDBHelper extends SQLiteOpenHelper {
 					while(cursor.moveToNext()) {
 						ShortDashboard dashboard = new ShortDashboard(
 								cursor.getString(DASH.TITLE.getNumber()),
-								cursor.getLong(DASH.ID.getNumber())
+								cursor.getLong(DASH.DASH_ID.getNumber())
 						);
 						dashboards.add(dashboard);
 					}
@@ -198,14 +198,14 @@ public class SchedulerDBHelper extends SQLiteOpenHelper {
 
 				// Select dashboard
 				try(final Cursor cursor = getReadableDatabase().query(
-						TABLE_SCHEDULER_NAME,
+						TABLE_DASHBOARDS_NAME,
 						new String[] {
-								DASH.ID.getName(),
+								DASH.DASH_ID.getName(),
 								DASH.TITLE.getName(),
 								DASH.AUTHOR_ID.getName(),
 								DASH.AUTHOR.getName(),
 						},
-						DASH.ID.getName() + " = ?",
+						DASH.DASH_ID.getName() + " = ?",
 						new String[] {String.valueOf(dashID)},
 						null, null, null)) {
 
@@ -248,7 +248,7 @@ public class SchedulerDBHelper extends SQLiteOpenHelper {
 
 				try {
 					final Long rowID = getWritableDatabase()
-							.insertOrThrow(TABLE_SCHEDULER_NAME, null, values);
+							.insertOrThrow(TABLE_DASHBOARDS_NAME, null, values);
 					if (wrapper.getListener() != null) {
 						wrapper.getListener().onSuccess(rowID);
 					}
@@ -300,16 +300,110 @@ public class SchedulerDBHelper extends SQLiteOpenHelper {
 				final ContentValues values = getContentValueFromEvent(event);
 				final String WHERE = EVENT.EVENT_ID.getName() + "=" + event.getEventID().toString();
 				try {
-					final int rowID = getWritableDatabase().update(
+					final int rowsAffected = getWritableDatabase().update(
 							TABLE_EVENTS_NAME,
 							values,
 							WHERE,
 							null
 					);
 					if (wrapper.getListener() != null) {
-						wrapper.getListener().onSuccess(rowID);
+						wrapper.getListener().onSuccess(rowsAffected);
 					}
 
+				} catch (SQLException e) {
+					if (wrapper.getListener() != null) {
+						wrapper.getListener().onFailure(e);
+					}
+				}
+			}
+		});
+		return wrapper;
+	}
+
+	public ListenerWrapper<OnUpdateCompleteListener> renameDashboard(
+			@NonNull final Dashboard dashboard,
+			@NonNull OnUpdateCompleteListener listener) {
+
+		final ListenerWrapper<OnUpdateCompleteListener> wrapper = new ListenerWrapper<>(listener);
+		executor.execute(new Runnable() {
+			@Override
+			public void run() {
+				final ContentValues values = new ContentValues();
+				values.put(DASH.TITLE.getName(), dashboard.getDashID());
+				final String WHERE = DASH.DASH_ID.getName() + "=" + dashboard.getDashID().toString();
+				try {
+					final int rowsAffected = getWritableDatabase().update(
+							TABLE_DASHBOARDS_NAME,
+							values,
+							WHERE,
+							null
+					);
+					if (wrapper.getListener() != null) {
+						wrapper.getListener().onSuccess(rowsAffected);
+					}
+
+				} catch (SQLException e) {
+					if (wrapper.getListener() != null) {
+						wrapper.getListener().onFailure(e);
+					}
+				}
+			}
+		});
+		return wrapper;
+	}
+
+	public ListenerWrapper<OnDeleteCompleteListener> deleteDashboard(
+			@NonNull final Dashboard dashboard,
+			@NonNull OnDeleteCompleteListener listener) {
+
+		final ListenerWrapper<OnDeleteCompleteListener> wrapper = new ListenerWrapper<>(listener);
+		executor.execute(new Runnable() {
+			@Override
+			public void run() {
+				final String WHERE_EVENT = EVENT.DASH_ID.getName() + "=" + dashboard.getDashID().toString();
+				final String WHERE_DASH = DASH.DASH_ID.getName() + "=" + dashboard.getDashID().toString();
+				try {
+					getWritableDatabase().delete(
+							TABLE_EVENTS_NAME,
+							WHERE_EVENT,
+							null
+					);
+					final int rowsAffected = getWritableDatabase().delete(
+							TABLE_DASHBOARDS_NAME,
+							WHERE_DASH,
+							null
+					);
+					if (wrapper.getListener() != null) {
+						wrapper.getListener().onSuccess(rowsAffected);
+					}
+				} catch (SQLException e) {
+					if (wrapper.getListener() != null) {
+						wrapper.getListener().onFailure(e);
+					}
+				}
+			}
+		});
+		return wrapper;
+	}
+
+	public ListenerWrapper<OnDeleteCompleteListener> deleteEvent(
+			@NonNull final Event event,
+			@NonNull OnDeleteCompleteListener listener) {
+
+		final ListenerWrapper<OnDeleteCompleteListener> wrapper = new ListenerWrapper<>(listener);
+		executor.execute(new Runnable() {
+			@Override
+			public void run() {
+				final String WHERE = EVENT.EVENT_ID.getName() + "=" + event.getEventID().toString();
+				try {
+					final int rowsAffected = getWritableDatabase().delete(
+							TABLE_EVENTS_NAME,
+							WHERE,
+							null
+					);
+					if (wrapper.getListener() != null) {
+						wrapper.getListener().onSuccess(rowsAffected);
+					}
 				} catch (SQLException e) {
 					if (wrapper.getListener() != null) {
 						wrapper.getListener().onFailure(e);
@@ -350,6 +444,13 @@ public class SchedulerDBHelper extends SQLiteOpenHelper {
 	}
 
 	public interface OnUpdateCompleteListener {
+
+		void onSuccess(final int numberOfRowsAffected);
+
+		void onFailure(final Exception exception);
+	}
+
+	public interface OnDeleteCompleteListener {
 
 		void onSuccess(final int numberOfRowsAffected);
 

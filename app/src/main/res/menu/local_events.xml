@@ -3,12 +3,40 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <item
+        android:id="@+id/today"
+        android:title="@string/menu_today"
+        android:icon="@mipmap/icon_today"
+        android:orderInCategory="1"
+        app:showAsAction="always"
+        />
+    <item
+        android:id="@+id/delete"
+        android:title="@string/create_dashboard"
+        android:icon="@mipmap/icon_delete_dashboard"
+        android:orderInCategory="2"
+        app:showAsAction="ifRoom"
+        />
+    <item
+        android:id="@+id/rename"
+        android:title="@string/menu_rename"
+        android:icon="@mipmap/icon_edit"
+        android:orderInCategory="3"
+        app:showAsAction="withText"
+        />
     <!--<item-->
-        <!--android:id="@+id/create_dashboard"-->
-        <!--android:title="@string/create_dashboard"-->
-        <!--android:icon="@mipmap"-->
+        <!--android:id="@+id/create_event"-->
+        <!--android:title="@string/menu_create_event"-->
+        <!--android:icon="@mipmap/icon_create"-->
         <!--android:orderInCategory="1"-->
         <!--app:showAsAction="ifRoom"-->
         <!--/>-->
+    <item
+        android:id="@+id/upload"
+        android:title="@string/menu_upload"
+        android:icon="@mipmap/icon_upload"
+        android:orderInCategory="4"
+        app:showAsAction="ifRoom"
+        />
 
 </menu>

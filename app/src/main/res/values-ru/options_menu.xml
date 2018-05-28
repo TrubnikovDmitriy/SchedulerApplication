@@ -16,4 +16,12 @@
     <string name="navigation_local_dash">Мои расписания</string>
     <string name="navigation_server_dash">Облако расписаний</string>
     <string name="navigation_settings">Настройки</string>
+
+    <!--Local events menu-->
+    <string name="menu_today">Cегодня</string>
+    <string name="menu_delete_dashboard">Удалить расписание</string>
+    <string name="menu_create_event">Создать событие</string>
+    <string name="menu_upload">Выгрузить расписание</string>
+    <string name="menu_rename">Переименовать расписание</string>
+
 </resources>

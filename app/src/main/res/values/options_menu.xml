@@ -16,4 +16,12 @@
     <string name="navigation_local_dash">My schedulers</string>
     <string name="navigation_server_dash">Cloud of schedulers</string>
     <string name="navigation_settings">Settings</string>
+
+    <!--Local events menu-->
+    <string name="menu_today">Today</string>
+    <string name="menu_delete_dashboard">Delete dashboard</string>
+    <string name="menu_create_event">Create event</string>
+    <string name="menu_upload">Upload</string>
+    <string name="menu_rename">Rename dashboard</string>
+
 </resources>

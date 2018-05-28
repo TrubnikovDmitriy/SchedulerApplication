@@ -17,7 +17,6 @@ import ru.mail.park.android.utils.ListenerWrapper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -65,6 +64,14 @@ public class LocalDashboardsFragment extends DashboardsFragment {
 		floatingButton.setVisibility(View.VISIBLE);
 		floatingButton.setOnClickListener(new onFloatingButtonClickListener());
 
+		adapter = new DashboardAdapter(dataset, new OnDashboardClickListener());
+
+		recyclerView.setAdapter(adapter);
+		recyclerView.setLayoutManager(new StaggeredGridLayoutManager(
+				getResources().getInteger(R.integer.span_count),
+				StaggeredGridLayoutManager.VERTICAL
+		));
+
 		if (savedInstanceState == null) {
 			// Receiving data from DB
 			final ListenerWrapper wrapper =
@@ -79,16 +86,11 @@ public class LocalDashboardsFragment extends DashboardsFragment {
 				ShortDashboard[] dashes = Arrays.copyOf(
 						objects, objects.length, ShortDashboard[].class);
 				dataset = new ArrayList<>(Arrays.asList(dashes));
+				updateDataset(dataset);
 			}
 			progressBar.setVisibility(ProgressBar.INVISIBLE);
 		}
 
-		adapter = new DashboardAdapter(dataset, new OnDashboardClickListener());
-		recyclerView.setAdapter(adapter);
-		recyclerView.setLayoutManager(new StaggeredGridLayoutManager(
-				getResources().getInteger(R.integer.span_count),
-				StaggeredGridLayoutManager.VERTICAL
-		));
 
 		return view;
 	}

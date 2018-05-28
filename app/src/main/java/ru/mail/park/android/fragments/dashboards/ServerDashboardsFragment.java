@@ -56,7 +56,6 @@ public class ServerDashboardsFragment extends DashboardsFragment {
 				container, false);
 		setActionBarTitle(getResources().getString(R.string.cloud_dashes_title));
 		recyclerView = view.findViewById(R.id.recycle_dash);
-
 		progressBar = view.findViewById(R.id.progressbar_dash_load);
 		progressBar.setVisibility(ProgressBar.VISIBLE);
 

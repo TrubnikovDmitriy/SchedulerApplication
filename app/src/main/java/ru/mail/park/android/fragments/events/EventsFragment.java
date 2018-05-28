@@ -42,11 +42,12 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 
 public abstract class EventsFragment extends Fragment {
 
-	protected final static ExecutorService executor = Executors.newSingleThreadExecutor();
+	protected final ExecutorService executor = Executors.newSingleThreadExecutor();
 
 	public static final String DASHBOARD_ID = "DASHBOARD_ID";
 	protected static final String DASHBOARD_BUNDLE = "DASHBOARD_BUNDLE";
@@ -62,6 +63,8 @@ public abstract class EventsFragment extends Fragment {
 	protected SchedulerCaldroidFragment calendarFragment;
 	protected RecyclerView recyclerView;
 	protected EventAdapter adapter;
+	// This flag is necessary to stop heavy background processes
+	protected AtomicBoolean isAlive = new AtomicBoolean(true);
 	@Nullable protected HashMap<DateTime, Drawable> eventsLabels;
 	@NonNull protected List<ListenerWrapper> wrappers = new LinkedList<>();
 	@NonNull protected HashMultimap<DateTime, Event> dateAssociatedWithEvents = HashMultimap.create();
@@ -113,6 +116,7 @@ public abstract class EventsFragment extends Fragment {
 		for (ListenerWrapper wrapper : wrappers) {
 			wrapper.unregister();
 		}
+		isAlive.set(false);
 		progressBar.setVisibility(View.GONE);
 	}
 
@@ -168,6 +172,7 @@ public abstract class EventsFragment extends Fragment {
 	}
 
 	protected void updateEventSetFromBackground(@NonNull final Dashboard dashboard) {
+		isAlive.set(true);
 		final DateTime now = DateTime.now(Tools.TIME_ZONE);
 		eventsLabels = calculateBackgroundsForEventDates(
 				now.minusDays(365),
@@ -191,10 +196,8 @@ public abstract class EventsFragment extends Fragment {
 		if (events == null) {
 			return new HashMap<>();
 		}
-
 		// Clear previous data-set to avoid double events
 		dateAssociatedWithEvents.clear();
-
 		// Hour, min, sec, msec, nsec must be reset to zero, otherwise
 		// it won't be able to update backgrounds of calendar's cells
 		DateTime iteratedDate = new DateTime(
@@ -204,6 +207,7 @@ public abstract class EventsFragment extends Fragment {
 				0, 0, 0, 0
 		);
 		final HashMap<DateTime, Drawable> backgrounds = new HashMap<>();
+
 
 		// Try to group all events by the dates (in multiMapEventDates)
 		while (iteratedDate.lteq(maxDate)) {
@@ -236,6 +240,10 @@ public abstract class EventsFragment extends Fragment {
 				}
 			}
 			iteratedDate = iteratedDate.plusDays(1);
+			// Check, is it still relevant
+			if (!isAlive.get()) {
+				return new HashMap<>();
+			}
 		}
 
 
@@ -304,6 +312,9 @@ public abstract class EventsFragment extends Fragment {
 
 			// At the end, add ready layer to map
 			backgrounds.put(eventDate, layerDrawable);
+			if (!isAlive.get()) {
+				return new HashMap<>();
+			}
 		}
 
 		return backgrounds;
