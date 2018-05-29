@@ -7,7 +7,6 @@ import butterknife.ButterKnife;
 import ru.mail.park.android.fragments.dashboards.LocalDashboardsFragment;
 import ru.mail.park.android.fragments.dashboards.ServerDashboardsFragment;
 
-import park.mail.ru.android.R;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
@@ -21,6 +20,10 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
+
+import com.google.firebase.iid.FirebaseInstanceId;
+
+import static android.content.ContentValues.TAG;
 
 
 public class MainActivity extends AppCompatActivity

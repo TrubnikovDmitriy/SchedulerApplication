@@ -7,7 +7,7 @@ import android.os.Handler;
 import android.os.Looper;
 
 import ru.mail.park.android.App;
-import park.mail.ru.android.R;
+import ru.mail.park.android.R;
 import ru.mail.park.android.database.SchedulerDBHelper;
 import ru.mail.park.android.dialogs.DialogConfirm;
 import ru.mail.park.android.dialogs.DialogDateTimePicker;

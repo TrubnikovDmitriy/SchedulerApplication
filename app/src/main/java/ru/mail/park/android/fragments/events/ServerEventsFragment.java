@@ -3,7 +3,7 @@ package ru.mail.park.android.fragments.events;
 import android.os.Bundle;
 
 import ru.mail.park.android.App;
-import park.mail.ru.android.R;
+import ru.mail.park.android.R;
 import ru.mail.park.android.network.ServerAPI;
 import ru.mail.park.android.models.Dashboard;
 import ru.mail.park.android.utils.ListenerWrapper;

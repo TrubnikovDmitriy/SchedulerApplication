@@ -5,7 +5,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 
-import park.mail.ru.android.R;
+import ru.mail.park.android.R;
 import ru.mail.park.android.App;
 import ru.mail.park.android.database.SchedulerDBHelper;
 import ru.mail.park.android.dialogs.DialogDashboardCreator;
@@ -14,8 +14,6 @@ import ru.mail.park.android.models.Dashboard;
 import ru.mail.park.android.models.ShortDashboard;
 import ru.mail.park.android.recycler.DashboardAdapter;
 import ru.mail.park.android.utils.ListenerWrapper;
-import ru.mail.park.android.utils.Tools;
-
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -29,6 +27,7 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import javax.inject.Inject;
 
@@ -73,9 +72,25 @@ public class LocalDashboardsFragment extends DashboardsFragment {
 				StaggeredGridLayoutManager.VERTICAL
 		));
 
-		// Receiving data from DB
-		final ListenerWrapper wrapper = dbManager.selectShortDashboards(new DatabaseLoadDashboardsListener());
-		wrappers.add(wrapper);
+		if (savedInstanceState == null) {
+			// Receiving data from DB
+			final ListenerWrapper wrapper =
+					dbManager.selectShortDashboards(new DatabaseLoadDashboardsListener());
+			wrappers.add(wrapper);
+
+		} else {
+			Object[] objects = (Object[]) savedInstanceState.getSerializable(DATASET);
+
+			if (objects != null) {
+				// Try to cast Object[] to ShortDashboard[]
+				ShortDashboard[] dashes = Arrays.copyOf(
+						objects, objects.length, ShortDashboard[].class);
+				dataset = new ArrayList<>(Arrays.asList(dashes));
+				updateDataset(dataset);
+			}
+			progressBar.setVisibility(ProgressBar.INVISIBLE);
+		}
+
 
 		return view;
 	}
@@ -98,11 +113,14 @@ public class LocalDashboardsFragment extends DashboardsFragment {
 
 		dialogDashboardCreator.setOnPositiveClick(new DialogInterface.OnClickListener() {
 
+			private static final int TITLE_MIN_LENGTH = 3;
+
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
+
 				// Validation of title
 				final String newTitle = dialogDashboardCreator.getInputText().trim();
-				if (newTitle.length() < Tools.TITLE_MIN_LENGTH) {
+				if (newTitle.length() < TITLE_MIN_LENGTH) {
 					Toast.makeText(getContext(), R.string.too_short_title, Toast.LENGTH_SHORT).show();
 					return;
 				}

@@ -12,7 +12,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.Date;
 
-import park.mail.ru.android.R;
+import ru.mail.park.android.R;
 import ru.mail.park.android.models.Event;
 import ru.mail.park.android.utils.Tools;
 

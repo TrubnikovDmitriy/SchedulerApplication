@@ -1,6 +1,6 @@
 package ru.mail.park.android.recycler;
 
-import park.mail.ru.android.R;
+import ru.mail.park.android.R;
 import ru.mail.park.android.models.ShortDashboard;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;

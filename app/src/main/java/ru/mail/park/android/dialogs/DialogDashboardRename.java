@@ -11,7 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 
-import park.mail.ru.android.R;
+import ru.mail.park.android.R;
 
 
 public class DialogDashboardRename extends DialogFragment {

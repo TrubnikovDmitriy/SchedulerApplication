@@ -5,7 +5,7 @@ import android.os.Bundle;
 
 import hirondelle.date4j.DateTime;
 import ru.mail.park.android.App;
-import park.mail.ru.android.R;
+import ru.mail.park.android.R;
 import ru.mail.park.android.database.SchedulerDBHelper;
 import ru.mail.park.android.dialogs.DialogConfirm;
 import ru.mail.park.android.dialogs.DialogDashboardRename;

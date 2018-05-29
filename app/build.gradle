@@ -47,4 +47,10 @@ dependencies {
 
     // Guava
     implementation group: 'com.google.guava', name: 'guava', version: '25.1-android'
+
+    // Firebase CloudMessage
+    implementation group: 'com.google.firebase', name: 'firebase-messaging', version: '17.0.0'
 }
+
+
+apply plugin: 'com.google.gms.google-services'

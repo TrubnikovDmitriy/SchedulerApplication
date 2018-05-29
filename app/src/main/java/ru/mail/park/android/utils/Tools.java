@@ -1,6 +1,6 @@
 package ru.mail.park.android.utils;
 
-import park.mail.ru.android.R;
+import ru.mail.park.android.R;
 import ru.mail.park.android.models.Event;
 
 import android.content.res.Resources;

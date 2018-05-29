@@ -4,7 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import park.mail.ru.android.R;
+import ru.mail.park.android.R;
 import ru.mail.park.android.utils.Tools;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;

@@ -20,7 +20,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-import park.mail.ru.android.R;
+import ru.mail.park.android.R;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 

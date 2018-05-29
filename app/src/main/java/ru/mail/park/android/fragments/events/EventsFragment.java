@@ -7,7 +7,7 @@ import android.graphics.drawable.LayerDrawable;
 import android.os.Bundle;
 
 import hirondelle.date4j.DateTime;
-import park.mail.ru.android.R;
+import ru.mail.park.android.R;
 import ru.mail.park.android.fragments.calendar.SchedulerCaldroidFragment;
 import ru.mail.park.android.models.Dashboard;
 import ru.mail.park.android.models.Event;
