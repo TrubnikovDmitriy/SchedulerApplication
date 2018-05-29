@@ -65,7 +65,7 @@ public abstract class EventsFragment extends Fragment {
 	protected EventAdapter adapter;
 	// This flag is necessary to stop heavy background processes
 	protected AtomicBoolean isAlive = new AtomicBoolean(true);
-	@Nullable protected HashMap<DateTime, Drawable> eventsLabels;
+	@Nullable protected HashMap<DateTime, Drawable> eventDrawables;
 	@NonNull protected List<ListenerWrapper> wrappers = new LinkedList<>();
 	@NonNull protected HashMultimap<DateTime, Event> dateAssociatedWithEvents = HashMultimap.create();
 
@@ -174,7 +174,7 @@ public abstract class EventsFragment extends Fragment {
 	protected void updateEventSetFromBackground(@NonNull final Dashboard dashboard) {
 		isAlive.set(true);
 		final DateTime now = DateTime.now(Tools.TIME_ZONE);
-		eventsLabels = calculateBackgroundsForEventDates(
+		eventDrawables = calculateBackgroundsForEventDates(
 				now.minusDays(365),
 				now.plusDays(365),
 				dashboard.getEvents()
@@ -182,7 +182,7 @@ public abstract class EventsFragment extends Fragment {
 		handler.post(new Runnable() {
 			@Override
 			public void run() {
-				calendarFragment.setBackgroundDrawableForDateTimes(eventsLabels);
+				calendarFragment.setBackgroundDrawableForDateTimes(eventDrawables);
 				calendarFragment.refreshView();
 			}
 		});

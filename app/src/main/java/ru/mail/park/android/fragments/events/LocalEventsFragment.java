@@ -175,7 +175,7 @@ public class LocalEventsFragment extends EventsFragment {
 			dashboard = data;
 			updateActionBarTitle();
 			createCalendarFragment(null);
-			calendarFragment.enableClicks();
+			calendarFragment.enableLongClicks();
 			updateEventSetFromBackground(data);
 			removeProgressBar();
 		}

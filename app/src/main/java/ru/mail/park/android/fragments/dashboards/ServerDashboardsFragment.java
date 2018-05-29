@@ -93,11 +93,13 @@ public class ServerDashboardsFragment extends DashboardsFragment {
 		inflater.inflate(R.menu.server_dashboards, menu);
 	}
 
+
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 
 			case R.id.update_dashboards:
+				adapter.clearDataSet();
 				ListenerWrapper wrapper = networkManager.getDashboards(new NetworkLoadDashboardsListener());
 				wrappers.add(wrapper);
 				return true;

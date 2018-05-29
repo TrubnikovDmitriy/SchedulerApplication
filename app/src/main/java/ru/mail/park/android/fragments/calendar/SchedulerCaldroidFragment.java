@@ -20,9 +20,11 @@ import hirondelle.date4j.DateTime;
 public class SchedulerCaldroidFragment extends CaldroidFragment {
 
 	public static final String DASH_ID_BUNDLE = "DASH_ID_BUNDLE";
-	@Nullable static DateTime currentDateTime = null;
 
-	private OnDateClickListener onDateClickListener;
+	@Nullable static DateTime currentDateTime = null;
+	@Nullable private OnDateClickListener onDateClickListener;
+	@Nullable private OnLongDateClickListener onLongDateClickListener;
+
 	private Long dashID;
 
 	@Override
@@ -43,6 +45,7 @@ public class SchedulerCaldroidFragment extends CaldroidFragment {
 		if (currentDateTime != null) {
 			moveToDateTime(currentDateTime);
 		}
+		this.setCaldroidListener(new SchedulerCaldroidListener());
 	}
 
 	@Override
@@ -52,16 +55,15 @@ public class SchedulerCaldroidFragment extends CaldroidFragment {
 	}
 
 
-	public void setOnDateClickListener(OnDateClickListener onDateClickListener) {
+	public void setOnDateClickListener(@Nullable OnDateClickListener onDateClickListener) {
 		this.onDateClickListener = onDateClickListener;
 	}
 
-	public void enableClicks() {
-		this.setCaldroidListener(new SchedulerCaldroidListener());
+	public void enableLongClicks() {
+		this.onLongDateClickListener = new OnLongDateClickListener();
 	}
 
 	final class SchedulerCaldroidListener extends CaldroidListener {
-
 		@Override
 		public void onSelectDate(Date date, View view) {
 			if (onDateClickListener != null) {
@@ -71,6 +73,19 @@ public class SchedulerCaldroidFragment extends CaldroidFragment {
 
 		@Override
 		public void onLongClickDate(Date date, @Nullable View view) {
+			if (onLongDateClickListener != null) {
+				onLongDateClickListener.onLongClickDate(date);
+			}
+		}
+	}
+
+	public interface OnDateClickListener {
+		void onSelectDate(@NonNull final Date date);
+	}
+
+	private class OnLongDateClickListener {
+
+		void onLongClickDate(final Date date) {
 
 			// Create fragment and set arguments
 			final Fragment fragment = new CreateEventFragment();
@@ -91,9 +106,5 @@ public class SchedulerCaldroidFragment extends CaldroidFragment {
 			// Remember the date to return at the same page of calendar
 			currentDateTime = Tools.getDate(date);
 		}
-	}
-
-	public interface OnDateClickListener {
-		void onSelectDate(@NonNull final Date date);
 	}
 }

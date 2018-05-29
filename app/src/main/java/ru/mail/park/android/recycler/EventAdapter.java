@@ -46,7 +46,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventHolder>
 		private void updateContent(@NonNull final Event event) {
 			title.setText(event.getTitle());
 
-			if (event.getText().isEmpty()) {
+			if (event.getText() == null || event.getText().isEmpty()) {
 				description.setText(R.string.no_description);
 			} else {
 				description.setText(event.getText());
