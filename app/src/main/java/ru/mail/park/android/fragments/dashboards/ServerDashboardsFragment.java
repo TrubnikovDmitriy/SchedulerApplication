@@ -116,7 +116,7 @@ public class ServerDashboardsFragment extends DashboardsFragment {
 			// Create fragment and set arguments
 			final Fragment fragment = new ServerEventsFragment();
 			final Bundle bundle = new Bundle();
-			bundle.putLong(ServerEventsFragment.DASHBOARD_ID, dashboard.getDashID());
+			bundle.putString(ServerEventsFragment.DASHBOARD_ID, dashboard.getDashID());
 			fragment.setArguments(bundle);
 
 			// Replace content in FrameLayout-container

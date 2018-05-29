@@ -130,7 +130,7 @@ public abstract class EventsFragment extends Fragment {
 		} else {
 			final Bundle bundle = new Bundle();
 			bundle.putInt(CaldroidFragment.START_DAY_OF_WEEK, CaldroidFragment.MONDAY);
-			bundle.putLong(SchedulerCaldroidFragment.DASH_ID_BUNDLE, dashboard.getDashID());
+			bundle.putString(SchedulerCaldroidFragment.DASH_ID_BUNDLE, dashboard.getDashID());
 			bundle.putBoolean(SchedulerCaldroidFragment.SQUARE_TEXT_VIEW_CELL, true);
 			calendarFragment.setArguments(bundle);
 		}

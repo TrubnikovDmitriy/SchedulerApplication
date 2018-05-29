@@ -31,6 +31,7 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import java.util.Date;
+import java.util.UUID;
 
 import javax.inject.Inject;
 
@@ -54,7 +55,7 @@ public class CreateEventFragment extends Fragment {
 	SchedulerDBHelper dbHelper;
 	@Nullable
 	private Event event;
-	private Long dashID;
+	private String dashID;
 	private Boolean isNew;
 	private Date date;
 	private DialogDateTimePicker dialogPicker;
@@ -111,7 +112,7 @@ public class CreateEventFragment extends Fragment {
 		outState.putSerializable(DATE_BUNDLE, date);
 		outState.putSerializable(EVENT_BUNDLE, event);
 		outState.putBoolean(IS_NEW_BUNDLE, isNew);
-		outState.putLong(DASH_ID_BUNDLE, dashID);
+		outState.putString(DASH_ID_BUNDLE, dashID);
 	}
 
 	@Override
@@ -155,7 +156,7 @@ public class CreateEventFragment extends Fragment {
 		if (bundle != null) {
 			date = (Date) bundle.getSerializable(DATE_BUNDLE);
 			isNew = bundle.getBoolean(IS_NEW_BUNDLE);
-			dashID = bundle.getLong(DASH_ID_BUNDLE);
+			dashID = bundle.getString(DASH_ID_BUNDLE);
 			if (!isNew) {
 				// If clicked at already existing event_high
 				event = (Event) bundle.getSerializable(EVENT_BUNDLE);
@@ -214,7 +215,7 @@ public class CreateEventFragment extends Fragment {
 			final Event.Priority eventPriority = Event.Priority
 					.values()[(int) spinnerPriority.getSelectedItemId()];
 
-			final Long eventID = (event == null) ? 0 : event.getEventID();
+			final String eventID = (event == null) ? UUID.randomUUID().toString() : event.getEventID();
 
 			event = new Event(
 					description,
@@ -250,15 +251,17 @@ public class CreateEventFragment extends Fragment {
 
 		@Override
 		public void onSuccess(@NonNull Long rowID) {
+			if (rowID == -1) {
+				onFailure(null);
+			}
 			if (event != null) {
-				event.setEventID(rowID);
 				// Return to calendar
 				getFragmentManager().popBackStack();
 			}
 		}
 
 		@Override
-		public void onFailure(Exception exception) {
+		public void onFailure(@Nullable Exception exception) {
 			handler.post(new Runnable() {
 				@Override
 				public void run() {

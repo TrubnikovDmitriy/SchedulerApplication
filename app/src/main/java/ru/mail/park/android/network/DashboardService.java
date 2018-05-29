@@ -16,6 +16,6 @@ public interface DashboardService {
 	Call<List<ShortDashboard>> getDashboards();
 
 	@GET("v1/dashboard/{DASH_ID}")
-	Call<Dashboard> getEvents(@Path("DASH_ID") Long ID);
+	Call<Dashboard> getEvents(@Path("DASH_ID") String ID);
 
 }

@@ -55,7 +55,7 @@ public class ServerAPI {
 	}
 
 	public ListenerWrapper<OnRequestCompleteListener<Dashboard>> getEvents(
-			final long ID, @NonNull OnRequestCompleteListener<Dashboard> listener) {
+			final String ID, @NonNull OnRequestCompleteListener<Dashboard> listener) {
 
 		final ListenerWrapper<OnRequestCompleteListener<Dashboard>> wrapper = new ListenerWrapper<>(listener);
 		executor.execute(new Runnable() {

@@ -25,16 +25,16 @@ public class SchedulerCaldroidFragment extends CaldroidFragment {
 	@Nullable private OnDateClickListener onDateClickListener;
 	@Nullable private OnLongDateClickListener onLongDateClickListener;
 
-	private Long dashID;
+	private String dashID;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 	                         @Nullable Bundle savedInstanceState) {
 		if (savedInstanceState != null) {
-			dashID = savedInstanceState.getLong(DASH_ID_BUNDLE);
+			dashID = savedInstanceState.getString(DASH_ID_BUNDLE);
 		}
 		if (getArguments() != null) {
-			dashID = getArguments().getLong(DASH_ID_BUNDLE);
+			dashID = getArguments().getString(DASH_ID_BUNDLE);
 		}
 		return super.onCreateView(inflater, container, savedInstanceState);
 	}
@@ -51,7 +51,7 @@ public class SchedulerCaldroidFragment extends CaldroidFragment {
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
-		outState.putLong(DASH_ID_BUNDLE, dashID);
+		outState.putString(DASH_ID_BUNDLE, dashID);
 	}
 
 
@@ -93,7 +93,7 @@ public class SchedulerCaldroidFragment extends CaldroidFragment {
 
 			bundle.putBoolean(CreateEventFragment.IS_NEW_BUNDLE, true);
 			bundle.putSerializable(CreateEventFragment.DATE_BUNDLE, date);
-			bundle.putLong(CreateEventFragment.DASH_ID_BUNDLE, dashID);
+			bundle.putString(CreateEventFragment.DASH_ID_BUNDLE, dashID);
 			fragment.setArguments(bundle);
 
 			// Replace content in FrameLayout-container

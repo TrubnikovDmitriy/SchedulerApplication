@@ -28,6 +28,7 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.UUID;
 
 import javax.inject.Inject;
 
@@ -128,7 +129,7 @@ public class LocalDashboardsFragment extends DashboardsFragment {
 				// TODO delete stubs
 				// Added to database
 				final Dashboard dashboard = new Dashboard("Dmitriy", 1L,
-						newTitle, null, null);
+						newTitle, UUID.randomUUID().toString(), null);
 				final ListenerWrapper wrapper = dbManager.insertDashboard(
 						dashboard, new SchedulerDBHelper.OnInsertCompleteListener() {
 
@@ -136,7 +137,9 @@ public class LocalDashboardsFragment extends DashboardsFragment {
 
 							@Override
 							public void onSuccess(@NonNull Long rowID) {
-								dashboard.setDashID(rowID);
+								if (rowID == -1) {
+									onFailure(null);
+								}
 								handler.post(new Runnable() {
 									@Override
 									public void run() {
@@ -147,7 +150,7 @@ public class LocalDashboardsFragment extends DashboardsFragment {
 							}
 
 							@Override
-							public void onFailure(Exception exception) {
+							public void onFailure(@Nullable Exception exception) {
 								handler.post(new Runnable() {
 									@Override
 									public void run() {
@@ -180,7 +183,7 @@ public class LocalDashboardsFragment extends DashboardsFragment {
 			// Create fragment and set arguments
 			final Fragment fragment = new LocalEventsFragment();
 			final Bundle bundle = new Bundle();
-			bundle.putLong(LocalEventsFragment.DASHBOARD_ID, dashboard.getDashID());
+			bundle.putString(LocalEventsFragment.DASHBOARD_ID, dashboard.getDashID());
 			fragment.setArguments(bundle);
 
 			// Replace content in FrameLayout-container

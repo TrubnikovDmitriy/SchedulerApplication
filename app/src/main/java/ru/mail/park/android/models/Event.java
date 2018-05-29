@@ -9,9 +9,9 @@ import java.io.Serializable;
 public class Event implements Serializable {
 
 	@SerializedName("eventID")
-	private Long eventID;
+	private String eventID;
 	@SerializedName("dashID")
-	private Long dashID;
+	private String dashID;
 	@SerializedName("text")
 	private String text;
 	@SerializedName("timestamp")
@@ -23,8 +23,8 @@ public class Event implements Serializable {
 	@SerializedName("priority")
 	private Priority priority;
 
-	public Event(String text, Long timestamp, Long eventID,
-	             Long dashID, String title, EventType type,
+	public Event(String text, Long timestamp, String eventID,
+	             String dashID, String title, EventType type,
 	             Priority priority) {
 
 		this.text = text;
@@ -37,11 +37,11 @@ public class Event implements Serializable {
 	}
 
 
-	public Long getEventID() {
+	public String getEventID() {
 		return eventID;
 	}
 
-	public Long getDashID() {
+	public String getDashID() {
 		return dashID;
 	}
 
@@ -81,11 +81,11 @@ public class Event implements Serializable {
 		ULTRA_HIGH
 	}
 
-	public void setEventID(Long eventID) {
+	public void setEventID(String eventID) {
 		this.eventID = eventID;
 	}
 
-	public void setDashID(Long dashID) {
+	public void setDashID(String dashID) {
 		this.dashID = dashID;
 	}
 

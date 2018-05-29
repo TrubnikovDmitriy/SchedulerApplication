@@ -11,7 +11,7 @@ public class Dashboard implements Serializable {
 	@SerializedName("title")
 	private String title;
 	@SerializedName("dashID")
-	private Long dashID;
+	private String dashID;
 	@SerializedName("author")
 	private String author;
 	@SerializedName("authorID")
@@ -23,7 +23,7 @@ public class Dashboard implements Serializable {
 	public Dashboard() { }
 
 	public Dashboard(String author, Long authorID, String title,
-	                 Long dashID, ArrayList<Event> events) {
+	                 String dashID, ArrayList<Event> events) {
 		this.author = author;
 		this.authorID = authorID;
 		this.title = title;
@@ -44,7 +44,7 @@ public class Dashboard implements Serializable {
 		return title;
 	}
 
-	public Long getDashID() {
+	public String getDashID() {
 		return dashID;
 	}
 
@@ -56,7 +56,7 @@ public class Dashboard implements Serializable {
 		this.title = title;
 	}
 
-	public void setDashID(Long dashID) {
+	public void setDashID(String dashID) {
 		this.dashID = dashID;
 	}
 
@@ -70,16 +70,5 @@ public class Dashboard implements Serializable {
 
 	public void setEvents(ArrayList<Event> events) {
 		this.events = events;
-	}
-
-	@Override
-	public String toString() {
-		return "Dashboard{" +
-				"title='" + title + '\'' +
-				", dashID=" + dashID +
-				", author='" + author + '\'' +
-				", authorID=" + authorID +
-				", events=" + events +
-				'}';
 	}
 }

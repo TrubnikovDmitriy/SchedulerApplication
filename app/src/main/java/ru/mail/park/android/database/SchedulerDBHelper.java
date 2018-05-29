@@ -26,10 +26,11 @@ public class SchedulerDBHelper extends SQLiteOpenHelper {
 
 	public enum DASH {
 
-		DASH_ID(0, "_id"),
-		TITLE(1, "title"),
-		AUTHOR_ID(2, "author_id"),
-		AUTHOR(3, "author");
+		PRIMARY_KEY(0, "_id"),
+		DASH_ID(1, "dash_id"),
+		TITLE(2, "title"),
+		AUTHOR_ID(3, "author_id"),
+		AUTHOR(4, "author");
 
 		DASH(int column_number, String column_name) {
 			this.column_number = column_number;
@@ -49,13 +50,14 @@ public class SchedulerDBHelper extends SQLiteOpenHelper {
 	}
 	public enum EVENT {
 
-		EVENT_ID(0, "_id"),
+		PRIMARY_KEY(0, "_id"),
 		DASH_ID(1, "dash_id"),
-		TITLE(2, "title"),
-		TEXT(3, "text"),
-		TIMESTAMP(4, "timestamp"),
-		TYPE(5, "type"),
-		PRIORITY(6, "priority");
+		EVENT_ID(2, "event_id"),
+		TITLE(3, "title"),
+		TEXT(4, "text"),
+		TIMESTAMP(5, "timestamp"),
+		TYPE(6, "type"),
+		PRIORITY(7, "priority");
 
 		EVENT(int column_number, String column_name) {
 			this.column_number = column_number;
@@ -86,6 +88,7 @@ public class SchedulerDBHelper extends SQLiteOpenHelper {
 		db.execSQL(
 				"CREATE TABLE " + TABLE_DASHBOARDS_NAME + "(" +
 						"_id INTEGER PRIMARY KEY AUTOINCREMENT," +
+						"dash_id TEXT NOT NULL UNIQUE," +
 						"title TEXT NOT NULL," +
 						"author_id INTEGER NOT NULL," +
 						"author TEXT NOT NULL" +
@@ -94,7 +97,8 @@ public class SchedulerDBHelper extends SQLiteOpenHelper {
 		db.execSQL(
 				"CREATE TABLE " + TABLE_EVENTS_NAME + "(" +
 						"_id INTEGER PRIMARY KEY AUTOINCREMENT," +
-						"dash_id INTEGER NOT NULL," +
+						"dash_id TEXT NOT NULL," +
+						"event_id TEXT NOT NULL," +
 						"title TEXT NOT NULL," +
 						"text BLOB," +
 						"timestamp NUMERIC NOT NULL," +
@@ -118,6 +122,7 @@ public class SchedulerDBHelper extends SQLiteOpenHelper {
 				try (final Cursor cursor = getReadableDatabase().query(
 						TABLE_DASHBOARDS_NAME,
 						new String[] {
+								DASH.PRIMARY_KEY.getName(),
 								DASH.DASH_ID.getName(),
 								DASH.TITLE.getName()
 						},
@@ -126,8 +131,8 @@ public class SchedulerDBHelper extends SQLiteOpenHelper {
 					final ArrayList<ShortDashboard> dashboards = new ArrayList<>(cursor.getCount());
 					while(cursor.moveToNext()) {
 						ShortDashboard dashboard = new ShortDashboard(
-								cursor.getString(DASH.TITLE.getNumber()),
-								cursor.getLong(DASH.DASH_ID.getNumber())
+								cursor.getString(cursor.getColumnIndex(DASH.TITLE.getName())),
+								cursor.getString(cursor.getColumnIndex(DASH.DASH_ID.getName()))
 						);
 						dashboards.add(dashboard);
 					}
@@ -146,7 +151,7 @@ public class SchedulerDBHelper extends SQLiteOpenHelper {
 	}
 
 	public ListenerWrapper<OnSelectCompleteListener<Dashboard>> selectDashboard(
-			@NonNull final Long dashID,
+			@NonNull final String dashID,
 			@NonNull OnSelectCompleteListener<Dashboard> listener) {
 
 		final ListenerWrapper<OnSelectCompleteListener<Dashboard>> wrapper = new ListenerWrapper<>(listener);
@@ -161,6 +166,7 @@ public class SchedulerDBHelper extends SQLiteOpenHelper {
 				try(final Cursor cursor = getReadableDatabase().query(
 						TABLE_EVENTS_NAME,
 						new String[] {
+								EVENT.PRIMARY_KEY.getName(),
 								EVENT.EVENT_ID.getName(),
 								EVENT.TITLE.getName(),
 								EVENT.TEXT.getName(),
@@ -169,7 +175,7 @@ public class SchedulerDBHelper extends SQLiteOpenHelper {
 								EVENT.TYPE.getName()
 						},
 						EVENT.DASH_ID.getName() + " = ?",
-						new String[] { String.valueOf(dashID) },
+						new String[] { dashID },
 						null, null, null)) {
 
 					final ArrayList<Event> events = new ArrayList<>(cursor.getCount());
@@ -177,7 +183,7 @@ public class SchedulerDBHelper extends SQLiteOpenHelper {
 						Event event = new Event(
 								cursor.getString(cursor.getColumnIndex(EVENT.TEXT.getName())),
 								cursor.getLong(cursor.getColumnIndex(EVENT.TIMESTAMP.getName())),
-								cursor.getLong(cursor.getColumnIndex(EVENT.EVENT_ID.getName())),
+								cursor.getString(cursor.getColumnIndex(EVENT.EVENT_ID.getName())),
 								dashID,
 								cursor.getString(cursor.getColumnIndex(EVENT.TITLE.getName())),
 								Event.EventType.valueOf(
@@ -200,19 +206,25 @@ public class SchedulerDBHelper extends SQLiteOpenHelper {
 				try(final Cursor cursor = getReadableDatabase().query(
 						TABLE_DASHBOARDS_NAME,
 						new String[] {
+								DASH.PRIMARY_KEY.getName(),
 								DASH.DASH_ID.getName(),
 								DASH.TITLE.getName(),
 								DASH.AUTHOR_ID.getName(),
 								DASH.AUTHOR.getName(),
 						},
 						DASH.DASH_ID.getName() + " = ?",
-						new String[] {String.valueOf(dashID)},
+						new String[] { dashID },
 						null, null, null)) {
 
 					if (cursor.moveToFirst()) {
-						dashboard.setAuthor(cursor.getString(DASH.AUTHOR.getNumber()));
-						dashboard.setAuthorID(cursor.getLong(DASH.AUTHOR_ID.getNumber()));
-						dashboard.setTitle(cursor.getString(DASH.TITLE.getNumber()));
+						final String author = cursor.getString(cursor.getColumnIndex(DASH.AUTHOR.getName()));
+						final Long authorID = cursor.getLong(cursor.getColumnIndex(DASH.AUTHOR_ID.getName()));
+						final String title = cursor.getString(cursor.getColumnIndex(DASH.TITLE.getName()));
+
+						dashboard.setAuthor(author);
+						dashboard.setAuthorID(authorID);
+						dashboard.setTitle(title);
+
 					} else {
 						if (wrapper.getListener() != null) {
 							wrapper.getListener().onFailure(new SQLException("This dashboards does not exist"));
@@ -242,6 +254,7 @@ public class SchedulerDBHelper extends SQLiteOpenHelper {
 			public void run() {
 				final ContentValues values = new ContentValues();
 
+				values.put(DASH.DASH_ID.getName(), dashboard.getDashID());
 				values.put(DASH.TITLE.getName(), dashboard.getTitle());
 				values.put(DASH.AUTHOR_ID.getName(), dashboard.getAuthorID());
 				values.put(DASH.AUTHOR.getName(), dashboard.getAuthor());
@@ -297,14 +310,21 @@ public class SchedulerDBHelper extends SQLiteOpenHelper {
 		executor.execute(new Runnable() {
 			@Override
 			public void run() {
-				final ContentValues values = getContentValueFromEvent(event);
-				final String WHERE = EVENT.EVENT_ID.getName() + "=" + event.getEventID().toString();
+
+				final ContentValues values = new ContentValues();
+				values.put(EVENT.TITLE.getName(), event.getTitle());
+				values.put(EVENT.TEXT.getName(), event.getText());
+				values.put(EVENT.TIMESTAMP.getName(), event.getTimestamp());
+				values.put(EVENT.TYPE.getName(), event.getType().toString());
+				values.put(EVENT.PRIORITY.getName(), event.getPriority().toString());
+
+				final String WHERE = EVENT.EVENT_ID.getName() + " = ?";
 				try {
 					final int rowsAffected = getWritableDatabase().update(
 							TABLE_EVENTS_NAME,
 							values,
 							WHERE,
-							null
+							new String[] { event.getEventID() }
 					);
 					if (wrapper.getListener() != null) {
 						wrapper.getListener().onSuccess(rowsAffected);
@@ -328,15 +348,17 @@ public class SchedulerDBHelper extends SQLiteOpenHelper {
 		executor.execute(new Runnable() {
 			@Override
 			public void run() {
+
 				final ContentValues values = new ContentValues();
 				values.put(DASH.TITLE.getName(), dashboard.getTitle());
-				final String WHERE = DASH.DASH_ID.getName() + "=" + dashboard.getDashID().toString();
+				final String WHERE = DASH.DASH_ID.getName() + " = ?";
+
 				try {
 					final int rowsAffected = getWritableDatabase().update(
 							TABLE_DASHBOARDS_NAME,
 							values,
 							WHERE,
-							null
+							new String[] { dashboard.getDashID() }
 					);
 					if (wrapper.getListener() != null) {
 						wrapper.getListener().onSuccess(rowsAffected);
@@ -353,25 +375,25 @@ public class SchedulerDBHelper extends SQLiteOpenHelper {
 	}
 
 	public ListenerWrapper<OnDeleteCompleteListener> deleteDashboard(
-			@NonNull final Long dashID,
+			@NonNull final String dashID,
 			@NonNull OnDeleteCompleteListener listener) {
 
 		final ListenerWrapper<OnDeleteCompleteListener> wrapper = new ListenerWrapper<>(listener);
 		executor.execute(new Runnable() {
 			@Override
 			public void run() {
-				final String WHERE_EVENT = EVENT.DASH_ID.getName() + "=" + dashID;
-				final String WHERE_DASH = DASH.DASH_ID.getName() + "=" + dashID;
+				final String WHERE_EVENT = EVENT.DASH_ID.getName() + " = ?";
+				final String WHERE_DASH = DASH.DASH_ID.getName() + " = ?";
 				try {
 					getWritableDatabase().delete(
 							TABLE_EVENTS_NAME,
 							WHERE_EVENT,
-							null
+							new String[] { dashID }
 					);
 					final int rowsAffected = getWritableDatabase().delete(
 							TABLE_DASHBOARDS_NAME,
 							WHERE_DASH,
-							null
+							new String[] { dashID }
 					);
 					if (wrapper.getListener() != null) {
 						wrapper.getListener().onSuccess(rowsAffected);
@@ -387,19 +409,19 @@ public class SchedulerDBHelper extends SQLiteOpenHelper {
 	}
 
 	public ListenerWrapper<OnDeleteCompleteListener> deleteEvent(
-			@NonNull final Long eventID,
+			@NonNull final String eventID,
 			@Nullable OnDeleteCompleteListener listener) {
 
 		final ListenerWrapper<OnDeleteCompleteListener> wrapper = new ListenerWrapper<>(listener);
 		executor.execute(new Runnable() {
 			@Override
 			public void run() {
-				final String WHERE = EVENT.EVENT_ID.getName() + "=" + eventID;
+				final String WHERE = EVENT.EVENT_ID.getName() + " = ?";
 				try {
 					final int rowsAffected = getWritableDatabase().delete(
 							TABLE_EVENTS_NAME,
 							WHERE,
-							null
+							new String[] { eventID }
 					);
 					if (wrapper.getListener() != null) {
 						wrapper.getListener().onSuccess(rowsAffected);
@@ -420,6 +442,7 @@ public class SchedulerDBHelper extends SQLiteOpenHelper {
 		final ContentValues values = new ContentValues();
 
 		values.put(EVENT.DASH_ID.getName(), event.getDashID());
+		values.put(EVENT.EVENT_ID.getName(), event.getEventID());
 		values.put(EVENT.TITLE.getName(), event.getTitle());
 		values.put(EVENT.TEXT.getName(), event.getText());
 		values.put(EVENT.TIMESTAMP.getName(), event.getTimestamp());

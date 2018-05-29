@@ -19,6 +19,7 @@ import ru.mail.park.android.utils.Tools;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -59,9 +60,11 @@ public class LocalEventsFragment extends EventsFragment {
 
 
 		if (savedInstanceState == null) {
-			final Long dashID = getArguments().getLong(DASHBOARD_ID);
-			final ListenerWrapper wrapper = dbManager.selectDashboard(dashID, new OnLoadDashboardListener());
-			wrappers.add(wrapper);
+			final String dashID = getArguments().getString(DASHBOARD_ID);
+			if (dashID != null) {
+				final ListenerWrapper wrapper = dbManager.selectDashboard(dashID, new OnLoadDashboardListener());
+				wrappers.add(wrapper);
+			}
 		} else {
 			dashboard = (Dashboard) savedInstanceState.getSerializable(DASHBOARD_BUNDLE);
 			if (dashboard != null) {
@@ -99,7 +102,7 @@ public class LocalEventsFragment extends EventsFragment {
 
 				bundle.putBoolean(CreateEventFragment.IS_NEW_BUNDLE, true);
 				bundle.putSerializable(CreateEventFragment.DATE_BUNDLE, Tools.getDate(today));
-				bundle.putLong(CreateEventFragment.DASH_ID_BUNDLE, dashboard.getDashID());
+				bundle.putString(CreateEventFragment.DASH_ID_BUNDLE, dashboard.getDashID());
 				fragment.setArguments(bundle);
 
 				// Replace content in FrameLayout-container
@@ -204,7 +207,15 @@ public class LocalEventsFragment extends EventsFragment {
 
 		@Override
 		public void onFailure(@Nullable Exception exception) {
-			Toast.makeText(getContext(), R.string.db_failure, Toast.LENGTH_LONG).show();
+			if (exception != null) {
+				Log.e("DB", "Rename", exception);
+			}
+			handler.post(new Runnable() {
+				@Override
+				public void run() {
+					Toast.makeText(getContext(), R.string.db_failure, Toast.LENGTH_LONG).show();
+				}
+			});
 		}
 	}
 
@@ -225,7 +236,15 @@ public class LocalEventsFragment extends EventsFragment {
 
 		@Override
 		public void onFailure(@Nullable Exception exception) {
-			Toast.makeText(getContext(), R.string.db_failure, Toast.LENGTH_LONG).show();
+			if (exception != null) {
+				Log.e("DB", "Rename", exception);
+			}
+			handler.post(new Runnable() {
+				@Override
+				public void run() {
+					Toast.makeText(getContext(), R.string.db_failure, Toast.LENGTH_LONG).show();
+				}
+			});
 		}
 	}
 
@@ -239,7 +258,7 @@ public class LocalEventsFragment extends EventsFragment {
 			bundle.putBoolean(CreateEventFragment.IS_NEW_BUNDLE, false);
 			bundle.putSerializable(CreateEventFragment.EVENT_BUNDLE, event);
 			bundle.putSerializable(CreateEventFragment.DATE_BUNDLE, Tools.getDate(event.getTimestamp()));
-			bundle.putLong(CreateEventFragment.DASH_ID_BUNDLE, event.getDashID());
+			bundle.putString(CreateEventFragment.DASH_ID_BUNDLE, event.getDashID());
 			fragment.setArguments(bundle);
 
 			// Replace content in FrameLayout-container

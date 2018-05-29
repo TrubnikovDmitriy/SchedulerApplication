@@ -44,7 +44,7 @@ public class ServerEventsFragment extends EventsFragment {
 
 		if (savedInstanceState == null) {
 			progressBar.setVisibility(ProgressBar.VISIBLE);
-			final Long dashID = getArguments().getLong(DASHBOARD_ID);
+			final String dashID = getArguments().getString(DASHBOARD_ID);
 			ListenerWrapper wrapper = networkManager.getEvents(dashID, new LoadEventsListener());
 			wrappers.add(wrapper);
 

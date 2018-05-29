@@ -10,9 +10,9 @@ public class ShortDashboard implements Serializable {
 	@SerializedName("title")
 	private final String title;
 	@SerializedName("dashID")
-	private final Long dashID;
+	private final String dashID;
 
-	public ShortDashboard(String title, Long dashID) {
+	public ShortDashboard(String title, String dashID) {
 		this.title = title;
 		this.dashID = dashID;
 	}
@@ -26,7 +26,7 @@ public class ShortDashboard implements Serializable {
 		return title;
 	}
 
-	public Long getDashID() {
+	public String getDashID() {
 		return dashID;
 	}
 }
