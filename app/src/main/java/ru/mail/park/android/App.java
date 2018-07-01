@@ -8,6 +8,7 @@ import ru.mail.park.android.injectons.DaggerAppComponent;
 
 public class App extends Application {
 
+	public static boolean isFirstTime = true;
 	private static AppComponent component;
 
 	public static AppComponent getComponent() {

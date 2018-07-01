@@ -26,6 +26,8 @@
 
     <string name="navigation_drawer_open">Отркыть панель навигации</string>
     <string name="navigation_drawer_close">Закрыть панель навигации</string>
+    <string name="sign_in">Войти</string>
+    <string name="sign_out">Выйти</string>
 
     <!--Text for labels-->
     <string name="title_of_dashboard">Название нового расписания</string>

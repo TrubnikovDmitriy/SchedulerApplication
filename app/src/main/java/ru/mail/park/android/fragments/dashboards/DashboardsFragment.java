@@ -42,7 +42,7 @@ public abstract class DashboardsFragment extends Fragment {
 
 	@Override
 	@CallSuper
-	public void onSaveInstanceState(Bundle outState) {
+	public void onSaveInstanceState(@NonNull Bundle outState) {
 		super.onSaveInstanceState(outState);
 		outState.putSerializable(DATASET, dataset == null ? null : dataset.toArray());
 		setHasOptionsMenu(true);
