@@ -39,7 +39,7 @@ public class Tools {
 
 	@NonNull
 	public static Date getDate(final long timestamp) {
-		return new Date(timestamp * 1000);
+		return new Date(timestamp);
 	}
 
 	@NonNull
@@ -49,8 +49,7 @@ public class Tools {
 
 	@NonNull
 	public static DateTime getDateTime(@NonNull final Event event) {
-		// TODO remove *1000 for milliseconds
-		return DateTime.forInstant(event.getTimestamp() * 1000, TIME_ZONE);
+		return DateTime.forInstant(event.getTimestamp(), TIME_ZONE);
 	}
 
 	public static float getCalendarCellWidthInPixels(@NonNull Resources resources) {

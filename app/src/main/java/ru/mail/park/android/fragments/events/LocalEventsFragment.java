@@ -4,6 +4,7 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 
 import hirondelle.date4j.DateTime;
+import retrofit2.Response;
 import ru.mail.park.android.App;
 import ru.mail.park.android.R;
 import ru.mail.park.android.database.SchedulerDBHelper;
@@ -12,6 +13,7 @@ import ru.mail.park.android.dialogs.DialogDashboardRename;
 import ru.mail.park.android.fragments.calendar.CreateEventFragment;
 import ru.mail.park.android.models.Dashboard;
 import ru.mail.park.android.models.Event;
+import ru.mail.park.android.network.ServerAPI;
 import ru.mail.park.android.recycler.EventAdapter;
 import ru.mail.park.android.utils.ListenerWrapper;
 import ru.mail.park.android.utils.Tools;
@@ -34,9 +36,11 @@ import javax.inject.Inject;
 
 public class LocalEventsFragment extends EventsFragment {
 
-	@Inject
-	public SchedulerDBHelper dbManager;
+	@Inject public SchedulerDBHelper dbManager;
+	@Inject public ServerAPI serverAPI;
+
 	private DialogDashboardRename dialogRename;
+
 
 	public LocalEventsFragment() { }
 
@@ -92,6 +96,7 @@ public class LocalEventsFragment extends EventsFragment {
 				return true;
 
 			case R.id.menu_upload_dashboard:
+				serverAPI.postDashboard(dashboard, new OnServerDashboardUpdate());
 				return true;
 
 			case R.id.menu_create_event:
@@ -160,13 +165,22 @@ public class LocalEventsFragment extends EventsFragment {
 				// Validate title
 				newTitle = newTitle.trim();
 				if (newTitle.length() < Tools.TITLE_MIN_LENGTH) {
-					Toast.makeText(getContext(), R.string.too_short_title, Toast.LENGTH_SHORT).show();
+					Toast.makeText(getContext(), R.string.fcm_update_event, Toast.LENGTH_SHORT).show();
 					return;
 				}
 
 				dashboard.setTitle(newTitle);
 				final ListenerWrapper wrapper = dbManager.renameDashboard(dashboard, new OnRenameDashboardListener());
 				wrappers.add(wrapper);
+			}
+		});
+	}
+
+	private void toastMessage(@NonNull final String message) {
+		handler.post(new Runnable() {
+			@Override
+			public void run() {
+				Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
 			}
 		});
 	}
@@ -268,5 +282,32 @@ public class LocalEventsFragment extends EventsFragment {
 					.addToBackStack(null)
 					.commit();
 		}
+	}
+
+	class OnServerDashboardUpdate implements ServerAPI.OnRequestCompleteListener<Dashboard> {
+
+			@Override
+			public void onSuccess(Response<Dashboard> response, Dashboard body) {
+				switch (response.code()) {
+					case 201:
+						toastMessage(getResources().getString(R.string.remote_dashboard_upload));
+						return;
+
+					case 200:
+						toastMessage(getResources().getString(R.string.remote_dashboard_update));
+						return;
+
+					default:
+						onFailure(null);
+				}
+			}
+
+			@Override
+			public void onFailure(Exception exception) {
+				if (exception != null) {
+					Log.e("Code", "postDashboard", exception);
+				}
+				toastMessage(getResources().getString(R.string.network_err));
+			}
 	}
 }

@@ -5,6 +5,8 @@ import ru.mail.park.android.models.ShortDashboard;
 import ru.mail.park.android.utils.ListenerWrapper;
 import android.support.annotation.NonNull;
 
+import com.google.firebase.iid.FirebaseInstanceId;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -30,6 +32,7 @@ public class ServerAPI {
 				.create(DashboardService.class);
 	}
 
+
 	public ListenerWrapper<OnRequestCompleteListener<List<ShortDashboard>>> getDashboards(
 			@NonNull OnRequestCompleteListener<List<ShortDashboard>> listener) {
 
@@ -54,6 +57,7 @@ public class ServerAPI {
 		return wrapper;
 	}
 
+
 	public ListenerWrapper<OnRequestCompleteListener<Dashboard>> getEvents(
 			final String ID, @NonNull OnRequestCompleteListener<Dashboard> listener) {
 
@@ -77,6 +81,86 @@ public class ServerAPI {
 		});
 		return wrapper;
 	}
+
+
+	public ListenerWrapper<OnRequestCompleteListener<Dashboard>> postDashboard(
+			@NonNull final Dashboard dashboard,
+			@NonNull OnRequestCompleteListener<Dashboard> listener) {
+
+		final ListenerWrapper<OnRequestCompleteListener<Dashboard>> wrapper = new ListenerWrapper<>(listener);
+		executor.execute(new Runnable() {
+			@Override
+			public void run() {
+				Call<Dashboard> call = service.postDashboard(dashboard, FirebaseInstanceId.getInstance().getToken());
+				try {
+					Response<Dashboard> response = call.execute();
+					if (wrapper.getListener() != null) {
+						wrapper.getListener().onSuccess(response, response.body());
+					}
+
+				} catch (IOException | RuntimeException e) {
+					if (wrapper.getListener() != null) {
+						wrapper.getListener().onFailure(e);
+					}
+				}
+			}
+		});
+		return wrapper;
+	}
+
+
+
+	public ListenerWrapper<OnRequestCompleteListener<Dashboard>> subscribe(
+			@NonNull final String dashID,
+			@NonNull OnRequestCompleteListener<Dashboard> listener) {
+
+		final ListenerWrapper<OnRequestCompleteListener<Dashboard>> wrapper = new ListenerWrapper<>(listener);
+		executor.execute(new Runnable() {
+			@Override
+			public void run() {
+				Call<Dashboard> call = service.subscribe(dashID, FirebaseInstanceId.getInstance().getToken());
+				try {
+					Response<Dashboard> response = call.execute();
+					if (wrapper.getListener() != null) {
+						wrapper.getListener().onSuccess(response, response.body());
+					}
+
+				} catch (IOException | RuntimeException e) {
+					if (wrapper.getListener() != null) {
+						wrapper.getListener().onFailure(e);
+					}
+				}
+			}
+		});
+		return wrapper;
+	}
+
+	public ListenerWrapper<OnRequestCompleteListener<Dashboard>> unsubscribe(
+			@NonNull final String dashID,
+			@NonNull OnRequestCompleteListener<Dashboard> listener) {
+
+		final ListenerWrapper<OnRequestCompleteListener<Dashboard>> wrapper = new ListenerWrapper<>(listener);
+		executor.execute(new Runnable() {
+			@Override
+			public void run() {
+				Call<Dashboard> call = service.unsubscribe(dashID, FirebaseInstanceId.getInstance().getToken());
+				try {
+					Response<Dashboard> response = call.execute();
+					if (wrapper.getListener() != null) {
+						wrapper.getListener().onSuccess(response, response.body());
+					}
+
+				} catch (IOException | RuntimeException e) {
+					if (wrapper.getListener() != null) {
+						wrapper.getListener().onFailure(e);
+					}
+				}
+			}
+		});
+		return wrapper;
+	}
+
+
 
 
 	public interface OnRequestCompleteListener<T> {

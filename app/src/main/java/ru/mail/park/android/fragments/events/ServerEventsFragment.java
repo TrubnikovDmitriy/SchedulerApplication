@@ -2,6 +2,7 @@ package ru.mail.park.android.fragments.events;
 
 import android.os.Bundle;
 
+import hirondelle.date4j.DateTime;
 import ru.mail.park.android.App;
 import ru.mail.park.android.R;
 import ru.mail.park.android.network.ServerAPI;
@@ -10,6 +11,9 @@ import ru.mail.park.android.utils.ListenerWrapper;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
@@ -20,6 +24,7 @@ import java.io.IOException;
 import javax.inject.Inject;
 
 import retrofit2.Response;
+import ru.mail.park.android.utils.Tools;
 
 
 public class ServerEventsFragment extends EventsFragment {
@@ -64,6 +69,49 @@ public class ServerEventsFragment extends EventsFragment {
 		}
 
 		return view;
+	}
+
+	@Override
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+		menu.clear();
+		inflater.inflate(R.menu.server_events, menu);
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+
+			case R.id.subscribe:
+				networkManager.subscribe(dashboard.getDashID(), new ServerAPI.OnRequestCompleteListener<Dashboard>() {
+					@Override
+					public void onSuccess(Response<Dashboard> response, Dashboard body) {
+						if (response.isSuccessful()) {
+							handler.post(new Runnable() {
+								@Override
+								public void run() {
+									Toast.makeText(getContext(), R.string.subscribe, Toast.LENGTH_LONG).show();
+								}
+							});
+						} else {
+							onFailure(null);
+						}
+					}
+
+					@Override
+					public void onFailure(@Nullable Exception exception) {
+						handler.post(new Runnable() {
+							@Override
+							public void run() {
+								Toast.makeText(getContext(), R.string.parse_err, Toast.LENGTH_LONG).show();
+							}
+						});
+					}
+				});
+				return true;
+
+			default:
+				return false;
+		}
 	}
 
 	class LoadEventsListener implements ServerAPI.OnRequestCompleteListener<Dashboard> {

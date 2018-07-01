@@ -1,5 +1,7 @@
 <resources>
 
+    <string name="channel_subscribe_message">Subscribe message</string>
+
     <!--Message for toast-->
     <string name="app_name">Scheduler</string>
     <string name="network_err">Error connecting to server</string>
@@ -10,9 +12,12 @@
     <string name="network_failure">Invalid server response</string>
     <string name="db_failure">Error accessing database</string>
     <string name="empty_title">The title can\'t be empty</string>
-    <string name="too_short_title">The title is too short</string>
+    <string name="fcm_update_event">The title is too short</string>
     <string name="too_long_title">The title is too long</string>
     <string name="options_dialog_dashboard">Select action</string>
+    <string name="remote_dashboard_upload">Your dashboard is successfully uploaded to server</string>
+    <string name="remote_dashboard_update">Your remote dashboard is successfully updated at server</string>
+    <string name="subscribe">You successfully subscribe to updates of this dashboard</string>
 
     <string name="local_dashes_title">My schedulers</string>
     <string name="cloud_dashes_title">Cloud of schedulers</string>
@@ -67,5 +72,10 @@
     <string name="event_type_label">Type of event: </string>
     <string name="event_priority_label">Priority: </string>
     <string name="no_description">No description available</string>
+
+    <!--FCM-->
+    <string name="fcm_inserted_events">Inserted events:</string>
+    <string name="fcm_updated_events">Updated events:</string>
+    <string name="fcm_deleted_events">Deleted events:</string>
 
 </resources>

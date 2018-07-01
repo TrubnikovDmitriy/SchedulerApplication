@@ -206,7 +206,7 @@ public class CreateEventFragment extends Fragment {
 			final String title = editTitle.getText().toString().trim();
 			// Validationgit
 			if (title.length() < Tools.TITLE_MIN_LENGTH) {
-				Toast.makeText(getContext(), R.string.too_short_title, Toast.LENGTH_SHORT).show();
+				Toast.makeText(getContext(), R.string.fcm_update_event, Toast.LENGTH_SHORT).show();
 				return;
 			}
 			final String description = editDescription.getText().toString().trim();
@@ -219,7 +219,7 @@ public class CreateEventFragment extends Fragment {
 
 			event = new Event(
 					description,
-					date.getTime() / 1000,
+					date.getTime(),
 					eventID,
 					dashID,
 					title,

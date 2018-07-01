@@ -122,7 +122,7 @@ public class LocalDashboardsFragment extends DashboardsFragment {
 				// Validation of title
 				final String newTitle = dialogDashboardCreator.getInputText().trim();
 				if (newTitle.length() < TITLE_MIN_LENGTH) {
-					Toast.makeText(getContext(), R.string.too_short_title, Toast.LENGTH_SHORT).show();
+					Toast.makeText(getContext(), R.string.fcm_update_event, Toast.LENGTH_SHORT).show();
 					return;
 				}
 

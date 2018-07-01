@@ -1,5 +1,7 @@
 <resources>
 
+    <string name="channel_subscribe_message">Сообщения обновлений</string>
+
     <!--Message for toast-->
     <string name="app_name">Расписание</string>
     <string name="network_err">Ошибка соединения с сервером. Проверьте интеренет соединение</string>
@@ -10,9 +12,12 @@
     <string name="network_failure">Некорректный ответ сервера</string>
     <string name="db_failure">Ошибка при обращении к базе данных</string>
     <string name="empty_title">Заголовок не может быть пустым</string>
-    <string name="too_short_title">Слишком короткий заголовок</string>
+    <string name="fcm_update_event">Слишком короткий заголовок</string>
     <string name="too_long_title">Слишком длинный заголовок</string>
     <string name="options_dialog_dashboard">Выберите действие</string>
+    <string name="remote_dashboard_upload">Ваше расписание успешно загружено на сервер</string>
+    <string name="remote_dashboard_update">Ваше расписание успешно обновленно на сервере</string>
+    <string name="subscribe">Вы успешно подписались на обновления</string>
 
     <string name="local_dashes_title">Мои расписания</string>
     <string name="cloud_dashes_title">Облако расписаний</string>
@@ -66,4 +71,8 @@
     <string name="event_priority_label">Важность: </string>
     <string name="no_description">Описание отсутсвует</string>
 
+    <!--FCM-->
+    <string name="fcm_inserted_events">Добавлено событие:</string>
+    <string name="fcm_updated_events">Изменено событие:</string>
+    <string name="fcm_deleted_events">Удалено событие:</string>
 </resources>

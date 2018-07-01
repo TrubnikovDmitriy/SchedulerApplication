@@ -13,6 +13,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.StaggeredGridLayoutManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -141,11 +142,10 @@ public class ServerDashboardsFragment extends DashboardsFragment {
 				handler.post(new Runnable() {
 					@Override
 					public void run() {
-						Toast.makeText(
-								getContext(),
-								dashboards.isEmpty() ? R.string.empty_dataset : R.string.success_load_dashboards,
-								Toast.LENGTH_SHORT
-						).show();
+						if (dashboards.isEmpty()) {
+							Toast.makeText(getContext(),
+									R.string.empty_dataset, Toast.LENGTH_SHORT).show();
+						}
 						progressBar.setVisibility(ProgressBar.INVISIBLE);
 						updateDataset(dashboards);
 					}
@@ -164,7 +164,11 @@ public class ServerDashboardsFragment extends DashboardsFragment {
 		}
 
 		@Override
-		public void onFailure(Exception exception) {
+		public void onFailure(@Nullable Exception exception) {
+
+			if (exception != null) {
+				Log.e("onFailure", "NetworkLoadDashboardsListener", exception);
+			}
 
 			// IOException - network problem
 			if (exception instanceof IOException) {

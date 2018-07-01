@@ -1,5 +1,9 @@
 package ru.mail.park.android;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.content.Context;
+import android.os.Build;
 import android.os.StrictMode;
 
 import butterknife.BindView;
@@ -21,13 +25,12 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 
-import com.google.firebase.iid.FirebaseInstanceId;
-
-import static android.content.ContentValues.TAG;
-
 
 public class MainActivity extends AppCompatActivity
 		implements NavigationView.OnNavigationItemSelectedListener {
+
+	public static final String SUBSCRIBE_MESSAGE = "SUBSCRIBE_MESSAGE";
+	public static final int SUBSCRIBE_MESSAGE_ID = 0;
 
 	@BindView(R.id.drawer_layout)
 	DrawerLayout drawerLayout;
@@ -61,6 +64,22 @@ public class MainActivity extends AppCompatActivity
 		toggle.syncState();
 
 		mainNavigation.setNavigationItemSelectedListener(this);
+//		mainNavigation.getMenu().performIdentifierAction(R.id.server_dashboards, 0);
+
+
+		if (Build.VERSION.SDK_INT < 26) {
+			return;
+		}
+		final NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+		if (manager != null) {
+			NotificationChannel defaultChannel = new NotificationChannel(
+					SUBSCRIBE_MESSAGE,
+					getString(R.string.channel_subscribe_message),
+					NotificationManager.IMPORTANCE_DEFAULT
+			);
+			manager.createNotificationChannel(defaultChannel);
+		}
+
 	}
 
 	@Override
