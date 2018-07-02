@@ -23,6 +23,9 @@ public class Event implements Serializable {
 	@SerializedName("priority")
 	private Priority priority;
 
+
+	public Event() { }
+
 	public Event(String text, Long timestamp, String eventID,
 	             String dashID, String title, EventType type,
 	             Priority priority) {

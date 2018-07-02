@@ -109,6 +109,10 @@ public class MainActivity extends AppCompatActivity
 			authentication();
 		}
 
+		if (App.isFirstTime) {
+			onNavigationItemSelected(mainNavigation.getMenu().findItem(R.id.local_dashboards));
+		}
+
 		App.isFirstTime = false;
 	}
 

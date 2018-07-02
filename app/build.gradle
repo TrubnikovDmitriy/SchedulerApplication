@@ -55,6 +55,7 @@ dependencies {
     // Firebase
     implementation group: 'com.google.firebase', name: 'firebase-core', version: '16.0.1'
     implementation group: 'com.google.firebase', name: 'firebase-messaging', version: '17.1.0'
+    implementation group: 'com.google.firebase', name: 'firebase-database', version: '16.0.1'
     implementation group: 'com.firebaseui', name: 'firebase-ui-auth', version: '4.0.0'
 }
 
