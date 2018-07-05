@@ -8,6 +8,8 @@ import ru.mail.park.android.R;
 import ru.mail.park.android.network.ServerAPI;
 import ru.mail.park.android.models.Dashboard;
 import ru.mail.park.android.utils.ListenerWrapper;
+
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -41,7 +43,7 @@ public class ServerEventsFragment extends EventsFragment {
 	}
 
 	@Override
-	public View onCreateView(LayoutInflater inflater,
+	public View onCreateView(@NonNull LayoutInflater inflater,
 	                         @Nullable final ViewGroup container,
 	                         @Nullable final Bundle savedInstanceState) {
 

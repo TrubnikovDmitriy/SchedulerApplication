@@ -6,13 +6,11 @@ import android.os.Bundle;
 import ru.mail.park.android.R;
 import ru.mail.park.android.App;
 import ru.mail.park.android.database.RealtimeDatabaseHelper;
-import ru.mail.park.android.database.SchedulerDBHelper;
 import ru.mail.park.android.dialogs.DialogDashboardCreator;
 import ru.mail.park.android.fragments.events.LocalEventsFragment;
 import ru.mail.park.android.models.Dashboard;
 import ru.mail.park.android.models.ShortDashboard;
 import ru.mail.park.android.recycler.DashboardAdapter;
-import ru.mail.park.android.utils.Tools;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -24,7 +22,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
@@ -33,18 +30,12 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.Iterator;
-
-import javax.inject.Inject;
 
 
 public class LocalDashboardsFragment extends DashboardsFragment {
 
-	@Inject
-	public SchedulerDBHelper dbManager;
 	private RealtimeDatabaseHelper dbHelper = new RealtimeDatabaseHelper();
 	private DialogDashboardCreator dialogDashboardCreator;
 
@@ -95,12 +86,6 @@ public class LocalDashboardsFragment extends DashboardsFragment {
 				StaggeredGridLayoutManager.VERTICAL
 		));
 
-		// Receiving data from DB
-//		dbHelper.getShortDashboards(
-//				Tools.checkAuthAndGetUser().getUid(),
-//				new OnLoadLocalDashboards()
-//		);
-
 		return view;
 	}
 
@@ -112,7 +97,7 @@ public class LocalDashboardsFragment extends DashboardsFragment {
 	private void initialDialogs() {
 		// If user rotates the screen the click-listeners will be lost
 		// We find an existing DialogFragment by tag to restore listeners after rotation
-		dialogDashboardCreator = (DialogDashboardCreator) getFragmentManager()
+		dialogDashboardCreator = (DialogDashboardCreator) requireFragmentManager()
 				.findFragmentByTag(DialogDashboardCreator.DIALOG_TAG);
 		// otherwise - create new one
 		if (dialogDashboardCreator == null) {
@@ -184,7 +169,7 @@ public class LocalDashboardsFragment extends DashboardsFragment {
 			// To prevent double tap
 			if (!dialogDashboardCreator.isAdded()) {
 				dialogDashboardCreator.show(
-						getFragmentManager(), DialogDashboardCreator.DIALOG_TAG);
+						requireFragmentManager(), DialogDashboardCreator.DIALOG_TAG);
 			}
 		}
 	}
@@ -209,33 +194,6 @@ public class LocalDashboardsFragment extends DashboardsFragment {
 					.replace(R.id.container, fragment)
 					.addToBackStack(null)
 					.commit();
-		}
-	}
-
-	class OnLoadLocalDashboards implements ValueEventListener {
-		@Override
-		public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-			final Iterator<DataSnapshot> iterable = dataSnapshot.getChildren().iterator();
-			final ArrayList<ShortDashboard> dashboards = new ArrayList<>();
-			while (iterable.hasNext()) {
-				final DataSnapshot childSnapshot = iterable.next();
-				final ShortDashboard dashboard = getShortDashFromDataSnapshot(childSnapshot);
-				dashboards.add(dashboard);
-			}
-
-			if (dashboards.isEmpty()) {
-				Toast.makeText(getContext(), R.string.empty_dataset, Toast.LENGTH_LONG).show();
-			}
-			progressBar.setVisibility(ProgressBar.INVISIBLE);
-			updateDataset(dashboards);
-
-		}
-
-		@Override
-		public void onCancelled(@NonNull DatabaseError databaseError) {
-			Toast.makeText(getContext(), databaseError.getMessage(), Toast.LENGTH_LONG).show();
-			progressBar.setVisibility(ProgressBar.INVISIBLE);
-			updateDataset(null);
 		}
 	}
 

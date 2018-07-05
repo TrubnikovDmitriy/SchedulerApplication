@@ -81,10 +81,9 @@ public abstract class EventsFragment extends Fragment {
 
 	@Override
 	@CallSuper
-	public View onCreateView(LayoutInflater inflater,
+	public View onCreateView(@NonNull LayoutInflater inflater,
 	                         @Nullable ViewGroup container,
 	                         @Nullable Bundle savedInstanceState) {
-
 		final View view = inflater.inflate(R.layout.fragment_events, container, false);
 		progressBar = view.findViewById(R.id.progressbar_event_load);
 		resources = view.getResources();
@@ -102,7 +101,7 @@ public abstract class EventsFragment extends Fragment {
 
 	@Override
 	@CallSuper
-	public void onSaveInstanceState(Bundle outState) {
+	public void onSaveInstanceState(@NonNull Bundle outState) {
 		super.onSaveInstanceState(outState);
 		outState.putSerializable(DASHBOARD_BUNDLE, dashboard);
 		setHasOptionsMenu(true);

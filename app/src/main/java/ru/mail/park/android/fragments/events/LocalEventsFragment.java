@@ -8,7 +8,6 @@ import retrofit2.Response;
 import ru.mail.park.android.App;
 import ru.mail.park.android.R;
 import ru.mail.park.android.database.RealtimeDatabaseHelper;
-import ru.mail.park.android.database.SchedulerDBHelper;
 import ru.mail.park.android.dialogs.DialogConfirm;
 import ru.mail.park.android.dialogs.DialogDashboardRename;
 import ru.mail.park.android.fragments.calendar.CreateEventFragment;
@@ -47,12 +46,9 @@ import javax.inject.Inject;
 
 public class LocalEventsFragment extends EventsFragment {
 
+	@Inject public ServerAPI serverAPI;
 	private final RealtimeDatabaseHelper dbHelper = new RealtimeDatabaseHelper();
 
-	@Inject public SchedulerDBHelper dbManager;
-	@Inject public ServerAPI serverAPI;
-
-	private FragmentManager fragmentManager;
 	private DialogDashboardRename dialogRename;
 
 	public LocalEventsFragment() { }
@@ -62,14 +58,11 @@ public class LocalEventsFragment extends EventsFragment {
 		App.getComponent().inject(this);
 		super.onCreate(savedInstanceState);
 		setHasOptionsMenu(true);
-		if (getFragmentManager() != null) {
-			fragmentManager = getFragmentManager();
-		}
 		initialDialogs();
 	}
 
 	@Override
-	public View onCreateView(LayoutInflater inflater,
+	public View onCreateView(@NonNull LayoutInflater inflater,
 	                         @Nullable final ViewGroup container,
 	                         @Nullable final Bundle savedInstanceState) {
 
@@ -124,10 +117,6 @@ public class LocalEventsFragment extends EventsFragment {
 				calendarFragment.moveToDateTime(DateTime.today(Tools.TIME_ZONE));
 				return true;
 
-			case R.id.menu_upload_dashboard:
-				serverAPI.postDashboard(dashboard, new OnServerDashboardUpdate());
-				return true;
-
 			case R.id.menu_create_event:
 				// Create fragment and set arguments
 				final Fragment fragment = new CreateEventFragment();
@@ -140,7 +129,7 @@ public class LocalEventsFragment extends EventsFragment {
 				fragment.setArguments(bundle);
 
 				// Replace content in FrameLayout-container
-				fragmentManager
+				requireFragmentManager()
 						.beginTransaction()
 						.replace(R.id.container, fragment)
 						.addToBackStack(null)
@@ -148,7 +137,7 @@ public class LocalEventsFragment extends EventsFragment {
 				return true;
 
 			case R.id.menu_rename_dashboard:
-				dialogRename.show(fragmentManager, DialogDashboardRename.DIALOG_TAG);
+				dialogRename.show(requireFragmentManager(), DialogDashboardRename.DIALOG_TAG);
 				return true;
 
 			case R.id.menu_delete_dashboard:
@@ -167,10 +156,10 @@ public class LocalEventsFragment extends EventsFragment {
 					public void onClick(DialogInterface dialog, int which) {
 						dbHelper.getPrivateDashInfo(user.getUid(), dashboard.getDashID()).removeValue();
 						dbHelper.getPrivateDashEvents(user.getUid(), dashboard.getDashID()).removeValue();
-						fragmentManager.popBackStack();
+						requireFragmentManager().popBackStack();
 					}
 				});
-				dialogConfirm.show(fragmentManager, null);
+				dialogConfirm.show(requireFragmentManager(), null);
 				return true;
 
 			default:
@@ -179,7 +168,7 @@ public class LocalEventsFragment extends EventsFragment {
 	}
 
 	@Override
-	public void onSaveInstanceState(Bundle outState) {
+	public void onSaveInstanceState(@NonNull Bundle outState) {
 		super.onSaveInstanceState(outState);
 		setHasOptionsMenu(true);
 	}
@@ -234,15 +223,6 @@ public class LocalEventsFragment extends EventsFragment {
 		});
 	}
 
-	private void toastMessage(@NonNull final String message) {
-		handler.post(new Runnable() {
-			@Override
-			public void run() {
-				Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
-			}
-		});
-	}
-
 	class OnLoadEventsFirebaseListener implements ValueEventListener {
 
 		@NonNull final Dashboard dashboard;
@@ -273,30 +253,6 @@ public class LocalEventsFragment extends EventsFragment {
 		}
 	}
 
-	class OnDeleteDashboardListener implements SchedulerDBHelper.OnDeleteCompleteListener {
-
-		@Override
-		public void onSuccess(int numberOfRowsAffected) {
-			if (numberOfRowsAffected != 1) {
-				onFailure(null);
-			}
-			getFragmentManager().popBackStack();
-		}
-
-		@Override
-		public void onFailure(@Nullable Exception exception) {
-			if (exception != null) {
-				Log.e("DB", "Rename", exception);
-			}
-			handler.post(new Runnable() {
-				@Override
-				public void run() {
-					Toast.makeText(getContext(), R.string.db_failure, Toast.LENGTH_LONG).show();
-				}
-			});
-		}
-	}
-
 	class OnCardEventClickListener implements EventAdapter.OnCardEventClickListener {
 		@Override
 		public void onEventCardClick(@NonNull final Event event) {
@@ -311,38 +267,11 @@ public class LocalEventsFragment extends EventsFragment {
 			fragment.setArguments(bundle);
 
 			// Replace content in FrameLayout-container
-			getFragmentManager()
+			requireFragmentManager()
 					.beginTransaction()
 					.replace(R.id.container, fragment)
 					.addToBackStack(null)
 					.commit();
-		}
-	}
-
-	class OnServerDashboardUpdate implements ServerAPI.OnRequestCompleteListener<Dashboard> {
-
-		@Override
-		public void onSuccess(Response<Dashboard> response, Dashboard body) {
-			switch (response.code()) {
-				case 201:
-					toastMessage(getResources().getString(R.string.remote_dashboard_upload));
-					return;
-
-				case 200:
-					toastMessage(getResources().getString(R.string.remote_dashboard_update));
-					return;
-
-				default:
-					onFailure(null);
-			}
-		}
-
-		@Override
-		public void onFailure(Exception exception) {
-			if (exception != null) {
-				Log.e("Code", "postDashboard", exception);
-			}
-			toastMessage(getResources().getString(R.string.network_err));
 		}
 	}
 }

@@ -11,13 +11,6 @@
         app:showAsAction="always"
         />
     <item
-        android:id="@+id/menu_upload_dashboard"
-        android:title="@string/menu_upload"
-        android:icon="@mipmap/icon_upload"
-        android:orderInCategory="2"
-        app:showAsAction="ifRoom"
-        />
-    <item
         android:id="@+id/menu_create_event"
         android:title="@string/menu_create_event"
         android:icon="@mipmap/icon_create_event"

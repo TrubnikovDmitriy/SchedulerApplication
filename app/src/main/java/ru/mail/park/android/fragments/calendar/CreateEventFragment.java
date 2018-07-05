@@ -7,7 +7,6 @@ import android.os.Bundle;
 import ru.mail.park.android.App;
 import ru.mail.park.android.R;
 import ru.mail.park.android.database.RealtimeDatabaseHelper;
-import ru.mail.park.android.database.SchedulerDBHelper;
 import ru.mail.park.android.dialogs.DialogConfirm;
 import ru.mail.park.android.dialogs.DialogDateTimePicker;
 import ru.mail.park.android.models.Event;
@@ -38,9 +37,6 @@ import com.google.firebase.database.DatabaseReference;
 
 import java.util.Date;
 
-import javax.inject.Inject;
-
-
 public class CreateEventFragment extends Fragment {
 
 	public static final String DATE_BUNDLE = "CURRENT_DATE_BUNDLE";
@@ -56,7 +52,6 @@ public class CreateEventFragment extends Fragment {
 	private Spinner spinnerType;
 	private View view;
 
-	@Inject SchedulerDBHelper dbHelper;
 	private final RealtimeDatabaseHelper rdbHelper = new RealtimeDatabaseHelper();
 
 	@Nullable
@@ -268,6 +263,7 @@ public class CreateEventFragment extends Fragment {
 			// If there are no changes, just go back
 			if (newEvent.equals(event)) {
 				fragmentManager.popBackStack();
+				return;
 			}
 			event = newEvent;
 
