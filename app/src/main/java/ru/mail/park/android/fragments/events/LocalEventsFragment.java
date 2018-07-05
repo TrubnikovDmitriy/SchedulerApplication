@@ -7,20 +7,22 @@ import hirondelle.date4j.DateTime;
 import retrofit2.Response;
 import ru.mail.park.android.App;
 import ru.mail.park.android.R;
+import ru.mail.park.android.database.RealtimeDatabaseHelper;
 import ru.mail.park.android.database.SchedulerDBHelper;
 import ru.mail.park.android.dialogs.DialogConfirm;
 import ru.mail.park.android.dialogs.DialogDashboardRename;
 import ru.mail.park.android.fragments.calendar.CreateEventFragment;
 import ru.mail.park.android.models.Dashboard;
 import ru.mail.park.android.models.Event;
+import ru.mail.park.android.models.ShortDashboard;
 import ru.mail.park.android.network.ServerAPI;
 import ru.mail.park.android.recycler.EventAdapter;
-import ru.mail.park.android.utils.ListenerWrapper;
 import ru.mail.park.android.utils.Tools;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -31,16 +33,27 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.ArrayList;
+
 import javax.inject.Inject;
 
 
 public class LocalEventsFragment extends EventsFragment {
 
+	private final RealtimeDatabaseHelper dbHelper = new RealtimeDatabaseHelper();
+
 	@Inject public SchedulerDBHelper dbManager;
 	@Inject public ServerAPI serverAPI;
 
+	private FragmentManager fragmentManager;
 	private DialogDashboardRename dialogRename;
-
 
 	public LocalEventsFragment() { }
 
@@ -49,6 +62,9 @@ public class LocalEventsFragment extends EventsFragment {
 		App.getComponent().inject(this);
 		super.onCreate(savedInstanceState);
 		setHasOptionsMenu(true);
+		if (getFragmentManager() != null) {
+			fragmentManager = getFragmentManager();
+		}
 		initialDialogs();
 	}
 
@@ -62,19 +78,32 @@ public class LocalEventsFragment extends EventsFragment {
 		progressBar.setVisibility(ProgressBar.VISIBLE);
 		adapter.setListener(new OnCardEventClickListener());
 
-
-		if (savedInstanceState == null) {
-			final String dashID = getArguments().getString(DASHBOARD_ID);
-			if (dashID != null) {
-				final ListenerWrapper wrapper = dbManager.selectDashboard(dashID, new OnLoadDashboardListener());
-				wrappers.add(wrapper);
+		if (savedInstanceState == null && getArguments() != null) {
+			final ShortDashboard shortDashboard = (ShortDashboard) getArguments().get(SHORT_DASHBOARD);
+			if (shortDashboard != null) {
+				dashboard = new Dashboard();
+				dashboard.setTitle(shortDashboard.getTitle());
+				dashboard.setDashID(shortDashboard.getDashID());
 			}
-		} else {
+		} else if (savedInstanceState != null) {
 			dashboard = (Dashboard) savedInstanceState.getSerializable(DASHBOARD_BUNDLE);
-			if (dashboard != null) {
-				final ListenerWrapper wrapper = dbManager.selectDashboard(dashboard.getDashID(), new OnLoadDashboardListener());
-				wrappers.add(wrapper);
-			}
+		}
+
+
+
+		// Check authentication
+		final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+		if (user == null) {
+			Toast.makeText(getContext(), R.string.auth_access_db, Toast.LENGTH_LONG).show();
+			return view;
+		}
+
+		if (dashboard != null) {
+			dbHelper.getDashboard(
+					user.getUid(),
+					dashboard.getDashID(),
+					new OnLoadEventsFirebaseListener(dashboard)
+			);
 		}
 
 		return view;
@@ -111,7 +140,7 @@ public class LocalEventsFragment extends EventsFragment {
 				fragment.setArguments(bundle);
 
 				// Replace content in FrameLayout-container
-				getFragmentManager()
+				fragmentManager
 						.beginTransaction()
 						.replace(R.id.container, fragment)
 						.addToBackStack(null)
@@ -119,23 +148,29 @@ public class LocalEventsFragment extends EventsFragment {
 				return true;
 
 			case R.id.menu_rename_dashboard:
-				dialogRename.show(getFragmentManager(), DialogDashboardRename.DIALOG_TAG);
+				dialogRename.show(fragmentManager, DialogDashboardRename.DIALOG_TAG);
 				return true;
 
 			case R.id.menu_delete_dashboard:
+				// Check authentication
+				final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+				if (user == null) {
+					Toast.makeText(getContext(), R.string.auth_access_db, Toast.LENGTH_LONG).show();
+					return true;
+				}
+
 				isAlive.set(false);
 				final DialogConfirm dialogConfirm = new DialogConfirm();
 				dialogConfirm.setTitle(getResources().getString(R.string.delete_dashboard_confirm));
 				dialogConfirm.setListener(new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
-						dbManager.deleteDashboard(
-								dashboard.getDashID(),
-								new OnDeleteDashboardListener()
-						);
+						dbHelper.getPrivateDashInfo(user.getUid(), dashboard.getDashID()).removeValue();
+						dbHelper.getPrivateDashEvents(user.getUid(), dashboard.getDashID()).removeValue();
+						fragmentManager.popBackStack();
 					}
 				});
-				dialogConfirm.show(getFragmentManager(), null);
+				dialogConfirm.show(fragmentManager, null);
 				return true;
 
 			default:
@@ -152,6 +187,10 @@ public class LocalEventsFragment extends EventsFragment {
 	private void initialDialogs() {
 		// If user rotates the screen the click-listeners will be lost
 		// We find an existing DialogFragment by tag to restore listeners after rotation
+		if (getFragmentManager() == null) {
+			Log.e("Null", "Can't get FragmentManager");
+			return;
+		}
 		dialogRename = (DialogDashboardRename) getFragmentManager()
 				.findFragmentByTag(DialogDashboardRename.DIALOG_TAG);
 		// otherwise - create new one
@@ -170,8 +209,27 @@ public class LocalEventsFragment extends EventsFragment {
 				}
 
 				dashboard.setTitle(newTitle);
-				final ListenerWrapper wrapper = dbManager.renameDashboard(dashboard, new OnRenameDashboardListener());
-				wrappers.add(wrapper);
+				final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+				if (user == null) {
+					Toast.makeText(getContext(), R.string.auth_access_db, Toast.LENGTH_LONG).show();
+					return;
+				}
+
+				final DatabaseReference titleRef = dbHelper
+						.getPrivateDashInfo(user.getUid(), dashboard.getDashID())
+						.child(RealtimeDatabaseHelper.TITLE);
+				titleRef.setValue(newTitle);
+				titleRef.addListenerForSingleValueEvent(new ValueEventListener() {
+					@Override
+					public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+						updateActionBarTitle();
+					}
+
+					@Override
+					public void onCancelled(@NonNull DatabaseError databaseError) {
+						Toast.makeText(getContext(), databaseError.getMessage(), Toast.LENGTH_LONG).show();
+					}
+				});
 			}
 		});
 	}
@@ -185,27 +243,33 @@ public class LocalEventsFragment extends EventsFragment {
 		});
 	}
 
-	class OnLoadDashboardListener implements SchedulerDBHelper.OnSelectCompleteListener<Dashboard> {
+	class OnLoadEventsFirebaseListener implements ValueEventListener {
+
+		@NonNull final Dashboard dashboard;
+
+		OnLoadEventsFirebaseListener(@NonNull Dashboard dashboard) {
+			this.dashboard = dashboard;
+		}
 
 		@Override
-		public void onSuccess(Dashboard data) {
-			dashboard = data;
+		public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+			final ArrayList<Event> events = new ArrayList<>();
+			for (final DataSnapshot snapshot : dataSnapshot.getChildren()) {
+				Event event = dbHelper.parseEvent(snapshot);
+				events.add(event);
+			}
+			dashboard.setEvents(events);
 			updateActionBarTitle();
 			createCalendarFragment(null);
 			calendarFragment.enableLongClicks();
-			updateEventSetFromBackground(data);
+			updateEventSetFromBackground(dashboard);
 			removeProgressBar();
 		}
 
 		@Override
-		public void onFailure(Exception exception) {
-			handler.post(new Runnable() {
-				@Override
-				public void run() {
-					Toast.makeText(getContext(), R.string.db_failure, Toast.LENGTH_LONG).show();
-					progressBar.setVisibility(ProgressBar.INVISIBLE);
-				}
-			});
+		public void onCancelled(@NonNull DatabaseError databaseError) {
+			Toast.makeText(getContext(), databaseError.getMessage(), Toast.LENGTH_LONG).show();
+			progressBar.setVisibility(ProgressBar.INVISIBLE);
 		}
 	}
 
@@ -217,35 +281,6 @@ public class LocalEventsFragment extends EventsFragment {
 				onFailure(null);
 			}
 			getFragmentManager().popBackStack();
-		}
-
-		@Override
-		public void onFailure(@Nullable Exception exception) {
-			if (exception != null) {
-				Log.e("DB", "Rename", exception);
-			}
-			handler.post(new Runnable() {
-				@Override
-				public void run() {
-					Toast.makeText(getContext(), R.string.db_failure, Toast.LENGTH_LONG).show();
-				}
-			});
-		}
-	}
-
-	class OnRenameDashboardListener implements SchedulerDBHelper.OnUpdateCompleteListener {
-
-		@Override
-		public void onSuccess(int numberOfRowsAffected) {
-			if (numberOfRowsAffected != 1) {
-				onFailure(null);
-			}
-			handler.post(new Runnable() {
-				@Override
-				public void run() {
-					updateActionBarTitle();
-				}
-			});
 		}
 
 		@Override
@@ -286,28 +321,28 @@ public class LocalEventsFragment extends EventsFragment {
 
 	class OnServerDashboardUpdate implements ServerAPI.OnRequestCompleteListener<Dashboard> {
 
-			@Override
-			public void onSuccess(Response<Dashboard> response, Dashboard body) {
-				switch (response.code()) {
-					case 201:
-						toastMessage(getResources().getString(R.string.remote_dashboard_upload));
-						return;
+		@Override
+		public void onSuccess(Response<Dashboard> response, Dashboard body) {
+			switch (response.code()) {
+				case 201:
+					toastMessage(getResources().getString(R.string.remote_dashboard_upload));
+					return;
 
-					case 200:
-						toastMessage(getResources().getString(R.string.remote_dashboard_update));
-						return;
+				case 200:
+					toastMessage(getResources().getString(R.string.remote_dashboard_update));
+					return;
 
-					default:
-						onFailure(null);
-				}
+				default:
+					onFailure(null);
 			}
+		}
 
-			@Override
-			public void onFailure(Exception exception) {
-				if (exception != null) {
-					Log.e("Code", "postDashboard", exception);
-				}
-				toastMessage(getResources().getString(R.string.network_err));
+		@Override
+		public void onFailure(Exception exception) {
+			if (exception != null) {
+				Log.e("Code", "postDashboard", exception);
 			}
+			toastMessage(getResources().getString(R.string.network_err));
+		}
 	}
 }

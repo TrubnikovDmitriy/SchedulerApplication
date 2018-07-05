@@ -112,6 +112,7 @@ public class SchedulerDBHelper extends SQLiteOpenHelper {
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) { }
 
 
+	@Deprecated
 	public ListenerWrapper<OnSelectCompleteListener<ArrayList<ShortDashboard>>> selectShortDashboards(
 			@NonNull OnSelectCompleteListener<ArrayList<ShortDashboard>> listener) {
 
@@ -150,6 +151,7 @@ public class SchedulerDBHelper extends SQLiteOpenHelper {
 		return wrapper;
 	}
 
+	@Deprecated
 	public ListenerWrapper<OnSelectCompleteListener<Dashboard>> selectDashboard(
 			@NonNull final String dashID,
 			@NonNull OnSelectCompleteListener<Dashboard> listener) {
@@ -218,7 +220,7 @@ public class SchedulerDBHelper extends SQLiteOpenHelper {
 
 					if (cursor.moveToFirst()) {
 						final String author = cursor.getString(cursor.getColumnIndex(DASH.AUTHOR.getName()));
-						final Long authorID = cursor.getLong(cursor.getColumnIndex(DASH.AUTHOR_ID.getName()));
+						final String authorID = cursor.getString(cursor.getColumnIndex(DASH.AUTHOR_ID.getName()));
 						final String title = cursor.getString(cursor.getColumnIndex(DASH.TITLE.getName()));
 
 						dashboard.setAuthor(author);
@@ -244,6 +246,7 @@ public class SchedulerDBHelper extends SQLiteOpenHelper {
 		return wrapper;
 	}
 
+	@Deprecated
 	public ListenerWrapper<OnInsertCompleteListener> insertDashboard(
 			@NonNull final Dashboard dashboard,
 			@NonNull OnInsertCompleteListener listener) {
@@ -276,6 +279,7 @@ public class SchedulerDBHelper extends SQLiteOpenHelper {
 		return wrapper;
 	}
 
+	@Deprecated
 	public ListenerWrapper<OnInsertCompleteListener> insertEvent(
 			@NonNull final Event event,
 			@NonNull OnInsertCompleteListener listener) {
@@ -302,6 +306,7 @@ public class SchedulerDBHelper extends SQLiteOpenHelper {
 		return wrapper;
 	}
 
+	@Deprecated
 	public ListenerWrapper<OnUpdateCompleteListener> updateEvent(
 			@NonNull final Event event,
 			@NonNull OnUpdateCompleteListener listener) {
@@ -340,6 +345,7 @@ public class SchedulerDBHelper extends SQLiteOpenHelper {
 		return wrapper;
 	}
 
+	@Deprecated
 	public ListenerWrapper<OnUpdateCompleteListener> renameDashboard(
 			@NonNull final Dashboard dashboard,
 			@NonNull OnUpdateCompleteListener listener) {
@@ -374,6 +380,7 @@ public class SchedulerDBHelper extends SQLiteOpenHelper {
 		return wrapper;
 	}
 
+	@Deprecated
 	public ListenerWrapper<OnDeleteCompleteListener> deleteDashboard(
 			@NonNull final String dashID,
 			@NonNull OnDeleteCompleteListener listener) {
@@ -408,6 +415,7 @@ public class SchedulerDBHelper extends SQLiteOpenHelper {
 		return wrapper;
 	}
 
+	@Deprecated
 	public ListenerWrapper<OnDeleteCompleteListener> deleteEvent(
 			@NonNull final String eventID,
 			@Nullable OnDeleteCompleteListener listener) {

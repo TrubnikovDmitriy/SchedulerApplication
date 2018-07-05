@@ -1,10 +1,14 @@
 package ru.mail.park.android.utils;
 
+import ru.mail.park.android.App;
 import ru.mail.park.android.R;
 import ru.mail.park.android.models.Event;
 
 import android.content.res.Resources;
 import android.support.annotation.NonNull;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;

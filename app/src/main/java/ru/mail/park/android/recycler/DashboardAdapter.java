@@ -79,6 +79,11 @@ public class DashboardAdapter extends RecyclerView.Adapter<DashboardAdapter.Dash
 				newDataset : new ArrayList<ShortDashboard>();
 	}
 
+	public void removeItem(int position) {
+		notifyItemRemoved(position);
+		dashSet.remove(position);
+	}
+
 	public void clearDataSet() {
 		this.dashSet.clear();
 		notifyDataSetChanged();

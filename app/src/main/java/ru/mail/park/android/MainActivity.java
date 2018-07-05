@@ -162,6 +162,9 @@ public class MainActivity extends AppCompatActivity
 		if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
 			drawerLayout.closeDrawer(GravityCompat.START);
 		} else {
+			if (getSupportFragmentManager().getBackStackEntryCount() == 0) {
+				App.isFirstTime = true;
+			}
 			super.onBackPressed();
 		}
 	}

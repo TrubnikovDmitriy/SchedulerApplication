@@ -3,14 +3,17 @@ package ru.mail.park.android.models;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 
 public class ShortDashboard implements Serializable {
 
 	@SerializedName("title")
-	private final String title;
+	private String title;
 	@SerializedName("dashID")
-	private final String dashID;
+	private String dashID;
+
+	public ShortDashboard() { }
 
 	public ShortDashboard(String title, String dashID) {
 		this.title = title;
@@ -28,5 +31,22 @@ public class ShortDashboard implements Serializable {
 
 	public String getDashID() {
 		return dashID;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
+	public void setDashID(String dashID) {
+		this.dashID = dashID;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		ShortDashboard that = (ShortDashboard) o;
+		return Objects.equals(title, that.title) &&
+				Objects.equals(dashID, that.dashID);
 	}
 }

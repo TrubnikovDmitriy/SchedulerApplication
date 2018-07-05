@@ -2,22 +2,23 @@ package ru.mail.park.android.fragments.dashboards;
 
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 
 import ru.mail.park.android.R;
 import ru.mail.park.android.App;
+import ru.mail.park.android.database.RealtimeDatabaseHelper;
 import ru.mail.park.android.database.SchedulerDBHelper;
 import ru.mail.park.android.dialogs.DialogDashboardCreator;
 import ru.mail.park.android.fragments.events.LocalEventsFragment;
 import ru.mail.park.android.models.Dashboard;
 import ru.mail.park.android.models.ShortDashboard;
 import ru.mail.park.android.recycler.DashboardAdapter;
-import ru.mail.park.android.utils.ListenerWrapper;
+import ru.mail.park.android.utils.Tools;
+
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.StaggeredGridLayoutManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -26,9 +27,16 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.ValueEventListener;
+
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.UUID;
+import java.util.Iterator;
 
 import javax.inject.Inject;
 
@@ -37,6 +45,7 @@ public class LocalDashboardsFragment extends DashboardsFragment {
 
 	@Inject
 	public SchedulerDBHelper dbManager;
+	private RealtimeDatabaseHelper dbHelper = new RealtimeDatabaseHelper();
 	private DialogDashboardCreator dialogDashboardCreator;
 
 	public LocalDashboardsFragment() { }
@@ -45,11 +54,24 @@ public class LocalDashboardsFragment extends DashboardsFragment {
 	public void onCreate(@Nullable Bundle savedInstanceState) {
 		App.getComponent().inject(this);
 		super.onCreate(savedInstanceState);
-		setDialogListeners();
+		initialDialogs();
+
+		// Check authentication
+		final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+		if (user == null) {
+			Toast.makeText(getContext(), R.string.auth_access_db, Toast.LENGTH_LONG).show();
+			return;
+		}
+
+		// Listener for update list of private dashboards
+		dbHelper.getPrivateDashboards(user.getUid())
+				.child(RealtimeDatabaseHelper.INFO)
+				.addChildEventListener(new RealtimeDatabaseChildListener());
+		setRetainInstance(true);
 	}
 
 	@Override
-	public View onCreateView(LayoutInflater inflater,
+	public View onCreateView(@NonNull LayoutInflater inflater,
 	                         @Nullable ViewGroup container,
 	                         @Nullable Bundle savedInstanceState) {
 
@@ -59,7 +81,7 @@ public class LocalDashboardsFragment extends DashboardsFragment {
 		recyclerView = view.findViewById(R.id.recycle_dash);
 
 		progressBar = view.findViewById(R.id.progressbar_dash_load);
-		progressBar.setVisibility(View.VISIBLE);
+		progressBar.setVisibility(View.INVISIBLE); // TODO remove progress bar?
 
 		floatingButton = view.findViewById(R.id.fab);
 		floatingButton.setVisibility(View.VISIBLE);
@@ -73,25 +95,11 @@ public class LocalDashboardsFragment extends DashboardsFragment {
 				StaggeredGridLayoutManager.VERTICAL
 		));
 
-		if (savedInstanceState == null) {
-			// Receiving data from DB
-			final ListenerWrapper wrapper =
-					dbManager.selectShortDashboards(new DatabaseLoadDashboardsListener());
-			wrappers.add(wrapper);
-
-		} else {
-			Object[] objects = (Object[]) savedInstanceState.getSerializable(DATASET);
-
-			if (objects != null) {
-				// Try to cast Object[] to ShortDashboard[]
-				ShortDashboard[] dashes = Arrays.copyOf(
-						objects, objects.length, ShortDashboard[].class);
-				dataset = new ArrayList<>(Arrays.asList(dashes));
-				updateDataset(dataset);
-			}
-			progressBar.setVisibility(ProgressBar.INVISIBLE);
-		}
-
+		// Receiving data from DB
+//		dbHelper.getShortDashboards(
+//				Tools.checkAuthAndGetUser().getUid(),
+//				new OnLoadLocalDashboards()
+//		);
 
 		return view;
 	}
@@ -101,8 +109,7 @@ public class LocalDashboardsFragment extends DashboardsFragment {
 		menu.clear();
 	}
 
-
-	private void setDialogListeners() {
+	private void initialDialogs() {
 		// If user rotates the screen the click-listeners will be lost
 		// We find an existing DialogFragment by tag to restore listeners after rotation
 		dialogDashboardCreator = (DialogDashboardCreator) getFragmentManager()
@@ -119,6 +126,13 @@ public class LocalDashboardsFragment extends DashboardsFragment {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 
+				// Check authentication
+				final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+				if (user == null) {
+					Toast.makeText(getContext(), R.string.auth_access_db, Toast.LENGTH_LONG).show();
+					return;
+				}
+
 				// Validation of title
 				final String newTitle = dialogDashboardCreator.getInputText().trim();
 				if (newTitle.length() < TITLE_MIN_LENGTH) {
@@ -126,48 +140,48 @@ public class LocalDashboardsFragment extends DashboardsFragment {
 					return;
 				}
 
-				// TODO delete stubs
 				// Added to database
-				final Dashboard dashboard = new Dashboard("Dmitriy", 1L,
-						newTitle, UUID.randomUUID().toString(), null);
-				final ListenerWrapper wrapper = dbManager.insertDashboard(
-						dashboard, new SchedulerDBHelper.OnInsertCompleteListener() {
+				final Dashboard dashboard = new Dashboard(
+						user.getDisplayName(), user.getUid(),
+						newTitle, null, null
+				);
 
-							final Handler handler = new Handler(Looper.getMainLooper());
-
+				dbHelper.createDashboard(
+						dashboard,
+						new OnFailureListener() {
 							@Override
-							public void onSuccess(@NonNull Long rowID) {
-								if (rowID == -1) {
-									onFailure(null);
-								}
-								handler.post(new Runnable() {
-									@Override
-									public void run() {
-										adapter.addItem(new ShortDashboard(dashboard));
-										recyclerView.scrollToPosition(dataset.size() - 1);
-									}
-								});
+							public void onFailure(@NonNull Exception e) {
+								Log.e("createDashboard", "OnFailureListener", e);
+								Toast.makeText(getContext(), R.string.db_failure, Toast.LENGTH_LONG).show();
 							}
-
-							@Override
-							public void onFailure(@Nullable Exception exception) {
-								handler.post(new Runnable() {
-									@Override
-									public void run() {
-										Toast.makeText(getContext(), R.string.db_failure, Toast.LENGTH_LONG).show();
-									}
-								});
-							}
-						});
-				wrappers.add(wrapper);
+						}
+				);
 			}
 		});
+	}
+
+	@NonNull
+	private ShortDashboard getShortDashFromDataSnapshot(@NonNull final DataSnapshot dataSnapshot) {
+		final ShortDashboard dashboard = dataSnapshot.getValue(ShortDashboard.class);
+		if (dashboard == null) {
+			throw new NullPointerException();
+		}
+		dashboard.setDashID(dataSnapshot.getKey());
+		return dashboard;
 	}
 
 
 	class onFloatingButtonClickListener implements View.OnClickListener {
 		@Override
 		public void onClick(View v) {
+			// Check authentication
+			final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+			if (user == null) {
+				Toast.makeText(getContext(), R.string.auth_access_db, Toast.LENGTH_LONG).show();
+				return;
+			}
+
+			// To prevent double tap
 			if (!dialogDashboardCreator.isAdded()) {
 				dialogDashboardCreator.show(
 						getFragmentManager(), DialogDashboardCreator.DIALOG_TAG);
@@ -183,10 +197,13 @@ public class LocalDashboardsFragment extends DashboardsFragment {
 			// Create fragment and set arguments
 			final Fragment fragment = new LocalEventsFragment();
 			final Bundle bundle = new Bundle();
-			bundle.putString(LocalEventsFragment.DASHBOARD_ID, dashboard.getDashID());
+			bundle.putSerializable(LocalEventsFragment.SHORT_DASHBOARD, dashboard);
 			fragment.setArguments(bundle);
 
 			// Replace content in FrameLayout-container
+			if (getFragmentManager() == null) {
+				throw new NullPointerException("Can't get FragmentManager");
+			}
 			getFragmentManager()
 					.beginTransaction()
 					.replace(R.id.container, fragment)
@@ -195,36 +212,68 @@ public class LocalDashboardsFragment extends DashboardsFragment {
 		}
 	}
 
-	class DatabaseLoadDashboardsListener implements
-			SchedulerDBHelper.OnSelectCompleteListener<ArrayList<ShortDashboard>> {
-
-		private final Handler handler = new Handler(Looper.getMainLooper());
-
+	class OnLoadLocalDashboards implements ValueEventListener {
 		@Override
-		public void onSuccess(final ArrayList<ShortDashboard> data) {
-			handler.post(new Runnable() {
-				@Override
-				public void run() {
-					if (data.isEmpty()) {
-						Toast.makeText(getContext(), R.string.empty_dataset, Toast.LENGTH_LONG).show();
-					}
-					progressBar.setVisibility(ProgressBar.INVISIBLE);
-					updateDataset(data);
-				}
-			});
+		public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+			final Iterator<DataSnapshot> iterable = dataSnapshot.getChildren().iterator();
+			final ArrayList<ShortDashboard> dashboards = new ArrayList<>();
+			while (iterable.hasNext()) {
+				final DataSnapshot childSnapshot = iterable.next();
+				final ShortDashboard dashboard = getShortDashFromDataSnapshot(childSnapshot);
+				dashboards.add(dashboard);
+			}
+
+			if (dashboards.isEmpty()) {
+				Toast.makeText(getContext(), R.string.empty_dataset, Toast.LENGTH_LONG).show();
+			}
+			progressBar.setVisibility(ProgressBar.INVISIBLE);
+			updateDataset(dashboards);
+
 		}
 
 		@Override
-		public void onFailure(Exception exception) {
-			handler.post(new Runnable() {
-				@Override
-				public void run() {
-					Toast.makeText(getContext(), R.string.db_failure, Toast.LENGTH_LONG).show();
-					progressBar.setVisibility(ProgressBar.INVISIBLE);
-					updateDataset(null);
-				}
-			});
+		public void onCancelled(@NonNull DatabaseError databaseError) {
+			Toast.makeText(getContext(), databaseError.getMessage(), Toast.LENGTH_LONG).show();
+			progressBar.setVisibility(ProgressBar.INVISIBLE);
+			updateDataset(null);
 		}
+	}
+
+	class RealtimeDatabaseChildListener implements ChildEventListener {
+		@Override
+		public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String previousChildName) {
+			if (dataset == null) {
+				dataset = new ArrayList<>();
+			}
+			final ShortDashboard dashboard = getShortDashFromDataSnapshot(dataSnapshot);
+			adapter.addItem(dashboard);
+			dataset.add(dashboard);
+			recyclerView.scrollToPosition(dataset.size() - 1);
+		}
+
+		@Override
+		public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+			try {
+				final ShortDashboard removed = getShortDashFromDataSnapshot(dataSnapshot);
+				final int position = dataset.indexOf(removed);
+
+				recyclerView.scrollToPosition(position);
+				adapter.removeItem(position);
+			} catch (Exception e) {
+				Log.e("e", "delete", e);
+			}
+		}
+
+		@Override
+		public void onCancelled(@NonNull DatabaseError databaseError) {
+			Toast.makeText(getContext(), databaseError.getMessage(), Toast.LENGTH_LONG).show();
+		}
+
+		// Other functions is not needed since it can't invoke in local-dashboards
+		@Override
+		public void onChildChanged(@NonNull DataSnapshot ds, @Nullable String s) { }
+		@Override
+		public void onChildMoved(@NonNull DataSnapshot ds, @Nullable String s) {  }
 	}
 
 }

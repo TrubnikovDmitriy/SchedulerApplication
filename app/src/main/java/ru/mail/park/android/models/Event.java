@@ -3,6 +3,9 @@ package ru.mail.park.android.models;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 
 
 @SuppressWarnings("unused")
@@ -110,5 +113,29 @@ public class Event implements Serializable {
 
 	public void setPriority(Priority priority) {
 		this.priority = priority;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		Event event = (Event) o;
+		return Objects.equals(eventID, event.eventID) &&
+				Objects.equals(dashID, event.dashID) &&
+				Objects.equals(text, event.text) &&
+				Objects.equals(timestamp, event.timestamp) &&
+				Objects.equals(title, event.title) &&
+				type == event.type &&
+				priority == event.priority;
+	}
+
+	public Map<String, Object> toMap() {
+		final HashMap<String, Object> firebaseModel = new HashMap<>();
+		firebaseModel.put("text", text);
+		firebaseModel.put("title", title);
+		firebaseModel.put("timestamp", timestamp);
+		firebaseModel.put("type", type);
+		firebaseModel.put("priority", priority);
+		return firebaseModel;
 	}
 }

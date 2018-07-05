@@ -29,6 +29,9 @@
     <string name="sign_in">Войти</string>
     <string name="sign_out">Выйти</string>
 
+    <!--Authentication-->
+    <string name="auth_access_db">Для доступа к личным необходимо авторизоваться</string>
+
     <!--Text for labels-->
     <string name="title_of_dashboard">Название нового расписания</string>
     <string name="rename_dashboard">Новое название расписания</string>

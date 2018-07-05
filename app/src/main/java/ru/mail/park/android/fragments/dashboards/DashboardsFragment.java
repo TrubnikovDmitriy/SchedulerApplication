@@ -44,6 +44,7 @@ public abstract class DashboardsFragment extends Fragment {
 	@CallSuper
 	public void onSaveInstanceState(@NonNull Bundle outState) {
 		super.onSaveInstanceState(outState);
+		// TODO delete (it has a listener of Firebase RealtimeDatabase, that loads it)
 		outState.putSerializable(DATASET, dataset == null ? null : dataset.toArray());
 		setHasOptionsMenu(true);
 	}

@@ -1,9 +1,12 @@
 package ru.mail.park.android.models;
 
+import com.google.firebase.database.Exclude;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 
 public class Dashboard implements Serializable {
@@ -15,14 +18,14 @@ public class Dashboard implements Serializable {
 	@SerializedName("author")
 	private String author;
 	@SerializedName("authorID")
-	private Long authorID;
+	private String authorID;
 	@SerializedName("events")
 	private ArrayList<Event> events;
 
 
 	public Dashboard() { }
 
-	public Dashboard(String author, Long authorID, String title,
+	public Dashboard(String author, String authorID, String title,
 	                 String dashID, ArrayList<Event> events) {
 		this.author = author;
 		this.authorID = authorID;
@@ -36,7 +39,7 @@ public class Dashboard implements Serializable {
 		return author;
 	}
 
-	public Long getAuthorID() {
+	public String getAuthorID() {
 		return authorID;
 	}
 
@@ -64,11 +67,19 @@ public class Dashboard implements Serializable {
 		this.author = author;
 	}
 
-	public void setAuthorID(Long authorID) {
+	public void setAuthorID(String authorID) {
 		this.authorID = authorID;
 	}
 
 	public void setEvents(ArrayList<Event> events) {
 		this.events = events;
+	}
+
+
+	@Exclude
+	public Map<String, Object> toMap() {
+		final HashMap<String, Object> firebaseModel = new HashMap<>();
+		firebaseModel.put("title", title);
+		return firebaseModel;
 	}
 }

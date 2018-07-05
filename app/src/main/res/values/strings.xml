@@ -29,6 +29,9 @@
     <string name="sign_in">Sign In</string>
     <string name="sign_out">Sign Out</string>
 
+    <!--Authentication-->
+    <string name="auth_access_db">To access your personal account, you must log in</string>
+
     <!--Text for labels-->
     <string name="title_of_dashboard">Title of new dashboard</string>
     <string name="rename_dashboard">New title of dashboard</string>

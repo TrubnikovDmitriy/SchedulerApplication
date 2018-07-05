@@ -50,6 +50,7 @@ public abstract class EventsFragment extends Fragment {
 	protected final ExecutorService executor = Executors.newSingleThreadExecutor();
 
 	public static final String DASHBOARD_ID = "DASHBOARD_ID";
+	public static final String SHORT_DASHBOARD = "SHORT_DASHBOARD";
 	protected static final String DASHBOARD_BUNDLE = "DASHBOARD_BUNDLE";
 	protected static final String CALENDAR_BUNDLE = "CALENDAR_BUNDLE";
 	private static final int MAX_DRAWABLES_EVENTS = 8;

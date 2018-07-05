@@ -3,11 +3,10 @@ package ru.mail.park.android.fragments.calendar;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 
 import ru.mail.park.android.App;
 import ru.mail.park.android.R;
+import ru.mail.park.android.database.RealtimeDatabaseHelper;
 import ru.mail.park.android.database.SchedulerDBHelper;
 import ru.mail.park.android.dialogs.DialogConfirm;
 import ru.mail.park.android.dialogs.DialogDateTimePicker;
@@ -17,6 +16,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
@@ -30,8 +30,13 @@ import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+
 import java.util.Date;
-import java.util.UUID;
 
 import javax.inject.Inject;
 
@@ -51,25 +56,31 @@ public class CreateEventFragment extends Fragment {
 	private Spinner spinnerType;
 	private View view;
 
-	@Inject
-	SchedulerDBHelper dbHelper;
+	@Inject SchedulerDBHelper dbHelper;
+	private final RealtimeDatabaseHelper rdbHelper = new RealtimeDatabaseHelper();
+
 	@Nullable
 	private Event event;
 	private String dashID;
 	private Boolean isNew;
 	private Date date;
 	private DialogDateTimePicker dialogPicker;
+	private FragmentManager fragmentManager;
 
 
 	@Override
 	public void onCreate(@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		App.getComponent().inject(this);
+		fragmentManager = getFragmentManager();
+		if (fragmentManager == null) {
+			throw new NullPointerException("Failed to get fragment manager");
+		}
 	}
 
 	@Nullable
 	@Override
-	public View onCreateView(LayoutInflater inflater,
+	public View onCreateView(@NonNull LayoutInflater inflater,
 	                         @Nullable ViewGroup container,
 	                         @Nullable Bundle savedInstanceState) {
 
@@ -98,7 +109,7 @@ public class CreateEventFragment extends Fragment {
 					bundle.putSerializable(DialogDateTimePicker.OLD_DATE_BUNDLE, date);
 					dialogPicker.setArguments(bundle);
 
-					dialogPicker.show(getFragmentManager(), DialogDateTimePicker.CREATE_DIALOG_TAG);
+					dialogPicker.show(fragmentManager, DialogDateTimePicker.CREATE_DIALOG_TAG);
 				}
 			}
 		});
@@ -108,7 +119,7 @@ public class CreateEventFragment extends Fragment {
 	}
 
 	@Override
-	public void onSaveInstanceState(Bundle outState) {
+	public void onSaveInstanceState(@NonNull Bundle outState) {
 		outState.putSerializable(DATE_BUNDLE, date);
 		outState.putSerializable(EVENT_BUNDLE, event);
 		outState.putBoolean(IS_NEW_BUNDLE, isNew);
@@ -131,10 +142,17 @@ public class CreateEventFragment extends Fragment {
 				dialogConfirm.setListener(new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
-						dbHelper.deleteEvent(event.getEventID(), new OnEventChange());
+						final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+						if (user == null) {
+							Toast.makeText(getContext(), R.string.auth_access_db, Toast.LENGTH_SHORT).show();
+							return;
+						}
+						final DatabaseReference events = rdbHelper.getPrivateDashEvents(user.getUid(), dashID);
+						events.addChildEventListener(new ChangeEvent(events, event.getEventID()));
+						events.child(event.getEventID()).removeValue();
 					}
 				});
-				dialogConfirm.show(getFragmentManager(), null);
+				dialogConfirm.show(fragmentManager, null);
 				return true;
 			}
 		}
@@ -162,7 +180,7 @@ public class CreateEventFragment extends Fragment {
 				event = (Event) bundle.getSerializable(EVENT_BUNDLE);
 				buttonDone.setText(R.string.event_edit_button);
 				if (event != null) {
-					// Restore data in fields from event
+					// Restore data in fields from eventID
 					editTitle.setText(event.getTitle());
 					editDescription.setText(event.getText());
 					date = Tools.getDate(event.getTimestamp());
@@ -174,16 +192,18 @@ public class CreateEventFragment extends Fragment {
 		}
 
 		// Set correct title of action bar
-		final ActionBar bar = ((AppCompatActivity) getActivity()).getSupportActionBar();
-		if (bar != null) {
-			bar.setTitle(isNew ? getResources().getString(R.string.event_create_title) : getResources().getString(R.string.event_edit_title));
+		if (getActivity() != null) {
+			final ActionBar bar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+			if (bar != null) {
+				bar.setTitle(isNew ? getResources().getString(R.string.event_create_title) : getResources().getString(R.string.event_edit_title));
+			}
 		}
 	}
 
 	private void updateDialog() {
 
-		dialogPicker = (DialogDateTimePicker) getFragmentManager()
-				.findFragmentByTag(DialogDateTimePicker.CREATE_DIALOG_TAG);
+		dialogPicker = (DialogDateTimePicker)
+				fragmentManager.findFragmentByTag(DialogDateTimePicker.CREATE_DIALOG_TAG);
 
 		if (dialogPicker == null) {
 			dialogPicker = new DialogDateTimePicker();
@@ -204,20 +224,21 @@ public class CreateEventFragment extends Fragment {
 		@Override
 		public void onClick(View v) {
 			final String title = editTitle.getText().toString().trim();
-			// Validationgit
+			// Validation
 			if (title.length() < Tools.TITLE_MIN_LENGTH) {
 				Toast.makeText(getContext(), R.string.fcm_update_event, Toast.LENGTH_SHORT).show();
 				return;
 			}
+
 			final String description = editDescription.getText().toString().trim();
 			final Event.EventType eventType = Event.EventType
 					.values()[(int) spinnerType.getSelectedItemId()];
 			final Event.Priority eventPriority = Event.Priority
 					.values()[(int) spinnerPriority.getSelectedItemId()];
 
-			final String eventID = (event == null) ? UUID.randomUUID().toString() : event.getEventID();
+			final String eventID = (event == null) ? null : event.getEventID();
 
-			event = new Event(
+			final Event newEvent = new Event(
 					description,
 					date.getTime(),
 					eventID,
@@ -237,62 +258,93 @@ public class CreateEventFragment extends Fragment {
 				imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
 			}
 
+			// Check auth
+			final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+			if (user == null) {
+				Toast.makeText(getContext(), R.string.auth_access_db, Toast.LENGTH_SHORT).show();
+				return;
+			}
+
+			// If there are no changes, just go back
+			if (newEvent.equals(event)) {
+				fragmentManager.popBackStack();
+			}
+			event = newEvent;
+
+			// Create/Update event in Firebase
+			final DatabaseReference events = rdbHelper.getPrivateDashEvents(user.getUid(), dashID);
 			if (isNew) {
-				dbHelper.insertEvent(event, new OnEventInsert());
+				final String newEventID = events.push().getKey();
+				if (newEventID == null) {
+					throw new NullPointerException("Failed to create new event");
+				}
+				events.addChildEventListener(new InsertEvent(events, newEventID));
+				events.child(newEventID).setValue(event.toMap());
+
 			} else {
-				dbHelper.updateEvent(event, new OnEventChange());
+				events.addChildEventListener(new ChangeEvent(events, event.getEventID()));
+				events.child(event.getEventID()).setValue(event.toMap());
 			}
 		}
 	}
 
-	private class OnEventInsert implements SchedulerDBHelper.OnInsertCompleteListener {
+	private class InsertEvent extends RealtimeDatabaseHelper.FirebaseEventListener {
 
-		private final Handler handler = new Handler(Looper.getMainLooper());
+		final DatabaseReference reference;
+		final String eventID;
+
+		InsertEvent(@NonNull final DatabaseReference reference,
+		            @NonNull final String eventID) {
+			this.reference = reference;
+			this.eventID = eventID;
+		}
 
 		@Override
-		public void onSuccess(@NonNull Long rowID) {
-			if (rowID == -1) {
-				onFailure(null);
-			}
-			if (event != null) {
-				// Return to calendar
-				getFragmentManager().popBackStack();
+		public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+			if (eventID.equals(dataSnapshot.getKey())) {
+				reference.removeEventListener(this);
+				fragmentManager.popBackStack();
 			}
 		}
 
 		@Override
-		public void onFailure(@Nullable Exception exception) {
-			handler.post(new Runnable() {
-				@Override
-				public void run() {
-					Toast.makeText(getContext(), R.string.db_failure, Toast.LENGTH_LONG).show();
-				}
-			});
+		public void onCancelled(@NonNull DatabaseError databaseError) {
+			Toast.makeText(getContext(), R.string.db_failure, Toast.LENGTH_LONG).show();
+			reference.removeEventListener(this);
 		}
 	}
 
-	private class OnEventChange implements
-			SchedulerDBHelper.OnUpdateCompleteListener,
-			SchedulerDBHelper.OnDeleteCompleteListener {
+	private class ChangeEvent extends RealtimeDatabaseHelper.FirebaseEventListener {
 
-		private final Handler handler = new Handler(Looper.getMainLooper());
+		final DatabaseReference reference;
+		final String eventID;
 
-		@Override
-		public void onSuccess(int numberOfRowsAffected) {
-			if (numberOfRowsAffected != 1) {
-				onFailure(null);
-			}
-			getFragmentManager().popBackStack();
+		ChangeEvent(@NonNull final DatabaseReference reference,
+		            @NonNull final String eventID) {
+			this.reference = reference;
+			this.eventID = eventID;
 		}
 
 		@Override
-		public void onFailure(@Nullable Exception exception) {
-			handler.post(new Runnable() {
-				@Override
-				public void run() {
-					Toast.makeText(getContext(), R.string.db_failure, Toast.LENGTH_LONG).show();
-				}
-			});
+		public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+			if (eventID.equals(dataSnapshot.getKey())) {
+				reference.removeEventListener(this);
+				fragmentManager.popBackStack();
+			}
+		}
+
+		@Override
+		public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+			if (eventID.equals(dataSnapshot.getKey())) {
+				reference.removeEventListener(this);
+				fragmentManager.popBackStack();
+			}
+		}
+
+		@Override
+		public void onCancelled(@NonNull DatabaseError databaseError) {
+			Toast.makeText(getContext(), R.string.db_failure, Toast.LENGTH_LONG).show();
+			reference.removeEventListener(this);
 		}
 	}
 }
