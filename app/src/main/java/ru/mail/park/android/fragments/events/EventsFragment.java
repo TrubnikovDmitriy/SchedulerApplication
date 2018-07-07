@@ -153,12 +153,7 @@ public abstract class EventsFragment extends Fragment {
 		final Activity activity = requireActivity();
 		final ActionBar bar = ((AppCompatActivity) activity).getSupportActionBar();
 		if (bar != null) {
-			handler.post(new Runnable() {
-				@Override
-				public void run() {
-					bar.setTitle(dashboard.getTitle());
-				}
-			});
+			bar.setTitle(dashboard.getTitle());
 		}
 	}
 
@@ -173,6 +168,7 @@ public abstract class EventsFragment extends Fragment {
 		handler.post(new Runnable() {
 			@Override
 			public void run() {
+				progressBar.setVisibility(View.INVISIBLE);
 				calendarFragment.setBackgroundDrawableForDateTimes(eventDrawables);
 				calendarFragment.refreshView();
 			}
@@ -365,19 +361,21 @@ public abstract class EventsFragment extends Fragment {
 		}
 
 		@Override
-		public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-			final ArrayList<Event> events = new ArrayList<>();
-			for (final DataSnapshot snapshot : dataSnapshot.getChildren()) {
-				Event event = RealtimeDatabase.parseEvent(snapshot);
-				events.add(event);
-			}
-			dashboard.setEvents(events);
-
+		public void onDataChange(@NonNull final DataSnapshot dataSnapshot) {
+			executor.execute(new Runnable() {
+				@Override
+				public void run() {
+					final ArrayList<Event> events = new ArrayList<>();
+					for (final DataSnapshot snapshot : dataSnapshot.getChildren()) {
+						Event event = RealtimeDatabase.parseEvent(snapshot);
+						events.add(event);
+					}
+					dashboard.setEvents(events);
+					updateEventSetFromBackground(dashboard);
+				}
+			});
 			updateActionBarTitle();
 			createCalendarFragment(null);
-			updateEventSetFromBackground(dashboard);
-
-			progressBar.setVisibility(View.GONE);
 		}
 
 		@Override
