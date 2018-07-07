@@ -20,6 +20,7 @@ public class DialogDashboardRename extends DialogFragment {
 
 	private OnRenameListener listener;
 	private EditText editText;
+	private String oldTitle;
 
 
 	public DialogDashboardRename() { }
@@ -34,12 +35,16 @@ public class DialogDashboardRename extends DialogFragment {
 		@SuppressLint("InflateParams")
 		final View viewDialog = inflater.inflate(R.layout.dialog_edit_name_dashboard, null);
 		editText = viewDialog.findViewById(R.id.edit_name_dashboard);
+		if (oldTitle != null) {
+			editText.setText(oldTitle);
+			editText.setSelection(oldTitle.length());
+		}
 
 		builder
 				.setIcon(R.mipmap.ic_edit_black)
 				.setTitle(R.string.rename_dashboard)
 				.setView(viewDialog)
-				.setPositiveButton(R.string.create_button, new DialogInterface.OnClickListener() {
+				.setPositiveButton(R.string.apply_button, new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
 						final String newName = editText.getText().toString();
@@ -51,6 +56,10 @@ public class DialogDashboardRename extends DialogFragment {
 				.setNegativeButton(R.string.cancel_button, null);
 
 		return builder.create();
+	}
+
+	public void setOldTitle(String oldTitle) {
+		this.oldTitle = oldTitle;
 	}
 
 	public void setOnRenameListener(OnRenameListener listener) {

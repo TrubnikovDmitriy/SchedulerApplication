@@ -85,7 +85,6 @@ public abstract class EventsFragment extends Fragment {
 	public void onCreate(@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setHasOptionsMenu(true);
-		initialDialogs();
 	}
 
 	@Override
@@ -123,10 +122,8 @@ public abstract class EventsFragment extends Fragment {
 	public void onStop() {
 		super.onStop();
 		isAlive.set(false);
-		progressBar.setVisibility(View.INVISIBLE);
+		progressBar.setVisibility(View.GONE);
 	}
-
-	protected abstract void initialDialogs();
 
 	protected void createCalendarFragment(@Nullable Bundle savedInstanceState) {
 
@@ -168,7 +165,7 @@ public abstract class EventsFragment extends Fragment {
 		handler.post(new Runnable() {
 			@Override
 			public void run() {
-				progressBar.setVisibility(View.INVISIBLE);
+				progressBar.setVisibility(View.GONE);
 				calendarFragment.setBackgroundDrawableForDateTimes(eventDrawables);
 				calendarFragment.refreshView();
 			}
@@ -384,7 +381,7 @@ public abstract class EventsFragment extends Fragment {
 			if (context != null) {
 				Toast.makeText(context, databaseError.getMessage(), Toast.LENGTH_SHORT).show();
 			}
-			progressBar.setVisibility(ProgressBar.INVISIBLE);
+			progressBar.setVisibility(ProgressBar.GONE);
 		}
 	}
 }

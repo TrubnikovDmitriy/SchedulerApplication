@@ -4,11 +4,11 @@
     <group android:id="@+id/general"
         android:checkableBehavior="single">
         <item
-            android:id="@+id/local_dashboards"
+            android:id="@+id/private_dashboards"
             android:icon="@drawable/ic_nav_local"
             android:title="@string/navigation_local_dash"/>
         <item
-            android:id="@+id/server_dashboards"
+            android:id="@+id/public_dashboards"
             android:icon="@drawable/ic_nav_server"
             android:title="@string/navigation_server_dash"/>
     </group>

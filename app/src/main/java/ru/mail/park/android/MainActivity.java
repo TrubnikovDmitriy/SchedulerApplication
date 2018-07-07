@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
-import android.os.StrictMode;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -62,11 +61,6 @@ public class MainActivity extends AppCompatActivity
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		// TODO remove
-		StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
-				.detectActivityLeaks()
-				.detectLeakedSqlLiteObjects()
-				.build());
 		setContentView(R.layout.main_activity);
 		ButterKnife.bind(this);
 
@@ -103,14 +97,14 @@ public class MainActivity extends AppCompatActivity
 
 		// Authentication
 		firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-		if (firebaseUser != null) {
-			updateSignUI(firebaseUser);
-		} else if (App.isFirstTime) {
-			authentication();
-		}
+		updateSignUI(firebaseUser);
 
 		if (App.isFirstTime) {
-			onNavigationItemSelected(mainNavigation.getMenu().findItem(R.id.local_dashboards));
+			if (firebaseUser == null) {
+				onNavigationItemSelected(mainNavigation.getMenu().findItem(R.id.public_dashboards));
+			} else {
+				onNavigationItemSelected(mainNavigation.getMenu().findItem(R.id.private_dashboards));
+			}
 		}
 
 		App.isFirstTime = false;
@@ -121,11 +115,11 @@ public class MainActivity extends AppCompatActivity
 
 		final Fragment fragment;
 		switch (item.getItemId()) {
-			case R.id.local_dashboards:
+			case R.id.private_dashboards:
 				fragment = new PrivateDashboardsFragment();
 				break;
 
-			case R.id.server_dashboards:
+			case R.id.public_dashboards:
 				fragment = new PublicDashboardsFragment();
 				break;
 
@@ -237,6 +231,9 @@ public class MainActivity extends AppCompatActivity
 
 			mainNavigation.getMenu().findItem(R.id.sign_in).setVisible(true);
 			mainNavigation.getMenu().findItem(R.id.sign_out).setVisible(false);
+
+			// Redirect to main page
+			onNavigationItemSelected(mainNavigation.getMenu().findItem(R.id.public_dashboards));
 		}
 	}
 }

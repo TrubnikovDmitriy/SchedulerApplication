@@ -67,6 +67,7 @@ public class PrivateEventsFragment extends EventsFragment {
 			RealtimeDatabase
 					.getPrivateEvents(user.getUid(), dashboard.getDashID())
 					.addListenerForSingleValueEvent(new OnLoadPrivateEvents(dashboard));
+			initialDialogs();
 		}
 
 		return view;
@@ -145,8 +146,7 @@ public class PrivateEventsFragment extends EventsFragment {
 		setHasOptionsMenu(true);
 	}
 
-	@Override
-	protected void initialDialogs() {
+	private void initialDialogs() {
 		// If user rotates the screen the click-listeners will be lost
 		// We find an existing DialogFragment by tag to restore listeners after rotation
 		dialogRename = (DialogDashboardRename) requireFragmentManager()
@@ -156,6 +156,7 @@ public class PrivateEventsFragment extends EventsFragment {
 			dialogRename = new DialogDashboardRename();
 		}
 
+		dialogRename.setOldTitle(dashboard.getTitle());
 		dialogRename.setOnRenameListener(new DialogDashboardRename.OnRenameListener() {
 			@Override
 			public void onRename(@NonNull String newTitle) {
@@ -166,12 +167,12 @@ public class PrivateEventsFragment extends EventsFragment {
 					return;
 				}
 
-				dashboard.setTitle(newTitle);
 				final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 				if (user == null) {
 					Toast.makeText(requireContext(), R.string.auth_access_db, Toast.LENGTH_LONG).show();
 					return;
 				}
+				dashboard.setTitle(newTitle);
 
 				final DatabaseReference titleRef = RealtimeDatabase
 						.getPrivateInfo(user.getUid(), dashboard.getDashID())
