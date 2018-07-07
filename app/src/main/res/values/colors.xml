@@ -13,5 +13,5 @@
     <color name="event_color_ultra_high">#f44336</color>
     <color name="event_color_high">#4CAF50</color>
     <color name="event_color_medium">#0D47A1</color>
-    <color name="event_color_low">#9E9E9E</color>
+    <color name="event_color_low">#FFC107</color>
 </resources>

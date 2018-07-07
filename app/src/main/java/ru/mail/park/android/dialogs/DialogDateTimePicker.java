@@ -22,7 +22,7 @@ import hirondelle.date4j.DateTime;
 
 public class DialogDateTimePicker extends DialogFragment {
 
-	public static final String CREATE_DIALOG_TAG = "DialogDateTimePicker";
+	public static final String DIALOG_TAG = "DialogDateTimePicker";
 
 	public static final String CURRENT_DATE_BUNDLE = "CURRENT_DATE";
 	public static final String OLD_DATE_BUNDLE = "OLD_DATE";
@@ -38,9 +38,9 @@ public class DialogDateTimePicker extends DialogFragment {
 	@Override
 	public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
 
-		final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+		final AlertDialog.Builder builder = new AlertDialog.Builder(requireActivity());
 
-		final LayoutInflater inflater = getActivity().getLayoutInflater();
+		final LayoutInflater inflater = requireActivity().getLayoutInflater();
 		@SuppressLint("InflateParams") final View viewDialog =
 				inflater.inflate(R.layout.dialog_datetime_picker, null);
 

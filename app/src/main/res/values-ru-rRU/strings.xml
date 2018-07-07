@@ -12,14 +12,14 @@
     <string name="network_failure">Некорректный ответ сервера</string>
     <string name="db_failure">Ошибка при обращении к базе данных</string>
     <string name="empty_title">Заголовок не может быть пустым</string>
-    <string name="fcm_update_event">Слишком короткий заголовок</string>
+    <string name="too_short_title">Слишком короткий заголовок</string>
     <string name="too_long_title">Слишком длинный заголовок</string>
     <string name="options_dialog_dashboard">Выберите действие</string>
     <string name="remote_dashboard_upload">Ваше расписание успешно загружено на сервер</string>
     <string name="remote_dashboard_update">Ваше расписание успешно обновленно на сервере</string>
     <string name="subscribe">Вы успешно подписались на обновления</string>
 
-    <string name="local_dashes_title">Мои расписания</string>
+    <string name="local_dashes_title">Личные расписания</string>
     <string name="cloud_dashes_title">Облако расписаний</string>
     <string name="event_create_title">Создать новое событие</string>
     <string name="event_edit_title">Редактировать событие</string>
@@ -30,7 +30,10 @@
     <string name="sign_out">Выйти</string>
 
     <!--Authentication-->
-    <string name="auth_access_db">Для доступа к личным необходимо авторизоваться</string>
+    <string name="auth_access_db">Для доступа к личным данным необходимо авторизоваться</string>
+    <string name="owner_access_db">Только автор расписания может редактировать его</string>
+    <string name="subscribe_access_db">Для подписки на обновления необходимо авторизоваться</string>
+    <string name="create_access_dashboard">Для создания нового расписания необходимо авторизоваться</string>
 
     <!--Text for labels-->
     <string name="title_of_dashboard">Название нового расписания</string>

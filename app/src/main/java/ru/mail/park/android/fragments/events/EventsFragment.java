@@ -1,18 +1,23 @@
 package ru.mail.park.android.fragments.events;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
 import android.os.Bundle;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import hirondelle.date4j.DateTime;
 import ru.mail.park.android.R;
+import ru.mail.park.android.database.RealtimeDatabase;
+import ru.mail.park.android.dialogs.DialogDashboardRename;
+import ru.mail.park.android.fragments.calendar.EventFragmentEditCreate;
 import ru.mail.park.android.fragments.calendar.SchedulerCaldroidFragment;
 import ru.mail.park.android.models.Dashboard;
 import ru.mail.park.android.models.Event;
 import ru.mail.park.android.recycler.EventAdapter;
-import ru.mail.park.android.utils.ListenerWrapper;
 import ru.mail.park.android.utils.Tools;
 
 import android.os.Handler;
@@ -29,8 +34,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.google.common.collect.HashMultimap;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.ValueEventListener;
 import com.roomorama.caldroid.CaldroidFragment;
 import com.roomorama.caldroid.CalendarHelper;
 
@@ -38,7 +49,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -49,25 +59,23 @@ public abstract class EventsFragment extends Fragment {
 
 	protected final ExecutorService executor = Executors.newSingleThreadExecutor();
 
-	public static final String DASHBOARD_ID = "DASHBOARD_ID";
-	public static final String SHORT_DASHBOARD = "SHORT_DASHBOARD";
-	protected static final String DASHBOARD_BUNDLE = "DASHBOARD_BUNDLE";
-	protected static final String CALENDAR_BUNDLE = "CALENDAR_BUNDLE";
 	private static final int MAX_DRAWABLES_EVENTS = 8;
-
+	public static final String DASHBOARD = "DASHBOARD";
+	public static final String CALENDAR_BUNDLE = "CALENDAR_BUNDLE";
 
 	protected final Handler handler = new Handler(Looper.getMainLooper());
+	protected DialogDashboardRename dialogRename;
 
-	protected Resources resources;
-	protected Dashboard dashboard;
-	protected ProgressBar progressBar;
+	@BindView(R.id.progressbar_event_load) ProgressBar progressBar;
+	@BindView(R.id.recycler_events) RecyclerView recyclerView;
 	protected SchedulerCaldroidFragment calendarFragment;
-	protected RecyclerView recyclerView;
 	protected EventAdapter adapter;
+	protected Dashboard dashboard;
+	protected Resources resources;
+
 	// This flag is necessary to stop heavy background processes
 	protected AtomicBoolean isAlive = new AtomicBoolean(true);
 	@Nullable protected HashMap<DateTime, Drawable> eventDrawables;
-	@NonNull protected List<ListenerWrapper> wrappers = new LinkedList<>();
 	@NonNull protected HashMultimap<DateTime, Event> dateAssociatedWithEvents = HashMultimap.create();
 
 
@@ -77,6 +85,7 @@ public abstract class EventsFragment extends Fragment {
 	public void onCreate(@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setHasOptionsMenu(true);
+		initialDialogs();
 	}
 
 	@Override
@@ -85,14 +94,14 @@ public abstract class EventsFragment extends Fragment {
 	                         @Nullable ViewGroup container,
 	                         @Nullable Bundle savedInstanceState) {
 		final View view = inflater.inflate(R.layout.fragment_events, container, false);
-		progressBar = view.findViewById(R.id.progressbar_event_load);
+		ButterKnife.bind(this, view);
+
 		resources = view.getResources();
 
 		adapter = new EventAdapter(
 				resources.getStringArray(R.array.event_priority),
 				resources.getStringArray(R.array.event_type)
 		);
-		recyclerView = view.findViewById(R.id.recycler_events);
 		recyclerView.setAdapter(adapter);
 		recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
@@ -103,7 +112,7 @@ public abstract class EventsFragment extends Fragment {
 	@CallSuper
 	public void onSaveInstanceState(@NonNull Bundle outState) {
 		super.onSaveInstanceState(outState);
-		outState.putSerializable(DASHBOARD_BUNDLE, dashboard);
+		outState.putSerializable(DASHBOARD, dashboard);
 		setHasOptionsMenu(true);
 		if (calendarFragment != null) {
 			calendarFragment.saveStatesToKey(outState, CALENDAR_BUNDLE);
@@ -113,20 +122,18 @@ public abstract class EventsFragment extends Fragment {
 	@Override
 	public void onStop() {
 		super.onStop();
-		for (ListenerWrapper wrapper : wrappers) {
-			wrapper.unregister();
-		}
 		isAlive.set(false);
-		progressBar.setVisibility(View.GONE);
+		progressBar.setVisibility(View.INVISIBLE);
 	}
 
+	protected abstract void initialDialogs();
 
 	protected void createCalendarFragment(@Nullable Bundle savedInstanceState) {
 
 		calendarFragment = new SchedulerCaldroidFragment();
 
 		if (savedInstanceState != null) {
-			calendarFragment.restoreStatesFromKey(savedInstanceState, DASHBOARD_BUNDLE);
+			calendarFragment.restoreStatesFromKey(savedInstanceState, DASHBOARD);
 		} else {
 			final Bundle bundle = new Bundle();
 			bundle.putInt(CaldroidFragment.START_DAY_OF_WEEK, CaldroidFragment.MONDAY);
@@ -135,40 +142,24 @@ public abstract class EventsFragment extends Fragment {
 			calendarFragment.setArguments(bundle);
 		}
 
-		if (getFragmentManager() != null) {
-			getFragmentManager()
-					.beginTransaction()
-					.replace(R.id.caldroid_container, calendarFragment)
-					.commit();
-		}
+		requireFragmentManager()
+				.beginTransaction()
+				.replace(R.id.caldroid_container, calendarFragment)
+				.commit();
 	}
 
 	protected void updateActionBarTitle() {
 		// Set title of dashboard in ActionBar
-		final Activity activity = getActivity();
-		if (activity != null) {
-			final ActionBar bar = ((AppCompatActivity) activity).getSupportActionBar();
-			if (bar != null) {
-				handler.post(new Runnable() {
-					@Override
-					public void run() {
-						bar.setTitle(dashboard.getTitle());
-					}
-				});
-			}
+		final Activity activity = requireActivity();
+		final ActionBar bar = ((AppCompatActivity) activity).getSupportActionBar();
+		if (bar != null) {
+			handler.post(new Runnable() {
+				@Override
+				public void run() {
+					bar.setTitle(dashboard.getTitle());
+				}
+			});
 		}
-	}
-
-	protected void removeProgressBar() {
-		// When data is loaded, we can set the listeners on calendar's cells
-		calendarFragment.setOnDateClickListener(new OnDateClickListener());
-		// And hide the progress bar indicating we are ready to work
-		handler.post(new Runnable() {
-			@Override
-			public void run() {
-				progressBar.setVisibility(View.GONE);
-			}
-		});
 	}
 
 	protected void updateEventSetFromBackground(@NonNull final Dashboard dashboard) {
@@ -326,6 +317,76 @@ public abstract class EventsFragment extends Fragment {
 			final Set<Event> eventsSet = dateAssociatedWithEvents.get(CalendarHelper.convertDateToDateTime(date));
 			adapter.setNewDataset(new ArrayList<>(eventsSet));
 			adapter.notifyDataSetChanged();
+		}
+	}
+
+	protected class OnLongDateClickListener implements SchedulerCaldroidFragment.OnLongDateClickListener {
+
+		@NonNull private final String dashID;
+
+		OnLongDateClickListener(@NonNull String dashID) {
+			this.dashID = dashID;
+		}
+
+		@Override
+		public void onLongClickDate(@NonNull final Date date) {
+
+			final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+			if (user == null) {
+				Toast.makeText(requireContext(), R.string.auth_access_db, Toast.LENGTH_SHORT).show();
+				return;
+			}
+
+			// Create fragment and set arguments
+			final Fragment fragment = new EventFragmentEditCreate();
+			final Bundle bundle = new Bundle();
+
+			bundle.putSerializable(EventFragmentEditCreate.DATE_BUNDLE, date);
+			bundle.putString(EventFragmentEditCreate.DASH_ID_BUNDLE, dashID);
+			bundle.putString(EventFragmentEditCreate.PATH_TO_NODE,
+					RealtimeDatabase.getPathToPrivateEvents(user.getUid(), dashID));
+			fragment.setArguments(bundle);
+
+			// Replace content in FrameLayout-container
+			requireFragmentManager()
+					.beginTransaction()
+					.replace(R.id.container, fragment)
+					.addToBackStack(null)
+					.commit();
+		}
+	}
+
+	abstract class OnLoadEventsFirebaseListener implements ValueEventListener {
+
+		@NonNull final Dashboard dashboard;
+
+		OnLoadEventsFirebaseListener(@NonNull Dashboard dashboard) {
+			this.dashboard = dashboard;
+		}
+
+		@Override
+		public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+			final ArrayList<Event> events = new ArrayList<>();
+			for (final DataSnapshot snapshot : dataSnapshot.getChildren()) {
+				Event event = RealtimeDatabase.parseEvent(snapshot);
+				events.add(event);
+			}
+			dashboard.setEvents(events);
+
+			updateActionBarTitle();
+			createCalendarFragment(null);
+			updateEventSetFromBackground(dashboard);
+
+			progressBar.setVisibility(View.GONE);
+		}
+
+		@Override
+		public void onCancelled(@NonNull DatabaseError databaseError) {
+			final Context context = getContext();
+			if (context != null) {
+				Toast.makeText(context, databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+			}
+			progressBar.setVisibility(ProgressBar.INVISIBLE);
 		}
 	}
 }

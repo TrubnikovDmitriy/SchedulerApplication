@@ -11,17 +11,17 @@
         app:showAsAction="always"
         />
     <item
+        android:id="@+id/menu_rename_dashboard"
+        android:title="@string/menu_rename"
+        android:icon="@mipmap/icon_edit"
+        android:orderInCategory="2"
+        app:showAsAction="ifRoom"
+        />
+    <item
         android:id="@+id/menu_create_event"
         android:title="@string/menu_create_event"
         android:icon="@mipmap/icon_create_event"
         android:orderInCategory="3"
-        app:showAsAction="ifRoom"
-        />
-    <item
-        android:id="@+id/menu_rename_dashboard"
-        android:title="@string/menu_rename"
-        android:icon="@mipmap/icon_edit"
-        android:orderInCategory="4"
         app:showAsAction="never"
         />
     <item

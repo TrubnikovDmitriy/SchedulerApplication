@@ -21,7 +21,7 @@ public class DialogConfirm extends DialogFragment {
 	@NonNull
 	@Override
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
-		return new AlertDialog.Builder(getActivity())
+		return new AlertDialog.Builder(requireActivity())
 				.setIcon(R.mipmap.ic_alert_black)
 				.setTitle(title)
 				.setPositiveButton(R.string.delete_button, listener)

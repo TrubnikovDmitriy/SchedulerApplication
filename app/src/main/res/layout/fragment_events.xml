@@ -6,7 +6,7 @@
     android:layout_marginStart="@dimen/activity_horizontal_margin"
     android:layout_marginEnd="@dimen/activity_horizontal_margin"
     android:scrollbars="none"
-    tools:context="ru.mail.park.android.fragments.events.ServerEventsFragment">
+    tools:context="ru.mail.park.android.fragments.events.PublicEventsFragment">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

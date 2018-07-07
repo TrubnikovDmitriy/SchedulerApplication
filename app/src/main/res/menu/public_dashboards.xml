@@ -4,10 +4,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/update_dashboards"
-        android:title="@string/update_dashboard"
-        android:icon="@mipmap/icon_update"
-        android:orderInCategory="2"
+        android:id="@+id/search_dashboards"
+        android:title="@string/search_dashboards"
+        android:icon="@mipmap/icon_search"
+        android:orderInCategory="1"
         app:showAsAction="always"
         />
 

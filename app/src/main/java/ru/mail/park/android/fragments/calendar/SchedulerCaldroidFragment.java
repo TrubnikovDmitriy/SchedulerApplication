@@ -1,11 +1,9 @@
 package ru.mail.park.android.fragments.calendar;
 
 import android.os.Bundle;
-import ru.mail.park.android.R;
 import ru.mail.park.android.utils.Tools;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -55,12 +53,12 @@ public class SchedulerCaldroidFragment extends CaldroidFragment {
 	}
 
 
-	public void setOnDateClickListener(@Nullable OnDateClickListener onDateClickListener) {
-		this.onDateClickListener = onDateClickListener;
+	public void setOnDateClickListener(@Nullable OnDateClickListener listener) {
+		this.onDateClickListener = listener;
 	}
 
-	public void enableLongClicks() {
-		this.onLongDateClickListener = new OnLongDateClickListener();
+	public void setOnLongDateClickListener(@Nullable OnLongDateClickListener listener) {
+		this.onLongDateClickListener = listener;
 	}
 
 	final class SchedulerCaldroidListener extends CaldroidListener {
@@ -74,6 +72,8 @@ public class SchedulerCaldroidFragment extends CaldroidFragment {
 		@Override
 		public void onLongClickDate(Date date, @Nullable View view) {
 			if (onLongDateClickListener != null) {
+				// Remember the date to return at the same page of calendar
+				currentDateTime = Tools.getDate(date);
 				onLongDateClickListener.onLongClickDate(date);
 			}
 		}
@@ -83,28 +83,7 @@ public class SchedulerCaldroidFragment extends CaldroidFragment {
 		void onSelectDate(@NonNull final Date date);
 	}
 
-	private class OnLongDateClickListener {
-
-		void onLongClickDate(final Date date) {
-
-			// Create fragment and set arguments
-			final Fragment fragment = new CreateEventFragment();
-			final Bundle bundle = new Bundle();
-
-			bundle.putBoolean(CreateEventFragment.IS_NEW_BUNDLE, true);
-			bundle.putSerializable(CreateEventFragment.DATE_BUNDLE, date);
-			bundle.putString(CreateEventFragment.DASH_ID_BUNDLE, dashID);
-			fragment.setArguments(bundle);
-
-			// Replace content in FrameLayout-container
-			getFragmentManager()
-					.beginTransaction()
-					.replace(R.id.container, fragment)
-					.addToBackStack(null)
-					.commit();
-
-			// Remember the date to return at the same page of calendar
-			currentDateTime = Tools.getDate(date);
-		}
+	public interface OnLongDateClickListener {
+		void onLongClickDate(@NonNull final Date date);
 	}
 }

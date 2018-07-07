@@ -28,8 +28,8 @@ public class DialogDashboardRename extends DialogFragment {
 	@Override
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
 
-		final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-		final LayoutInflater inflater = getActivity().getLayoutInflater();
+		final AlertDialog.Builder builder = new AlertDialog.Builder(requireActivity());
+		final LayoutInflater inflater = requireActivity().getLayoutInflater();
 
 		@SuppressLint("InflateParams")
 		final View viewDialog = inflater.inflate(R.layout.dialog_edit_name_dashboard, null);

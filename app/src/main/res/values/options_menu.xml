@@ -9,14 +9,13 @@
     <string name="delete_dashboard">Delete dashboard</string>
     <string name="delete_event">Delete event</string>
 
-    <string name="update_dashboard">Update list</string>
-    <string name="update_event">Update events</string>
-
     <string name="menu_subscribe">Subscribe</string>
     <string name="menu_unsubscribe">Unsubscribe</string>
 
+    <string name="search_dashboards">Search</string>
+
     <!--Main navigation menu-->
-    <string name="navigation_local_dash">My schedulers</string>
+    <string name="navigation_local_dash">Private schedulers</string>
     <string name="navigation_server_dash">Cloud of schedulers</string>
     <string name="navigation_settings">Settings</string>
 

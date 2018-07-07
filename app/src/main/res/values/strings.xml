@@ -12,14 +12,14 @@
     <string name="network_failure">Invalid server response</string>
     <string name="db_failure">Error accessing database</string>
     <string name="empty_title">The title can\'t be empty</string>
-    <string name="fcm_update_event">The title is too short</string>
+    <string name="too_short_title">The title is too short</string>
     <string name="too_long_title">The title is too long</string>
     <string name="options_dialog_dashboard">Select action</string>
     <string name="remote_dashboard_upload">Your dashboard is successfully uploaded to server</string>
     <string name="remote_dashboard_update">Your remote dashboard is successfully updated at server</string>
     <string name="subscribe">You successfully subscribe to updates of this dashboard</string>
 
-    <string name="local_dashes_title">My schedulers</string>
+    <string name="local_dashes_title">Private schedulers</string>
     <string name="cloud_dashes_title">Cloud of schedulers</string>
     <string name="event_create_title">Create event</string>
     <string name="event_edit_title">Edit event</string>
@@ -31,6 +31,9 @@
 
     <!--Authentication-->
     <string name="auth_access_db">To access your personal account, you must log in</string>
+    <string name="owner_access_db">Only the author of dashboard can edit it</string>
+    <string name="subscribe_access_db">You must be authorized to subscribe to updates</string>
+    <string name="create_access_dashboard">You must be authorized to subscribe to create new dashboard</string>
 
     <!--Text for labels-->
     <string name="title_of_dashboard">Title of new dashboard</string>

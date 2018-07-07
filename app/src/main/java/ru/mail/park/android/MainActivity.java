@@ -10,8 +10,8 @@ import android.os.StrictMode;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import ru.mail.park.android.fragments.dashboards.LocalDashboardsFragment;
-import ru.mail.park.android.fragments.dashboards.ServerDashboardsFragment;
+import ru.mail.park.android.fragments.dashboards.PrivateDashboardsFragment;
+import ru.mail.park.android.fragments.dashboards.PublicDashboardsFragment;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -122,11 +122,11 @@ public class MainActivity extends AppCompatActivity
 		final Fragment fragment;
 		switch (item.getItemId()) {
 			case R.id.local_dashboards:
-				fragment = new LocalDashboardsFragment();
+				fragment = new PrivateDashboardsFragment();
 				break;
 
 			case R.id.server_dashboards:
-				fragment = new ServerDashboardsFragment();
+				fragment = new PublicDashboardsFragment();
 				break;
 
 			case R.id.sign_out:

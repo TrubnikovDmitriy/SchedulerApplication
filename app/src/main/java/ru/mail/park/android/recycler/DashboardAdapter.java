@@ -1,7 +1,7 @@
 package ru.mail.park.android.recycler;
 
 import ru.mail.park.android.R;
-import ru.mail.park.android.models.ShortDashboard;
+import ru.mail.park.android.models.Dashboard;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.CardView;
@@ -13,13 +13,14 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
+
 public class DashboardAdapter extends RecyclerView.Adapter<DashboardAdapter.DashboardHolder> {
 
 	static public class DashboardHolder extends RecyclerView.ViewHolder {
 
 		private CardView cardItemView;
 		private TextView textView;
-		private ShortDashboard dashboard;
+		private Dashboard dashboard;
 
 		DashboardHolder(CardView cardItemView) {
 			super(cardItemView);
@@ -27,27 +28,28 @@ public class DashboardAdapter extends RecyclerView.Adapter<DashboardAdapter.Dash
 			this.textView = cardItemView.findViewById(R.id.dash_title);
 		}
 
-		private void updateContent(@NonNull final ShortDashboard dashboard) {
+		private void updateContent(@NonNull final Dashboard dashboard) {
 			this.dashboard = dashboard;
 			textView.setText(dashboard.getTitle());
 		}
 
-		public ShortDashboard getDashboard() {
+		public Dashboard getDashboard() {
 			return dashboard;
 		}
 	}
 
 	@Nullable private OnDashboardClickListener onItemClickListener;
-	@NonNull private ArrayList<ShortDashboard> dashSet;
+	@NonNull private ArrayList<Dashboard> dashSet;
 
-	public DashboardAdapter(@Nullable final ArrayList<ShortDashboard> dataset,
+	public DashboardAdapter(@NonNull final ArrayList<Dashboard> dataset,
 	                        @Nullable final OnDashboardClickListener listener) {
 		this.onItemClickListener = listener;
-		this.dashSet = (dataset != null) ? dataset : new ArrayList<ShortDashboard>();
+		this.dashSet = dataset;
 	}
 
+	@NonNull
 	@Override
-	public DashboardHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+	public DashboardHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 		// Inflate item
 		final CardView itemView = (CardView) LayoutInflater.from(parent.getContext())
 				.inflate(R.layout.holder_dashboard, parent, false);
@@ -65,7 +67,7 @@ public class DashboardAdapter extends RecyclerView.Adapter<DashboardAdapter.Dash
 	}
 
 	@Override
-	public void onBindViewHolder(final DashboardHolder holder, final int position) {
+	public void onBindViewHolder(@NonNull final DashboardHolder holder, final int position) {
 		holder.updateContent(dashSet.get(position));
 	}
 
@@ -74,28 +76,9 @@ public class DashboardAdapter extends RecyclerView.Adapter<DashboardAdapter.Dash
 		return dashSet.size();
 	}
 
-	public void setNewDataset(@Nullable ArrayList<ShortDashboard> newDataset) {
-		this.dashSet = (newDataset != null) ?
-				newDataset : new ArrayList<ShortDashboard>();
-	}
-
-	public void removeItem(int position) {
-		notifyItemRemoved(position);
-		dashSet.remove(position);
-	}
-
-	public void clearDataSet() {
-		this.dashSet.clear();
-		notifyDataSetChanged();
-	}
-
-	public void addItem(@NonNull ShortDashboard dashboard) {
-		dashSet.add(dashboard);
-		notifyItemInserted(dashSet.size() - 1);
-	}
 
 	public interface OnDashboardClickListener {
 
-		void onClick(@NonNull final ShortDashboard dashboard);
+		void onClick(@NonNull final Dashboard dashboard);
 	}
 }

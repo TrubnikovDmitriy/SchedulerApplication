@@ -1,5 +1,7 @@
 package ru.mail.park.android.models;
 
+import android.support.annotation.NonNull;
+
 import com.google.firebase.database.Exclude;
 import com.google.gson.annotations.SerializedName;
 
@@ -17,18 +19,18 @@ public class Dashboard implements Serializable {
 	private String dashID;
 	@SerializedName("author")
 	private String author;
-	@SerializedName("authorID")
-	private String authorID;
+	@SerializedName("authorUID")
+	private String authorUID;
 	@SerializedName("events")
 	private ArrayList<Event> events;
 
 
 	public Dashboard() { }
 
-	public Dashboard(String author, String authorID, String title,
+	public Dashboard(String author, String authorUID, String title,
 	                 String dashID, ArrayList<Event> events) {
 		this.author = author;
-		this.authorID = authorID;
+		this.authorUID = authorUID;
 		this.title = title;
 		this.dashID = dashID;
 		this.events = events;
@@ -39,8 +41,8 @@ public class Dashboard implements Serializable {
 		return author;
 	}
 
-	public String getAuthorID() {
-		return authorID;
+	public String getAuthorUID() {
+		return authorUID;
 	}
 
 	public String getTitle() {
@@ -67,8 +69,8 @@ public class Dashboard implements Serializable {
 		this.author = author;
 	}
 
-	public void setAuthorID(String authorID) {
-		this.authorID = authorID;
+	public void setAuthorUID(String authorUID) {
+		this.authorUID = authorUID;
 	}
 
 	public void setEvents(ArrayList<Event> events) {
@@ -77,9 +79,18 @@ public class Dashboard implements Serializable {
 
 
 	@Exclude
-	public Map<String, Object> toMap() {
+	public Map<String, Object> toPrivateMap() {
 		final HashMap<String, Object> firebaseModel = new HashMap<>();
 		firebaseModel.put("title", title);
+		return firebaseModel;
+	}
+
+	@Exclude
+	public  Map<String, Object> toPublicMap() {
+		final HashMap<String, Object> firebaseModel = new HashMap<>();
+		firebaseModel.put("title", title);
+		firebaseModel.put("author", author);
+		firebaseModel.put("authorUID", authorUID);
 		return firebaseModel;
 	}
 }

@@ -65,8 +65,9 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventHolder>
 		this.eventTypes = eventTypes;
 	}
 
+	@NonNull
 	@Override
-	public EventHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+	public EventHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 		// Inflate item
 		final CardView itemView = (CardView) LayoutInflater.from(parent.getContext())
 				.inflate(R.layout.holder_event, parent, false);
@@ -85,7 +86,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventHolder>
 	}
 
 	@Override
-	public void onBindViewHolder(final EventHolder holder, final int position) {
+	public void onBindViewHolder(@NonNull final EventHolder holder, final int position) {
 		holder.updateContent(eventSet.get(position));
 	}
 
@@ -103,6 +104,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventHolder>
 	}
 
 	public interface OnCardEventClickListener {
+
 		void onEventCardClick(@NonNull final Event event);
 	}
 }

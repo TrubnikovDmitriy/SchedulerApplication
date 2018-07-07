@@ -9,14 +9,13 @@
     <string name="delete_dashboard">Удалить расписание</string>
     <string name="delete_event">Удалить событие</string>
 
-    <string name="update_dashboard">Обновить список</string>
-    <string name="update_event">Обновить события</string>
-
     <string name="menu_subscribe">Подписаться на обновления</string>
     <string name="menu_unsubscribe">Отписаться от обновлений</string>
 
+    <string name="search_dashboards">Найти</string>
+
     <!--Main navigation menu-->
-    <string name="navigation_local_dash">Мои расписания</string>
+    <string name="navigation_local_dash">Личные расписания</string>
     <string name="navigation_server_dash">Облако расписаний</string>
     <string name="navigation_settings">Настройки</string>
 
