@@ -8,6 +8,8 @@ import android.graphics.Color;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
@@ -19,11 +21,20 @@ import java.util.UUID;
 
 import ru.mail.park.android.MainActivity;
 import ru.mail.park.android.R;
+import ru.mail.park.android.database.RealtimeDatabase;
 import ru.mail.park.android.models.Event;
 import ru.mail.park.android.models.SubscriberMessage;
 
+import static android.content.ContentValues.TAG;
+
 
 public class SchedulerFirebaseMessagingService extends FirebaseMessagingService {
+
+	@Override
+	public void onNewToken(String token) {
+		Log.e(TAG, "Token from arguments: " + token);
+		RealtimeDatabase.sendToken();
+	}
 
 	@Override
 	public void onMessageReceived(RemoteMessage remoteMessage) {
@@ -32,37 +43,37 @@ public class SchedulerFirebaseMessagingService extends FirebaseMessagingService 
 		if (remoteMessage.getData().size() > 0) {
 			Log.e("MESSAGE", "Message data payload: " + remoteMessage.getData());
 
-			SubscriberMessage message = new Gson().fromJson(
-					remoteMessage.getData().get("payload"), SubscriberMessage.class);
-
-
-
-			if (message.getInsertedEvents() != null && !message.getInsertedEvents().isEmpty()) {
-				final StringBuilder builder = new StringBuilder();
-				for (final Event event : message.getInsertedEvents()) {
-					builder.append(event.getTitle());
-					builder.append(" ");
-				}
-				showMessageNotification(getString(R.string.fcm_inserted_events), builder.toString());
-			}
-
-			if (message.getUpdatedEvents() != null && !message.getUpdatedEvents().isEmpty()) {
-				final StringBuilder builder = new StringBuilder();
-				for (final Event event : message.getUpdatedEvents()) {
-					builder.append(event.getTitle());
-					builder.append(" ");
-				}
-				showMessageNotification(getString(R.string.fcm_updated_events), builder.toString());
-			}
-
-			if (message.getDeletedEvents() != null && !message.getDeletedEvents().isEmpty()) {
-				final StringBuilder builder = new StringBuilder();
-				for (final Event event : message.getDeletedEvents()) {
-					builder.append(event.getTitle());
-					builder.append(" ");
-				}
-				showMessageNotification(getString(R.string.fcm_deleted_events), builder.toString());
-			}
+//			SubscriberMessage message = new Gson().fromJson(
+//					remoteMessage.getData().get("payload"), SubscriberMessage.class);
+//
+//
+//
+//			if (message.getInsertedEvents() != null && !message.getInsertedEvents().isEmpty()) {
+//				final StringBuilder builder = new StringBuilder();
+//				for (final Event event : message.getInsertedEvents()) {
+//					builder.append(event.getTitle());
+//					builder.append(" ");
+//				}
+//				showMessageNotification(getString(R.string.fcm_inserted_events), builder.toString());
+//			}
+//
+//			if (message.getUpdatedEvents() != null && !message.getUpdatedEvents().isEmpty()) {
+//				final StringBuilder builder = new StringBuilder();
+//				for (final Event event : message.getUpdatedEvents()) {
+//					builder.append(event.getTitle());
+//					builder.append(" ");
+//				}
+//				showMessageNotification(getString(R.string.fcm_updated_events), builder.toString());
+//			}
+//
+//			if (message.getDeletedEvents() != null && !message.getDeletedEvents().isEmpty()) {
+//				final StringBuilder builder = new StringBuilder();
+//				for (final Event event : message.getDeletedEvents()) {
+//					builder.append(event.getTitle());
+//					builder.append(" ");
+//				}
+//				showMessageNotification(getString(R.string.fcm_deleted_events), builder.toString());
+//			}
 
 		}
 	}

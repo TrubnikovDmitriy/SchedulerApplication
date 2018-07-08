@@ -9,9 +9,12 @@ import android.os.Build;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import ru.mail.park.android.database.RealtimeDatabase;
 import ru.mail.park.android.fragments.dashboards.PrivateDashboardsFragment;
 import ru.mail.park.android.fragments.dashboards.PublicDashboardsFragment;
 
+import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
@@ -36,10 +39,14 @@ import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.IdpResponse;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.squareup.picasso.Picasso;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+
+import static com.firebase.ui.auth.AuthUI.TAG;
 
 
 public class MainActivity extends AppCompatActivity
@@ -124,9 +131,35 @@ public class MainActivity extends AppCompatActivity
 				break;
 
 			case R.id.sign_out:
-				FirebaseAuth.getInstance().signOut();
-				updateSignUI(null);
-				firebaseUser = null;
+				// Logout is rare action, so once explicitly start a new thread is not critical
+				new Thread(new Runnable() {
+					@Override
+					public void run() {
+						final Handler handler = new Handler(Looper.getMainLooper());
+						try {
+							// It is necessary to invalidate token, otherwise notifications
+							// of the previous user will be sent to the current device
+							FirebaseInstanceId.getInstance().deleteInstanceId();
+							FirebaseAuth.getInstance().signOut();
+							handler.post(new Runnable() {
+								@Override
+								public void run() {
+									updateSignUI(null);
+									firebaseUser = null;
+								}
+							});
+
+						} catch (IOException e) {
+							Log.e(TAG, "Failed to unauth", e);
+							handler.post(new Runnable() {
+								@Override
+								public void run() {
+									Toast.makeText(MainActivity.this, R.string.failed_to_unauth, Toast.LENGTH_LONG).show();
+								}
+							});
+						}
+					}
+				}).start();
 				return true;
 
 			case R.id.sign_in:
@@ -220,6 +253,9 @@ public class MainActivity extends AppCompatActivity
 
 			mainNavigation.getMenu().findItem(R.id.sign_in).setVisible(false);
 			mainNavigation.getMenu().findItem(R.id.sign_out).setVisible(true);
+
+			// Send pair token-UID to server
+			RealtimeDatabase.sendToken();
 
 		} else {
 			signPhoto.setImageDrawable(

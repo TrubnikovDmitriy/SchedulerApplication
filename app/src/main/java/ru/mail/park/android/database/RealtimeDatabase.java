@@ -5,6 +5,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -12,6 +14,7 @@ import com.google.firebase.database.DatabaseException;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.util.Map;
 
@@ -30,6 +33,7 @@ public class RealtimeDatabase {
 	private static final String EVENTS = "events";
 	private static final String INFO = "info";
 	private static final String WATCHERS = "watchers";
+	private static final String TOKEN = "token";
 
 	public static final String TITLE = "title";
 
@@ -162,6 +166,19 @@ public class RealtimeDatabase {
 		return dashboard;
 	}
 
+
+	public static void sendToken() {
+		final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+		final String token = FirebaseInstanceId.getInstance().getToken();
+		if (user == null || token == null) {
+			return;
+		}
+		FirebaseDatabase.getInstance().getReference()
+				.child(PRIVATE)
+				.child(user.getUid())
+				.child(TOKEN)
+				.setValue(token);
+	}
 
 
 	public static class FailEventListener implements ValueEventListener {
